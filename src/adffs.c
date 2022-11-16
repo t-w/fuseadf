@@ -263,19 +263,16 @@ int adffs_readdir ( const char *            path,
     while ( *path == '/' ) // skip all leading '/' from the path
         path++;            // (normally, fuse always starts with a single '/')
 
-    log_info ( fs_state->logfile, "We are here 1, path: %s\n", path );
     if ( *path &&
          ( adfChangeDir ( vol, ( char * ) path ) != RC_OK ) )
     {
         adfToRootDir ( vol );
-        log_info ( fs_state->logfile, "We are here 2\n");
         return -ENOENT;
     }
     
     filler ( buffer, ".", NULL, 0 );
     filler ( buffer, "..", NULL, 0 );
 
-    log_info ( fs_state->logfile, "We are here 3\n");
     struct List * const dentries = adfGetDirEnt ( vol, vol->curDirPtr );
     if ( ! dentries ) {
         fprintf ( stderr, "adfimage_getdentry(): Error getting dir entries,"
@@ -305,7 +302,6 @@ int adffs_readdir ( const char *            path,
     }
 
 #ifdef DEBUG_ADFFS
-    log_info ( fs_state->logfile, "We are here - end\n");
     log_fuse_file_info ( finfo );
 #endif
 
