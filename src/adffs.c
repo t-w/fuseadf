@@ -6,6 +6,7 @@
 
 #include <errno.h>
 #include <inttypes.h>
+#include <libgen.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -113,7 +114,11 @@ int adffs_getattr ( const char *  path,
 #endif
 
     memset ( statbuf, 0, sizeof ( *statbuf ) );
-    if ( strcmp ( path, "/" ) == 0 ) {
+
+    while ( *path == '/' ) // skip all leading '/' from the path
+        path++;            // (normally, fuse always starts with a single '/')
+
+    if ( *path == '\0' ) {
         // main directory
         statbuf->st_mode = S_IFDIR |
             S_IRUSR | S_IXUSR |
@@ -124,29 +129,50 @@ int adffs_getattr ( const char *  path,
 
         // links count - always 1 (what should it be?)
         statbuf->st_nlink = 1;
-    } else {
+
+    } else {         // path is a non-empty string
+                     // so anything besided main directory
+
         adfimage_t * const adfimage = fs_state->adfimage;
+        struct Volume * const vol = adfimage->vol;
 
-        while ( *path == '/' ) // skip all leading '/' from the path
-                path++;            // (normally, fuse always starts with a single '/')
+        // first, find and enter the directory where is dir. entry to check
+        char * dir_path = dirname ( strdup ( path ) );
+        if ( *dir_path && adfChangeDir ( vol, ( char * ) dir_path ) == RC_OK ) {
+            log_info ( fs_state->logfile, "Changed the directory to %s.\n",
+                       dir_path );
+        }
 
-        adfvolume_dentry_t dentry = adfvolume_getdentry ( adfimage->vol, path );
+        char * direntry_name = basename ( strdup ( path ) );
+        if ( *direntry_name == '\0' ) {
+            // empty name means that given path is a directory
+            // to which we entered above - so we need to check
+            // properties of the current directory
+            direntry_name = ".";
+        }
+
+        adfvolume_dentry_t dentry = adfvolume_getdentry ( vol, direntry_name );
+
         if ( dentry.type == ADFVOLUME_DENTRY_FILE ) {
             statbuf->st_mode = S_IFREG |
                 S_IRUSR |
                 S_IRGRP |
                 S_IROTH;
             statbuf->st_nlink = 1;
+
         } else if ( dentry.type == ADFVOLUME_DENTRY_DIRECTORY ) {
             statbuf->st_mode = S_IFDIR |
-            S_IRUSR | S_IXUSR |
-            S_IRGRP | S_IXGRP |
-            S_IROTH | S_IXOTH;
+                S_IRUSR | S_IXUSR |
+                S_IRGRP | S_IXGRP |
+                S_IROTH | S_IXOTH;
             statbuf->st_nlink = 1;
+
         } else {
             // file/dirname not found
+            adfToRootDir ( vol );
             return -ENOENT;
         }            
+        adfToRootDir ( vol );
     }
 
     statbuf->st_uid = geteuid();
