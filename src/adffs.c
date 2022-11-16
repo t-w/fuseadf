@@ -160,7 +160,7 @@ int adffs_getattr ( const char *  path,
                 S_IROTH;
             statbuf->st_nlink = 1;
 
-            struct File * afile = adfOpenFile ( vol, ( char * ) path, "r" );
+            struct File * afile = adfOpenFile ( vol, direntry_name, "r" );
             if ( afile ) {
                 statbuf->st_size = afile->fileHdr->byteSize;
             } else
