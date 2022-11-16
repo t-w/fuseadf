@@ -217,28 +217,33 @@ int adffs_read ( const char *            path,
                path, buffer, size, offset, finfo );
 #endif
 
-/*    const cdImage_t * const cdimage = fs_state->cdimage;
+    adfimage_t * const adfimage = fs_state->adfimage;
+    struct Volume * const vol = adfimage->vol;
 
-    if ( strncmp ( path, "/track", 6 ) != 0 ||
-         strlen (path) < 7 ||
-         strlen (path) > 8 ||
-         atoi ( &path[6] ) <= 0 &&
-         atoi ( &path[6] ) > cdimage->ntracks )
-    {
+    while ( *path == '/' ) // skip all leading '/' from the path
+        path++;            // (normally, fuse always starts with a single '/')
+
+    struct File * file = adfOpenFile ( vol, ( char * ) path, "r" );
+    if ( ! file ) {
+        log_info ( fs_state->logfile,
+                   "Error opening file: %s\n", path );
         return -ENOENT;
     }
 
-    int trackNumber = atoi ( &path[6] ) - 1;
-    int bytesRead = cdTrackRead ( cdimage, trackNumber, buffer, size, offset );
-*/
-    int bytesRead = 0; // tmp devel
+    //void adfFileSeek(struct File *file, uint32_t pos);
+    adfFileSeek ( file, offset );
+
+    //int32_t adfReadFile(struct File* file, int32_t n, unsigned char *buffer);
+    int32_t bytes_read = adfReadFile ( file, size, ( unsigned char * ) buffer );
+    adfCloseFile ( file );
+
 #ifdef DEBUG_ADFFS
-    log_info ( fs_state->logfile,
-               "adffs_read () => %d (%s)\n", bytesRead,
-               size == (size_t) bytesRead ? "OK" : "READ ERROR" );
+    //log_info ( fs_state->logfile,
+    //           "adffs_read () => %d (%s)\n", bytes_read,
+    //           size == (size_t) bytes_read ? "OK" : "READ ERROR" );
 #endif
 
-    return bytesRead;
+    return bytes_read;
 }
 
 
