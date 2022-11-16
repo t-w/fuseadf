@@ -160,6 +160,13 @@ int adffs_getattr ( const char *  path,
                 S_IROTH;
             statbuf->st_nlink = 1;
 
+            struct File * afile = adfOpenFile ( vol, ( char * ) path, "r" );
+            if ( afile ) {
+                statbuf->st_size = afile->fileHdr->byteSize;
+            } else
+                log_info ( fs_state->logfile,
+                           "Error opening file: %s\n", path );
+
         } else if ( dentry.type == ADFVOLUME_DENTRY_DIRECTORY ) {
             statbuf->st_mode = S_IFDIR |
                 S_IRUSR | S_IXUSR |
