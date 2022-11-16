@@ -112,8 +112,6 @@ int adffs_getattr ( const char *  path,
           path, statbuf );
 #endif
 
-    //const cdImage_t * const cdimage = fs_state->cdimage;
-
     memset ( statbuf, 0, sizeof ( *statbuf ) );
     if ( strcmp ( path, "/" ) == 0 ) {
         // main directory
@@ -150,43 +148,7 @@ int adffs_getattr ( const char *  path,
             return -ENOENT;
         }            
     }
-    
 
-/*else if ( strncmp ( path, "/track", 6 ) == 0 &&
-                strlen (path) > 6 &&
-                strlen (path) <= 8 &&
-                atoi ( &path[6] ) > 0 )
-    {
-        int trackNumber = atoi ( &path[6] ) - 1;
-        if ( trackNumber < cdimage->ntracks )  {
-            statbuf->st_mode = S_IFREG | S_IRUSR | S_IRGRP | S_IROTH;
-
-            const cdTrackInfo_t * const     track         = & cdimage->tracks [ trackNumber ];
-            const cdTrackTypeInfo_t * const trackTypeInfo = & CD_TRACK_TYPE_INFO [ track->mode ];
-
-            // size in bytes (counting only data size)
-            long size_in_blocks = ( track->end - track->begin ) / CD_SECTOR_SIZE;
-            statbuf->st_size   = size_in_blocks * trackTypeInfo->dataSize;
-
-            // size in blocks <- size in CD sectors
-            //statbuf->st_blocks = ( tracks->end - track->begin ) / CD_SECTOR_SIZE;
-            // useful info: https://askubuntu.com/questions/946521/what-is-the-meaning-of-io-block-and-how-is-it-calculated
-            // size in blocks <- size of data only in 512-byte blocks
-            statbuf->st_blocks = ( size_in_blocks * track->dataLength ) / 512;
-
-            // block size <- data size
-            statbuf->st_blksize = trackTypeInfo->dataSize;
-
-            // links count - always 1 (for files)
-            statbuf->st_nlink = 1;
-        } else {
-            return -ENOENT;
-        }
-    } else {
-        //errno = ENOENT;
-        return -ENOENT;
-    }
-*/
     statbuf->st_uid = geteuid();
     statbuf->st_gid = getegid();
 
