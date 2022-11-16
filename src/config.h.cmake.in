@@ -1,0 +1,2 @@
+
+#define PACKAGE_STRING "fuseadf-${fuseadf_VERSION_MAJOR}.${fuseadf_VERSION_MINOR}"

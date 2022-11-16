@@ -1,0 +1,44 @@
+.TH FUSEADF 1 "Nov 2022"
+.SH NAME
+fuseadf \- Mount an ADF image and read files with FUSE.
+.SH SYNOPSIS
+.B fuseadf
+[\fBoptions\fR] <\fIimage_adf\fR> <\fImount point\fR>
+.SH DESCRIPTION
+\fBfuseadf\fR is a simple libfuse-based filesystem allowing to mount
+an ADF image of an Amiga floppy or hard disk and to read its contents
+(volumes/partitions, directories and files).
+.PP
+Volumes/partitions can be chosen with -p option (not needed for images with
+one volume only, ie. floppy disk images).
+.PP
+The filesystem is written for simplicity, not performance. It uses probably
+minimal set of FUSE API functions that allows to create a working filesystem.
+It is intended for simple accessing the contents of ADF images without copying
+/ extracting all data from them.
+.
+.SH OPTIONS
+.TP
+.B \-p
+Specify volume/partition (number) to mount (default: 0).
+.TP
+.B \-v
+Show version.
+.TP
+.B \-h
+Show usage info.
+.SH FUSE options
+.TP
+.B \-f
+Execute in foreground.
+.TP
+.B \-d
+Execute in foreground with debug output.
+.TP
+.B \-s
+Single-threaded mode.
+.SH SEE ALSO
+.BR fusermount (1), adflib (1)
+.SH AUTHOR
+\fBfuseadf\fR was written by \fBTomasz Wolak\fR <tomas.wolak@gmail.com>.
+.PP
