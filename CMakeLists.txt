@@ -40,5 +40,5 @@ add_link_options(
 ADD_SUBDIRECTORY ( src )
 
 # testing
-#enable_testing()
-#ADD_SUBDIRECTORY ( tests )
+enable_testing()
+ADD_SUBDIRECTORY ( tests )
