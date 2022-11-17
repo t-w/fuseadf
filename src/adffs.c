@@ -137,13 +137,16 @@ int adffs_getattr ( const char *  path,
         struct Volume * const vol = adfimage->vol;
 
         // first, find and enter the directory where is dir. entry to check
-        char * dir_path = dirname ( strdup ( path ) );
-        if ( *dir_path && adfChangeDir ( vol, ( char * ) dir_path ) == RC_OK ) {
-            log_info ( fs_state->logfile, "Changed the directory to %s.\n",
+        char * dirpath_buf = strdup ( path );
+        char * dir_path = dirname ( dirpath_buf );
+        if ( ! adfvolume_chdir ( vol, dir_path ) ) {
+            log_info ( fs_state->logfile, "adffs_getattr(): Cannot chdir to the directory %s.\n",
                        dir_path );
         }
+        free ( dirpath_buf );
 
-        char * direntry_name = basename ( strdup ( path ) );
+        char * direntry_buf = strdup ( path );
+        char * direntry_name = basename ( direntry_buf );
         if ( *direntry_name == '\0' ) {
             // empty name means that given path is a directory
             // to which we entered above - so we need to check
@@ -161,13 +164,15 @@ int adffs_getattr ( const char *  path,
             statbuf->st_nlink = 1;
 
             struct File * afile = adfOpenFile ( vol, direntry_name, "r" );
+            free (direntry_buf);
             if ( afile ) {
                 statbuf->st_size = afile->fileHdr->byteSize;
             } else
                 log_info ( fs_state->logfile,
-                           "Error opening file: %s\n", path );
+                           "adffs_getattr(): Error opening file: %s\n", path );
 
         } else if ( dentry.type == ADFVOLUME_DENTRY_DIRECTORY ) {
+            free ( direntry_buf );
             statbuf->st_mode = S_IFDIR |
                 S_IRUSR | S_IXUSR |
                 S_IRGRP | S_IXGRP |
@@ -176,6 +181,7 @@ int adffs_getattr ( const char *  path,
 
         } else {
             // file/dirname not found
+            free ( direntry_buf );
             adfToRootDir ( vol );
             return -ENOENT;
         }            
