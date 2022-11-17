@@ -104,6 +104,22 @@ START_TEST ( test_adfimage_chdir )
     //dentry = adfvolume_getdentry ( adf->vol, "ploT.c" );
     //ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_FILE );
 
+    // test multi-level subdir.
+    result = adfvolume_chdir ( adf->vol, "/" );
+    ck_assert ( result );
+
+    result = adfvolume_chdir ( adf->vol, "Polygon" );
+    ck_assert ( result );
+
+    dentry = adfvolume_getdentry ( adf->vol, "iffwriter" );
+    ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_DIRECTORY );
+
+    result = adfvolume_chdir ( adf->vol, "iffwriter" );
+    ck_assert ( result );
+
+    dentry = adfvolume_getdentry ( adf->vol, "iffwriter.h" );
+    ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_FILE );
+
     adfimage_close ( &adf );
 }
 END_TEST
