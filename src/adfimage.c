@@ -198,6 +198,51 @@ BOOL adfvolume_chdir ( struct Volume * const vol,
 }
 
 
+int adfimage_read ( adfimage_t * const adfimage,
+                    const char *       path,
+                    char *             buffer,
+                    size_t             size,
+                    off_t              offset )
+{
+    struct Volume * const vol = adfimage->vol;
+
+    //while ( *path == '/' ) // skip all leading '/' from the path
+    //    path++;            // (normally, fuse always starts with a single '/')
+
+    // if necessary (file path is not in the main dir) - enter the directory
+    // with the file to read
+
+    char * dirpath_buf = strdup ( path );
+    char * dir_path = dirname ( dirpath_buf );
+    if ( ! adfvolume_chdir ( vol, dir_path ) ) {
+        //log_info ( fs_state->logfile, "adffs_read(): Cannot chdir to the directory %s.\n",
+        //           dir_path );
+    }
+    free ( dirpath_buf );
+
+    char * filename_buf = strdup ( path );
+    char * filename = basename ( filename_buf );
+    struct File * file = adfOpenFile ( vol, filename, "r" );
+    free ( filename_buf );
+    if ( ! file ) {
+        //log_info ( fs_state->logfile,
+        //           "Error opening file: %s\n", path );
+        return -ENOENT;
+    }
+
+    //void adfFileSeek(struct File *file, uint32_t pos);
+    adfFileSeek ( file, offset );
+
+    //int32_t adfReadFile(struct File* file, int32_t n, unsigned char *buffer);
+    int32_t bytes_read = adfReadFile ( file, size, ( unsigned char * ) buffer );
+
+    adfCloseFile ( file );
+    adfToRootDir ( vol );
+
+    return bytes_read;
+}
+
+
 static void show_version_info()
 {
     // afd version info only for now

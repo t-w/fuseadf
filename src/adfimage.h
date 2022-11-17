@@ -46,11 +46,10 @@ adfvolume_dentry_t adfvolume_getdentry ( struct Volume * const vol,
 BOOL adfvolume_chdir ( struct Volume * const vol,
                        const char *          path );
 
-/*
-int cdTrackRead ( const cdImage_t * const cdimage,
-                  const int               trackNumber,
-                  char * const            buffer,
-                  const size_t            size,
-                  const off_t             offset );
-*/
+int adfimage_read ( adfimage_t * const adfimage,
+                    const char *       path,
+                    char *             buffer,
+                    size_t             size,
+                    off_t              offset );
+
 #endif

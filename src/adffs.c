@@ -223,36 +223,8 @@ int adffs_read ( const char *            path,
                path, buffer, size, offset, finfo );
 #endif
 
-    adfimage_t * const adfimage = fs_state->adfimage;
-    struct Volume * const vol = adfimage->vol;
-
-    while ( *path == '/' ) // skip all leading '/' from the path
-        path++;            // (normally, fuse always starts with a single '/')
-
-    // if necessary (file path is not in the main dir) - enter the directory
-    // with the file to read
-    char * dir_path = dirname ( strdup ( path ) );
-    if ( *dir_path && adfChangeDir ( vol, ( char * ) dir_path ) == RC_OK ) {
-        log_info ( fs_state->logfile, "Changed the directory to %s.\n",
-                   dir_path );
-    }
-
-    char * filename = basename ( strdup ( path ) );
-    struct File * file = adfOpenFile ( vol, filename, "r" );
-    if ( ! file ) {
-        log_info ( fs_state->logfile,
-                   "Error opening file: %s\n", path );
-        return -ENOENT;
-    }
-
-    //void adfFileSeek(struct File *file, uint32_t pos);
-    adfFileSeek ( file, offset );
-
-    //int32_t adfReadFile(struct File* file, int32_t n, unsigned char *buffer);
-    int32_t bytes_read = adfReadFile ( file, size, ( unsigned char * ) buffer );
-
-    adfCloseFile ( file );
-    adfToRootDir ( vol );
+    int bytes_read = adfimage_read ( fs_state->adfimage, path,
+                                     buffer, size, offset );
 
 #ifdef DEBUG_ADFFS
     //log_info ( fs_state->logfile,
