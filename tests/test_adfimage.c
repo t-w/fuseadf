@@ -33,6 +33,19 @@ START_TEST ( test_adfimage_open_close )
 END_TEST
 
 
+START_TEST ( test_adfimage_properties )
+{
+    adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf" );
+
+    ck_assert_int_eq ( adf->size, 901120 );
+    ck_assert_ptr_nonnull ( adf->dev );
+    ck_assert_ptr_nonnull ( adf->vol );
+
+    adfimage_close ( &adf );
+}
+END_TEST
+
+
 Suite * adfimage_suite ( void )
 {
     Suite * s = suite_create ( "adfimage" );
@@ -48,7 +61,11 @@ Suite * adfimage_suite ( void )
     tc = tcase_create ( "adfimage open close" );
     tcase_add_test ( tc, test_adfimage_open_close );
     suite_add_tcase ( s, tc );
-    
+
+    tc = tcase_create ( "adfimage properties" );
+    tcase_add_test ( tc, test_adfimage_properties );
+    suite_add_tcase ( s, tc );
+
     return s;
 }
 
