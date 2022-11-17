@@ -46,6 +46,26 @@ START_TEST ( test_adfimage_properties )
 END_TEST
 
 
+START_TEST ( test_adfimage_getdentry )
+{
+    adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf" );
+
+    adfvolume_dentry_t dentry =
+        adfvolume_getdentry ( adf->vol, "non-exestent-file.tst" );
+    ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_NONE );
+
+    dentry = adfvolume_getdentry ( adf->vol, "README.list49" );
+    ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_FILE );
+
+    dentry = adfvolume_getdentry ( adf->vol, "Plot" );
+    ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_DIRECTORY );
+
+    adfimage_close ( &adf );
+}
+END_TEST
+
+
+
 Suite * adfimage_suite ( void )
 {
     Suite * s = suite_create ( "adfimage" );
@@ -64,6 +84,10 @@ Suite * adfimage_suite ( void )
 
     tc = tcase_create ( "adfimage properties" );
     tcase_add_test ( tc, test_adfimage_properties );
+    suite_add_tcase ( s, tc );
+
+    tc = tcase_create ( "adfimage getdentry" );
+    tcase_add_test ( tc, test_adfimage_getdentry );
     suite_add_tcase ( s, tc );
 
     return s;
