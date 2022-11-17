@@ -278,17 +278,9 @@ int adffs_readdir ( const char *            path,
                path, buffer, filler, offset, finfo );
 #endif
 
-    //if ( strcmp ( path, "/" ) != 0 )
-    //    return -ENOENT;
-    adfimage_t * const adfimage = fs_state->adfimage;
-    struct Volume * const vol = adfimage->vol;
-
-    while ( *path == '/' ) // skip all leading '/' from the path
-        path++;            // (normally, fuse always starts with a single '/')
-
-    if ( *path &&
-         ( adfChangeDir ( vol, ( char * ) path ) != RC_OK ) )
-    {
+    if ( ! adfvolume_chdir ( fs_state->adfimage->vol, path ) ) {
+        log_info ( fs_state->logfile, "adffs_read(): Cannot chdir to the directory %s.\n",
+                   path );
         adfToRootDir ( vol );
         return -ENOENT;
     }
