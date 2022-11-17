@@ -125,6 +125,23 @@ START_TEST ( test_adfimage_chdir )
 END_TEST
 
 
+START_TEST ( test_adfimage_read )
+{
+    adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf" );
+
+    adfvolume_dentry_t dentry =
+        adfvolume_getdentry ( adf->vol, "README.list49" );
+    ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_FILE );
+
+    char buf[1024];
+    int bytes_read = adfimage_read ( adf, "README.list49",
+                                     buf, 10, 0 );
+    ck_assert_int_eq ( bytes_read, 10 );
+
+    adfimage_close ( &adf );
+}
+END_TEST
+
 
 Suite * adfimage_suite ( void )
 {
@@ -152,6 +169,10 @@ Suite * adfimage_suite ( void )
 
     tc = tcase_create ( "adfimage chdir" );
     tcase_add_test ( tc, test_adfimage_chdir );
+    suite_add_tcase ( s, tc );
+
+    tc = tcase_create ( "adfimage read" );
+    tcase_add_test ( tc, test_adfimage_read );
     suite_add_tcase ( s, tc );
 
     return s;
