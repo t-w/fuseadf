@@ -65,6 +65,50 @@ START_TEST ( test_adfimage_getdentry )
 END_TEST
 
 
+START_TEST ( test_adfimage_chdir )
+{
+    adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf" );
+
+    BOOL result = adfvolume_chdir ( adf->vol, "non-exestent-dir" );
+    ck_assert ( ! result );
+
+    // go to top-level
+    result = adfvolume_chdir ( adf->vol, "/" );
+    ck_assert ( result );
+
+    result = adfvolume_chdir ( adf->vol, "Plot" );
+    ck_assert ( result );
+
+    adfvolume_dentry_t dentry =
+        adfvolume_getdentry ( adf->vol, "non-exestent-file.tst" );
+    ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_NONE );
+
+    dentry = adfvolume_getdentry ( adf->vol, "plot.c" );
+    ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_FILE );
+
+    // go to top-level
+    result = adfvolume_chdir ( adf->vol, "/" );
+    ck_assert ( result );
+
+    // test case-insensitive chdir
+    result = adfvolume_chdir ( adf->vol, "plot" );
+    ck_assert ( result );
+
+    dentry = adfvolume_getdentry ( adf->vol, "non-exestent-file.tst" );
+    ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_NONE );
+
+    dentry = adfvolume_getdentry ( adf->vol, "plot.c" );
+    ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_FILE );
+
+    // this fails - meaning getdentry is not case-insensitive(!)
+    //dentry = adfvolume_getdentry ( adf->vol, "ploT.c" );
+    //ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_FILE );
+
+    adfimage_close ( &adf );
+}
+END_TEST
+
+
 
 Suite * adfimage_suite ( void )
 {
@@ -88,6 +132,10 @@ Suite * adfimage_suite ( void )
 
     tc = tcase_create ( "adfimage getdentry" );
     tcase_add_test ( tc, test_adfimage_getdentry );
+    suite_add_tcase ( s, tc );
+
+    tc = tcase_create ( "adfimage chdir" );
+    tcase_add_test ( tc, test_adfimage_chdir );
     suite_add_tcase ( s, tc );
 
     return s;

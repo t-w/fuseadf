@@ -162,6 +162,42 @@ adfvolume_dentry_t adfvolume_getdentry ( struct Volume * const vol,
 }
 
 
+BOOL adfvolume_chdir ( struct Volume * const vol,
+                       const char *          path )
+{
+    if ( ! vol || ! path || strlen ( path ) < 1 )
+        return false;
+
+    if ( *path == '/' ) {
+        adfToRootDir ( vol );
+        while ( *path == '/' ) // skip all leading '/' from the path
+            path++;
+    }
+
+    if ( *path == '\0' || ( strcmp ( path, "." ) == 0 ) )
+        // no need to chdir(".")
+        return true;
+
+    char * dir_path = strdup ( path );
+    char * dir = dir_path;
+    char * dir_end;
+    while ( *dir && ( dir_end = strchr ( dir, '/' ) ) ) {
+        *dir_end = '\0';
+        if ( adfChangeDir ( vol, ( char * ) dir ) != RC_OK ) {
+            free ( dir_path );
+            return false;
+        }
+        dir = dir_end + 1;
+    }
+    if ( adfChangeDir ( vol, ( char * ) dir ) != RC_OK ) {
+        free ( dir_path );
+        return false;
+    }
+    free ( dir_path );
+    return true;
+}
+
+
 static void show_version_info()
 {
     // afd version info only for now

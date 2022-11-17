@@ -3,6 +3,7 @@
 #define __ADFIMAGE_H__
 
 #include <adflib.h>
+#include <stdbool.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -41,6 +42,9 @@ typedef struct adfvolume_dentry {
 
 adfvolume_dentry_t adfvolume_getdentry ( struct Volume * const vol,
                                          const char * const    name );
+
+BOOL adfvolume_chdir ( struct Volume * const vol,
+                       const char *          path );
 
 /*
 int cdTrackRead ( const cdImage_t * const cdimage,
