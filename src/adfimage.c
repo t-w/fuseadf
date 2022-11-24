@@ -246,9 +246,16 @@ int adfimage_read ( adfimage_t * const adfimage,
 
     char * dirpath_buf = strdup ( path );
     char * dir_path = dirname ( dirpath_buf );
-    if ( ! adfimage_chdir ( adfimage, dir_path ) ) {
-        //log_info ( fs_state->logfile, "adffs_read(): Cannot chdir to the directory %s.\n",
-        //           dir_path );
+    char * cwd = NULL;
+    if ( strlen ( dir_path ) > 0 ) {
+        cwd = strdup ( adfimage->cwd );
+        if ( ! adfimage_chdir ( adfimage, dir_path ) ) {
+            //log_info ( fs_state->logfile, "adffs_read(): Cannot chdir to the directory %s.\n",
+            //           dir_path );
+            free ( cwd );
+            free ( dirpath_buf );
+            return -ENOENT;
+        }
     }
     free ( dirpath_buf );
 
@@ -270,7 +277,12 @@ int adfimage_read ( adfimage_t * const adfimage,
     int32_t bytes_read = adfReadFile ( file, size, ( unsigned char * ) buffer );
 
     adfCloseFile ( file );
-    adfToRootDir ( vol );
+
+    // go back to the working directory (if necessary)
+    if ( cwd ) {
+        adfimage_chdir ( adfimage, cwd );
+        free ( cwd );
+    }
 
     return bytes_read;
 }
