@@ -160,14 +160,25 @@ START_TEST ( test_adfimage_read )
 {
     adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf" );
 
-    adfimage_dentry_t dentry =
-        adfimage_getdentry ( adf, "README.list49" );
-    ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_FILE );
-
     char buf[1024];
-    int bytes_read = adfimage_read ( adf, "README.list49",
-                                     buf, 10, 0 );
+
+    // read a file in the main directory
+    const char * filename = "README.list49";
+    adfimage_dentry_t dentry = adfimage_getdentry ( adf, filename );
+    ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_FILE );
+    int bytes_read = adfimage_read ( adf, filename, buf, 10, 0 );
     ck_assert_int_eq ( bytes_read, 10 );
+    const char * cwd = adfimage_getcwd ( adf );
+    ck_assert_str_eq ( "/", cwd );
+
+    // reading a file with a directory in its pathname
+    filename = "plot/plot.h";
+    dentry = adfimage_getdentry ( adf, filename );
+    ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_FILE );
+    bytes_read = adfimage_read ( adf, filename, buf, 10, 0 );
+    ck_assert_int_eq ( bytes_read, 10 );
+    cwd = adfimage_getcwd ( adf );
+    ck_assert_str_eq ( "/", cwd );
 
     adfimage_close ( &adf );
 }
