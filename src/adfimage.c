@@ -20,7 +20,7 @@ static struct Device *
 
 static struct Volume *
     mount_volume ( struct Device * const dev,
-                   int                   partition,
+                   unsigned int          partition,
                    BOOL                  read_only );
 
 static long getFileSize ( const char * const filename );
@@ -28,8 +28,8 @@ static long getFileSize ( const char * const filename );
 static void append_dir ( adfimage_t * const adfimage,
                          const char * const dir );
 
-adfimage_t *
-    adfimage_open ( char * const filename )
+adfimage_t * adfimage_open ( char * const filename,
+                             unsigned int volume )
 {
 
     adfEnvInitDefault();
@@ -46,7 +46,7 @@ adfimage_t *
         return NULL;
     }
 
-    struct Volume * const vol = mount_volume ( dev, 0, read_only );
+    struct Volume * const vol = mount_volume ( dev, volume, read_only );
     if ( ! vol ) {
         adfUnMountDev ( dev );
         adfEnvCleanUp();
@@ -314,14 +314,14 @@ static struct Device *
 
 struct Volume *
     mount_volume ( struct Device * const dev,
-                   int                   partition,
+                   unsigned int          partition,
                    BOOL                  read_only )
 {
     // mount volume (volume/partition number, for floppies always 0 (?))
 #ifdef DEBUG_ADFIMAGE
     printf ("\nMounting volume (partition) %d\n", partition );
 #endif
-    struct Volume * const vol = adfMount ( dev, partition, read_only );
+    struct Volume * const vol = adfMount ( dev, (int) partition, read_only );
     if ( vol == NULL ) {
         fprintf ( stderr,  "Error opening volume %d.\n", partition );
     }

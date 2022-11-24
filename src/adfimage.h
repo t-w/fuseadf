@@ -26,7 +26,8 @@ typedef struct adfimage {
 } adfimage_t;
 
 
-adfimage_t * adfimage_open ( char * const filename );
+adfimage_t * adfimage_open ( char * const filename,
+                             unsigned int volume );
 
 //void adfimage_close ( adfimage_t * const adfimage );
 void adfimage_close ( adfimage_t ** adfimage );
