@@ -119,6 +119,7 @@ adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
         cwd = strdup ( adfimage->cwd );
         adfimage_chdir ( adfimage, dir_path );
     }
+    free ( dirpath_buf );
 
     // get directory list entries (for current directory)
     struct Volume * const vol = adfimage->vol;
@@ -170,10 +171,10 @@ adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
             break;
         }
     }
-
+    free ( filename_buf );
     freeList ( dentries );
 
-    // go back to working directory (if necessary)
+    // go back to the working directory (if necessary)
     if ( cwd ) {
         adfimage_chdir ( adfimage, cwd );
         free ( cwd );
