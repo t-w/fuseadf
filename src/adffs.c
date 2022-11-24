@@ -255,8 +255,8 @@ int adffs_readdir ( const char *            path,
                "    finfo  = 0x%" PRIxPTR " )\n",
                path, buffer, filler, offset, finfo );
 #endif
-
-    if ( ! adfvolume_chdir ( fs_state->adfimage->vol, path ) ) {
+    struct Volume * const vol = fs_state->adfimage->vol;
+    if ( ! adfvolume_chdir ( vol, path ) ) {
         log_info ( fs_state->logfile, "adffs_read(): Cannot chdir to the directory %s.\n",
                    path );
         adfToRootDir ( vol );
