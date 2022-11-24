@@ -31,7 +31,7 @@ void * adffs_init ( struct fuse_conn_info * conninfo )
 {
     struct fuse_context * const context = fuse_get_context();
     const adffs_state_t * const fs_state =
-        ( struct adffs_state * ) context->private_data;
+        ( adffs_state_t * ) context->private_data;
 
 #ifdef DEBUG_ADFFS
     log_info ( fs_state->logfile, "\nadffs_init ( conninfo = 0x%" PRIxPTR " )\n",
@@ -49,7 +49,7 @@ void * adffs_init ( struct fuse_conn_info * conninfo )
 
 void adffs_destroy ( void * private_data )
 {
-    adffs_state_t * const fs_state = ( struct adffs_state * ) private_data;
+    adffs_state_t * const fs_state = ( adffs_state_t * ) private_data;
     
 #ifdef DEBUG_ADFFS
     log_info ( fs_state->logfile,
@@ -68,7 +68,7 @@ int adffs_statfs ( const char *     path,
                    struct statvfs * stvfs )
 {
     const adffs_state_t * const fs_state =
-        ( struct adffs_state * ) fuse_get_context()->private_data;
+        ( adffs_state_t * ) fuse_get_context()->private_data;
 
 #ifdef DEBUG_ADFFS 
     log_info ( fs_state->logfile,
@@ -103,7 +103,7 @@ int adffs_getattr ( const char *  path,
                     struct stat * statbuf )
 {
     adffs_state_t * const fs_state =
-        ( struct adffs_state * ) fuse_get_context()->private_data;
+        ( adffs_state_t * ) fuse_get_context()->private_data;
 
 #ifdef DEBUG_ADFFS
     log_info ( fs_state->logfile,
@@ -210,7 +210,7 @@ int adffs_read ( const char *            path,
                  struct fuse_file_info * finfo )
 {
     const adffs_state_t * const fs_state =
-        ( struct adffs_state * ) fuse_get_context()->private_data;
+        ( adffs_state_t * ) fuse_get_context()->private_data;
     
 #ifdef DEBUG_ADFFS
     log_info ( fs_state->logfile,
@@ -243,7 +243,7 @@ int adffs_readdir ( const char *            path,
                     struct fuse_file_info * finfo )
 {
     const adffs_state_t * const fs_state =
-        ( struct adffs_state * ) fuse_get_context()->private_data;
+        ( adffs_state_t * ) fuse_get_context()->private_data;
 
 #ifdef DEBUG_ADFFS
     log_info ( fs_state->logfile,
