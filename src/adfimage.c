@@ -102,13 +102,14 @@ void adfimage_close ( adfimage_t ** adfimage )
 }
 
 
-adfvolume_dentry_t adfvolume_getdentry ( struct Volume * const vol,
-                                         const char * const    name )
+adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
+                                       const char * const name )
 {
-    adfvolume_dentry_t adf_dentry = { 
+    adfimage_dentry_t adf_dentry = {
         .type = ADFVOLUME_DENTRY_NONE
     };
 
+    struct Volume * const vol = adfimage->vol;
     struct List * const dentries = adfGetDirEnt ( vol, vol->curDirPtr );
     if ( ! dentries ) {
         fprintf ( stderr, "adfimage_getdentry(): Error getting dir entries,"
@@ -154,17 +155,18 @@ adfvolume_dentry_t adfvolume_getdentry ( struct Volume * const vol,
             break;
         }
     }
-    
-    freeList ( dentries );
 
+    freeList ( dentries );
 
     return adf_dentry;
 }
 
 
-BOOL adfvolume_chdir ( struct Volume * const vol,
-                       const char *          path )
+BOOL adfimage_chdir ( adfimage_t * const adfimage,
+                      const char *       path )
 {
+    struct Volume * const vol = adfimage->vol;
+
     if ( ! vol || ! path || strlen ( path ) < 1 )
         return false;
 
@@ -204,8 +206,6 @@ int adfimage_read ( adfimage_t * const adfimage,
                     size_t             size,
                     off_t              offset )
 {
-    struct Volume * const vol = adfimage->vol;
-
     //while ( *path == '/' ) // skip all leading '/' from the path
     //    path++;            // (normally, fuse always starts with a single '/')
 
@@ -214,7 +214,7 @@ int adfimage_read ( adfimage_t * const adfimage,
 
     char * dirpath_buf = strdup ( path );
     char * dir_path = dirname ( dirpath_buf );
-    if ( ! adfvolume_chdir ( vol, dir_path ) ) {
+    if ( ! adfimage_chdir ( adfimage, dir_path ) ) {
         //log_info ( fs_state->logfile, "adffs_read(): Cannot chdir to the directory %s.\n",
         //           dir_path );
     }
@@ -222,6 +222,7 @@ int adfimage_read ( adfimage_t * const adfimage,
 
     char * filename_buf = strdup ( path );
     char * filename = basename ( filename_buf );
+    struct Volume * const vol = adfimage->vol;
     struct File * file = adfOpenFile ( vol, filename, "r" );
     free ( filename_buf );
     if ( ! file ) {

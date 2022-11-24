@@ -50,14 +50,14 @@ START_TEST ( test_adfimage_getdentry )
 {
     adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf" );
 
-    adfvolume_dentry_t dentry =
-        adfvolume_getdentry ( adf->vol, "non-exestent-file.tst" );
+    adfimage_dentry_t dentry =
+        adfimage_getdentry ( adf, "non-exestent-file.tst" );
     ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_NONE );
 
-    dentry = adfvolume_getdentry ( adf->vol, "README.list49" );
+    dentry = adfimage_getdentry ( adf, "README.list49" );
     ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_FILE );
 
-    dentry = adfvolume_getdentry ( adf->vol, "Plot" );
+    dentry = adfimage_getdentry ( adf, "Plot" );
     ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_DIRECTORY );
 
     adfimage_close ( &adf );
@@ -69,55 +69,55 @@ START_TEST ( test_adfimage_chdir )
 {
     adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf" );
 
-    BOOL result = adfvolume_chdir ( adf->vol, "non-exestent-dir" );
+    BOOL result = adfimage_chdir ( adf, "non-exestent-dir" );
     ck_assert ( ! result );
 
     // go to top-level
-    result = adfvolume_chdir ( adf->vol, "/" );
+    result = adfimage_chdir ( adf, "/" );
     ck_assert ( result );
 
-    result = adfvolume_chdir ( adf->vol, "Plot" );
+    result = adfimage_chdir ( adf, "Plot" );
     ck_assert ( result );
 
-    adfvolume_dentry_t dentry =
-        adfvolume_getdentry ( adf->vol, "non-exestent-file.tst" );
+    adfimage_dentry_t dentry =
+        adfimage_getdentry ( adf, "non-exestent-file.tst" );
     ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_NONE );
 
-    dentry = adfvolume_getdentry ( adf->vol, "plot.c" );
+    dentry = adfimage_getdentry ( adf, "plot.c" );
     ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_FILE );
 
     // go to top-level
-    result = adfvolume_chdir ( adf->vol, "/" );
+    result = adfimage_chdir ( adf, "/" );
     ck_assert ( result );
 
     // test case-insensitive chdir
-    result = adfvolume_chdir ( adf->vol, "plot" );
+    result = adfimage_chdir ( adf, "plot" );
     ck_assert ( result );
 
-    dentry = adfvolume_getdentry ( adf->vol, "non-exestent-file.tst" );
+    dentry = adfimage_getdentry ( adf, "non-exestent-file.tst" );
     ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_NONE );
 
-    dentry = adfvolume_getdentry ( adf->vol, "plot.c" );
+    dentry = adfimage_getdentry ( adf, "plot.c" );
     ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_FILE );
 
     // this fails - meaning getdentry is not case-insensitive(!)
-    //dentry = adfvolume_getdentry ( adf->vol, "ploT.c" );
+    //dentry = adfimage_getdentry ( adf->vol, "ploT.c" );
     //ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_FILE );
 
     // test multi-level subdir.
-    result = adfvolume_chdir ( adf->vol, "/" );
+    result = adfimage_chdir ( adf, "/" );
     ck_assert ( result );
 
-    result = adfvolume_chdir ( adf->vol, "Polygon" );
+    result = adfimage_chdir ( adf, "Polygon" );
     ck_assert ( result );
 
-    dentry = adfvolume_getdentry ( adf->vol, "iffwriter" );
+    dentry = adfimage_getdentry ( adf, "iffwriter" );
     ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_DIRECTORY );
 
-    result = adfvolume_chdir ( adf->vol, "iffwriter" );
+    result = adfimage_chdir ( adf, "iffwriter" );
     ck_assert ( result );
 
-    dentry = adfvolume_getdentry ( adf->vol, "iffwriter.h" );
+    dentry = adfimage_getdentry ( adf, "iffwriter.h" );
     ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_FILE );
 
     adfimage_close ( &adf );
@@ -129,8 +129,8 @@ START_TEST ( test_adfimage_read )
 {
     adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf" );
 
-    adfvolume_dentry_t dentry =
-        adfvolume_getdentry ( adf->vol, "README.list49" );
+    adfimage_dentry_t dentry =
+        adfimage_getdentry ( adf, "README.list49" );
     ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_FILE );
 
     char buf[1024];

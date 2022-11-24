@@ -33,18 +33,18 @@ enum {
     ADFVOLUME_DENTRY_DIRECTORY
 };
 
-typedef struct adfvolume_dentry {
+typedef struct adfimage_dentry {
     // name ?
     int type;
     int size;
     // ...
-} adfvolume_dentry_t;
+} adfimage_dentry_t;
 
-adfvolume_dentry_t adfvolume_getdentry ( struct Volume * const vol,
-                                         const char * const    name );
+adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
+                                       const char * const name );
 
-BOOL adfvolume_chdir ( struct Volume * const vol,
-                       const char *          path );
+BOOL adfimage_chdir ( adfimage_t * const adfimage,
+                      const char *       path );
 
 int adfimage_read ( adfimage_t * const adfimage,
                     const char *       path,

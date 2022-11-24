@@ -139,7 +139,7 @@ int adffs_getattr ( const char *  path,
         // first, find and enter the directory where is dir. entry to check
         char * dirpath_buf = strdup ( path );
         char * dir_path = dirname ( dirpath_buf );
-        if ( ! adfvolume_chdir ( vol, dir_path ) ) {
+        if ( ! adfimage_chdir ( adfimage, dir_path ) ) {
             log_info ( fs_state->logfile, "adffs_getattr(): Cannot chdir to the directory %s.\n",
                        dir_path );
         }
@@ -154,7 +154,7 @@ int adffs_getattr ( const char *  path,
             direntry_name = ".";
         }
 
-        adfvolume_dentry_t dentry = adfvolume_getdentry ( vol, direntry_name );
+        adfimage_dentry_t dentry = adfimage_getdentry ( adfimage, direntry_name );
 
         if ( dentry.type == ADFVOLUME_DENTRY_FILE ) {
             statbuf->st_mode = S_IFREG |
@@ -255,8 +255,9 @@ int adffs_readdir ( const char *            path,
                "    finfo  = 0x%" PRIxPTR " )\n",
                path, buffer, filler, offset, finfo );
 #endif
-    struct Volume * const vol = fs_state->adfimage->vol;
-    if ( ! adfvolume_chdir ( vol, path ) ) {
+    adfimage_t * const adfimage = fs_state->adfimage;
+    struct Volume * const vol = adfimage->vol;
+    if ( ! adfimage_chdir ( adfimage, path ) ) {
         log_info ( fs_state->logfile, "adffs_read(): Cannot chdir to the directory %s.\n",
                    path );
         adfToRootDir ( vol );
