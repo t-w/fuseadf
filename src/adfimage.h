@@ -18,8 +18,6 @@ typedef struct adfimage {
     struct Device * dev;
     struct Volume * vol;
 
-    //int ntracks;
-    //cdTrackInfo_t * tracks;
     struct stat fstat;
 
     char cwd [ ADFIMAGE_MAX_PATH ];
@@ -58,5 +56,4 @@ int adfimage_read ( adfimage_t * const adfimage,
                     char *             buffer,
                     size_t             size,
                     off_t              offset );
-
 #endif
