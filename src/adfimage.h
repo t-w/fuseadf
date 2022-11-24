@@ -22,7 +22,7 @@ typedef struct adfimage {
     //cdTrackInfo_t * tracks;
     struct stat fstat;
 
-    char current_directory [ ADFIMAGE_MAX_PATH ];
+    char cwd [ ADFIMAGE_MAX_PATH ];
 } adfimage_t;
 
 

@@ -25,7 +25,8 @@ static struct Volume *
 
 static long getFileSize ( const char * const filename );
 
-
+static void append_dir ( adfimage_t * const adfimage,
+                         const char * const dir );
 
 adfimage_t *
     adfimage_open ( char * const filename )
@@ -64,7 +65,7 @@ adfimage_t *
     adfimage->size = dev->size;
     adfimage->dev = dev;
     adfimage->vol = vol;
-    strcpy ( adfimage->current_directory, "/" );
+    strcpy ( adfimage->cwd, "/" );
     
     stat ( adfimage->filename, &adfimage->fstat );
 
@@ -165,8 +166,9 @@ adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
 
 const char * adfimage_getcwd ( const adfimage_t * const adfimage )
 {
-    return adfimage->current_directory;
+    return adfimage->cwd;
 }
+
 
 BOOL adfimage_chdir ( adfimage_t * const adfimage,
                       const char *       path )
@@ -180,6 +182,7 @@ BOOL adfimage_chdir ( adfimage_t * const adfimage,
         adfToRootDir ( vol );
         while ( *path == '/' ) // skip all leading '/' from the path
             path++;
+        strcpy ( adfimage->cwd, "/" );
     }
 
     if ( *path == '\0' || ( strcmp ( path, "." ) == 0 ) )
@@ -195,12 +198,15 @@ BOOL adfimage_chdir ( adfimage_t * const adfimage,
             free ( dir_path );
             return false;
         }
+        append_dir ( adfimage, dir );
         dir = dir_end + 1;
     }
     if ( adfChangeDir ( vol, ( char * ) dir ) != RC_OK ) {
         free ( dir_path );
         return false;
     }
+    append_dir ( adfimage, dir );
+
     free ( dir_path );
     return true;
 }
@@ -316,4 +322,13 @@ static long getFileSize ( const char * const filename )
         return -1;
     }
     return flen;
+}
+
+static void append_dir ( adfimage_t * const adfimage,
+                         const char * const dir )
+{
+    // update current working dir.
+    if ( strcmp ( adfimage->cwd, "/" ) != 0 )
+        strcat ( adfimage->cwd, "/" );
+    strcat ( adfimage->cwd, dir );
 }

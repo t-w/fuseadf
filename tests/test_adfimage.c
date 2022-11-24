@@ -87,11 +87,16 @@ START_TEST ( test_adfimage_chdir )
     ck_assert ( ! result );
 
     // go to top-level
-    result = adfimage_chdir ( adf, "/" );
+    const char * testdir = "/";
+    result = adfimage_chdir ( adf, testdir );
     ck_assert ( result );
+    const char * cwd = adfimage_getcwd ( adf );
+    ck_assert_str_eq ( testdir, cwd );
 
     result = adfimage_chdir ( adf, "Plot" );
     ck_assert ( result );
+    cwd = adfimage_getcwd ( adf );
+    ck_assert_str_eq ( "/Plot", cwd );
 
     adfimage_dentry_t dentry =
         adfimage_getdentry ( adf, "non-exestent-file.tst" );
@@ -101,12 +106,17 @@ START_TEST ( test_adfimage_chdir )
     ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_FILE );
 
     // go to top-level
-    result = adfimage_chdir ( adf, "/" );
+    testdir = "/";
+    result = adfimage_chdir ( adf, testdir );
     ck_assert ( result );
+    cwd = adfimage_getcwd ( adf );
+    ck_assert_str_eq ( testdir, cwd );
 
     // test case-insensitive chdir
     result = adfimage_chdir ( adf, "plot" );
     ck_assert ( result );
+    cwd = adfimage_getcwd ( adf );
+    ck_assert_str_eq ( "/plot", cwd );
 
     dentry = adfimage_getdentry ( adf, "non-exestent-file.tst" );
     ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_NONE );
@@ -119,17 +129,24 @@ START_TEST ( test_adfimage_chdir )
     //ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_FILE );
 
     // test multi-level subdir.
-    result = adfimage_chdir ( adf, "/" );
+    testdir = "/";
+    result = adfimage_chdir ( adf, testdir );
     ck_assert ( result );
+    cwd = adfimage_getcwd ( adf );
+    ck_assert_str_eq ( testdir, cwd );
 
     result = adfimage_chdir ( adf, "Polygon" );
     ck_assert ( result );
+    cwd = adfimage_getcwd ( adf );
+    ck_assert_str_eq ( "/Polygon", cwd );
 
     dentry = adfimage_getdentry ( adf, "iffwriter" );
     ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_DIRECTORY );
 
     result = adfimage_chdir ( adf, "iffwriter" );
     ck_assert ( result );
+    cwd = adfimage_getcwd ( adf );
+    ck_assert_str_eq ( "/Polygon/iffwriter", cwd );
 
     dentry = adfimage_getdentry ( adf, "iffwriter.h" );
     ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_FILE );
