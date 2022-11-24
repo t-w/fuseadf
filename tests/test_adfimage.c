@@ -185,6 +185,64 @@ START_TEST ( test_adfimage_read )
 END_TEST
 
 
+START_TEST ( test_adfimage_read_large_file )
+{
+    adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf" );
+
+    adfimage_dentry_t dentry = adfimage_getdentry ( adf, "Polygon/polynums.c" );
+    ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_FILE );
+
+    char buf[1024 * 1024];
+
+    // failing reading files larger that ~50k
+    int bytes_read = adfimage_read ( adf, "Polygon/polynums.c", buf, 10, 0 );
+    ck_assert_int_eq ( bytes_read, 10 );
+
+    bytes_read = adfimage_read ( adf, "Polygon/polynums.c", buf, 10, 10 );
+    ck_assert_int_eq ( bytes_read, 10 );
+
+    bytes_read = adfimage_read ( adf, "Polygon/polynums.c", buf, 10, 0x100 );
+    ck_assert_int_eq ( bytes_read, 10 );
+
+    bytes_read = adfimage_read ( adf, "Polygon/polynums.c", buf, 10, 0x8000 );
+    ck_assert_int_eq ( bytes_read, 10 );
+
+    bytes_read = adfimage_read ( adf, "Polygon/polynums.c", buf, 59854, 0 );
+    ck_assert_int_eq ( bytes_read, 59854 );
+
+    bytes_read = adfimage_read ( adf, "Polygon/polynums.c", buf, 1000 * 10, 0x893f );
+    ck_assert_int_eq ( bytes_read, 1000 * 10 );
+
+    bytes_read = adfimage_read ( adf, "Trees/BCS", buf, 1000 * 10, 0x893f );
+    ck_assert_int_eq ( bytes_read, 1000 * 10 );
+
+    // read fails for offset 0x8940 (1 bytes can be read at 0x893f)
+    bytes_read = adfimage_read ( adf, "Polygon/polynums.c", buf, 1, 0x8940 );
+    ck_assert_int_eq ( bytes_read, 1 );
+
+    bytes_read = adfimage_read ( adf, "Trees/BCS", buf, 1, 0x8940 );
+    ck_assert_int_eq ( bytes_read, 1 );
+
+    bytes_read = adfimage_read ( adf, "Polygon/polynums.c", buf, 1, 0x0bfe8 );
+    ck_assert_int_eq ( bytes_read, 1 );
+
+    bytes_read = adfimage_read ( adf, "Polygon/polynums.c", buf, 1, 0x0bffe );
+    ck_assert_int_eq ( bytes_read, 1 );
+
+    bytes_read = adfimage_read ( adf, "Polygon/polynums.c", buf, 1, 0x0bfff );
+    ck_assert_int_eq ( bytes_read, 1 );
+
+    bytes_read = adfimage_read ( adf, "Polygon/polynums.c", buf, 1, 0x0c000 );
+    ck_assert_int_eq ( bytes_read, 1 );
+
+    const char * cwd = adfimage_getcwd ( adf );
+    ck_assert_str_eq ( "/", cwd );
+
+    adfimage_close ( &adf );
+}
+END_TEST
+
+
 Suite * adfimage_suite ( void )
 {
     Suite * s = suite_create ( "adfimage" );
@@ -219,6 +277,10 @@ Suite * adfimage_suite ( void )
 
     tc = tcase_create ( "adfimage read" );
     tcase_add_test ( tc, test_adfimage_read );
+    suite_add_tcase ( s, tc );
+
+    tc = tcase_create ( "adfimage read large file" );
+    tcase_add_test ( tc, test_adfimage_read_large_file );
     suite_add_tcase ( s, tc );
 
     return s;
