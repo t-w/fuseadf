@@ -34,8 +34,9 @@ adfimage_t *
 
     adfEnvInitDefault();
 
-    // debug
+#ifdef DEBUG_ADFIMAGE
     show_version_info();
+#endif
 
     const int read_only = 1;
 
@@ -68,8 +69,10 @@ adfimage_t *
     strcpy ( adfimage->cwd, "/" );
     
     stat ( adfimage->filename, &adfimage->fstat );
-    
+
+#ifdef DEBUG_ADFIMAGE
     printf ("\nfile size: %ld\n", adfimage->size );
+#endif
 
     return adfimage;
 }
@@ -292,15 +295,20 @@ static struct Device *
                 const BOOL   read_only )
 {
     // mount device (ie. image file)
+#ifdef DEBUG_ADFIMAGE
     printf ("Mounting file: %s\n", adf_filename );
+#endif
     struct Device * const dev = adfMountDev ( adf_filename, read_only );
     if ( dev == NULL ) {
         fprintf ( stderr, "Error opening ADF file: %s\n", adf_filename );
     }
 
+#ifdef DEBUG_ADFIMAGE
     printf ( "\nMounted device info:\n" );
     //adfDeviceInfo ( dev );
     printf ( "  size:\t\t%d\n  volumes:\t%d\n", dev->size, dev->nVol );
+#endif
+
     return dev;
 }
 
@@ -310,12 +318,17 @@ struct Volume *
                    BOOL                  read_only )
 {
     // mount volume (volume/partition number, for floppies always 0 (?))
+#ifdef DEBUG_ADFIMAGE
     printf ("\nMounting volume (partition) %d\n", partition );
+#endif
     struct Volume * const vol = adfMount ( dev, partition, read_only );
     if ( vol == NULL ) {
         fprintf ( stderr,  "Error opening volume %d.\n", partition );
     }
+
+#ifdef DEBUG_ADFIMAGE
     adfVolumeInfo ( vol );
+#endif
     return vol;
 }
 
