@@ -105,19 +105,32 @@ void adfimage_close ( adfimage_t ** adfimage )
 
 
 adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
-                                       const char * const name )
+                                       const char * const pathname )
 {
     adfimage_dentry_t adf_dentry = {
         .type = ADFVOLUME_DENTRY_NONE
     };
 
+    // change the directory first (if necessary)
+    char * dirpath_buf = strdup ( pathname );
+    char * dir_path = dirname ( dirpath_buf );
+    char * cwd = NULL;
+    if ( strlen ( dir_path ) > 0 ) {
+        cwd = strdup ( adfimage->cwd );
+        adfimage_chdir ( adfimage, dir_path );
+    }
+
+    // get directory list entries (for current directory)
     struct Volume * const vol = adfimage->vol;
     struct List * const dentries = adfGetDirEnt ( vol, vol->curDirPtr );
     if ( ! dentries ) {
         fprintf ( stderr, "adfimage_getdentry(): Error getting dir entries,"
-                  "filename %s\n", name );
+                  "filename %s\n", pathname );
         return adf_dentry;
     }
+
+    char * filename_buf = strdup ( pathname );
+    char * filename = basename ( filename_buf );
 
     for ( struct List * lentry = dentries ;
           lentry ;
@@ -133,7 +146,7 @@ adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
         //printEntry(struct Entry* entry);
         //printEntry ( dentry );
 
-        if ( strcmp ( dentry->name, name ) == 0 ) {
+        if ( strcmp ( dentry->name, filename ) == 0 ) {
             // ....
             if ( dentry->type == ST_FILE ||
                  dentry->type == ST_LFILE
@@ -159,6 +172,12 @@ adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
     }
 
     freeList ( dentries );
+
+    // go back to working directory (if necessary)
+    if ( cwd ) {
+        adfimage_chdir ( adfimage, cwd );
+        free ( cwd );
+    }
 
     return adf_dentry;
 }
