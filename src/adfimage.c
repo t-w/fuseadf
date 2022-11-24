@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-//#define DEBUG_CDIMAGE 1
+//#define DEBUG_ADFIMAGE 1
 
 static void show_version_info();
 
@@ -68,17 +68,9 @@ adfimage_t *
     strcpy ( adfimage->cwd, "/" );
     
     stat ( adfimage->filename, &adfimage->fstat );
-
-    //cdimage->size = getFileSize ( cdimage->filenameBin );
     
     printf ("\nfile size: %ld\n", adfimage->size );
 
-
-//#ifdef DEBUG_CDIMAGE 
-//    showTracksInfo ( cdimage );
-//#endif
-
-    //free ( cueData );
     return adfimage;
 }
 
@@ -238,12 +230,8 @@ int adfimage_read ( adfimage_t * const adfimage,
                     size_t             size,
                     off_t              offset )
 {
-    //while ( *path == '/' ) // skip all leading '/' from the path
-    //    path++;            // (normally, fuse always starts with a single '/')
-
     // if necessary (file path is not in the main dir) - enter the directory
     // with the file to read
-
     char * dirpath_buf = strdup ( path );
     char * dir_path = dirname ( dirpath_buf );
     char * cwd = NULL;
@@ -259,8 +247,11 @@ int adfimage_read ( adfimage_t * const adfimage,
     }
     free ( dirpath_buf );
 
+    // get the filename
     char * filename_buf = strdup ( path );
     char * filename = basename ( filename_buf );
+
+    // open the file
     struct Volume * const vol = adfimage->vol;
     struct File * file = adfOpenFile ( vol, filename, "r" );
     free ( filename_buf );
@@ -270,12 +261,11 @@ int adfimage_read ( adfimage_t * const adfimage,
         return -ENOENT;
     }
 
-    //void adfFileSeek(struct File *file, uint32_t pos);
+    // seek and read the file
     adfFileSeek ( file, offset );
-
-    //int32_t adfReadFile(struct File* file, int32_t n, unsigned char *buffer);
     int32_t bytes_read = adfReadFile ( file, size, ( unsigned char * ) buffer );
 
+    // ... and close it
     adfCloseFile ( file );
 
     // go back to the working directory (if necessary)
@@ -303,8 +293,6 @@ static struct Device *
 {
     // mount device (ie. image file)
     printf ("Mounting file: %s\n", adf_filename );
-    //struct Device* adfMountDev( char* filename,BOOL ro);
-    //struct Device * const dev = adfMountDev ( "d1.adf", readOnly );
     struct Device * const dev = adfMountDev ( adf_filename, read_only );
     if ( dev == NULL ) {
         fprintf ( stderr, "Error opening ADF file: %s\n", adf_filename );
@@ -323,7 +311,6 @@ struct Volume *
 {
     // mount volume (volume/partition number, for floppies always 0 (?))
     printf ("\nMounting volume (partition) %d\n", partition );
-    //struct Device* adfMountDev( char* filename,BOOL ro);
     struct Volume * const vol = adfMount ( dev, partition, read_only );
     if ( vol == NULL ) {
         fprintf ( stderr,  "Error opening volume %d.\n", partition );
