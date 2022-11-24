@@ -8,6 +8,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+// check the max. value for Amiga filesystems(!)
+#define ADFIMAGE_MAX_PATH 1024
 
 typedef struct adfimage {
     const char * filename;
@@ -19,6 +21,8 @@ typedef struct adfimage {
     //int ntracks;
     //cdTrackInfo_t * tracks;
     struct stat fstat;
+
+    char current_directory [ ADFIMAGE_MAX_PATH ];
 } adfimage_t;
 
 
@@ -42,6 +46,8 @@ typedef struct adfimage_dentry {
 
 adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
                                        const char * const name );
+
+const char * adfimage_getcwd ( const adfimage_t * const adfimage );
 
 BOOL adfimage_chdir ( adfimage_t * const adfimage,
                       const char *       path );

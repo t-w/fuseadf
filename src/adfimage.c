@@ -64,6 +64,7 @@ adfimage_t *
     adfimage->size = dev->size;
     adfimage->dev = dev;
     adfimage->vol = vol;
+    strcpy ( adfimage->current_directory, "/" );
     
     stat ( adfimage->filename, &adfimage->fstat );
 
@@ -161,6 +162,11 @@ adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
     return adf_dentry;
 }
 
+
+const char * adfimage_getcwd ( const adfimage_t * const adfimage )
+{
+    return adfimage->current_directory;
+}
 
 BOOL adfimage_chdir ( adfimage_t * const adfimage,
                       const char *       path )

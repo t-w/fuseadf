@@ -65,6 +65,20 @@ START_TEST ( test_adfimage_getdentry )
 END_TEST
 
 
+START_TEST ( test_adfimage_getcwd )
+{
+    adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf" );
+
+    const char * cwd = adfimage_getcwd ( adf );
+    ck_assert_ptr_nonnull ( cwd );
+    ck_assert_str_eq ( "/", cwd );
+
+    adfimage_close ( &adf );
+}
+END_TEST
+
+
+
 START_TEST ( test_adfimage_chdir )
 {
     adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf" );
@@ -165,6 +179,10 @@ Suite * adfimage_suite ( void )
 
     tc = tcase_create ( "adfimage getdentry" );
     tcase_add_test ( tc, test_adfimage_getdentry );
+    suite_add_tcase ( s, tc );
+
+    tc = tcase_create ( "adfimage getcwd" );
+    tcase_add_test ( tc, test_adfimage_getcwd );
     suite_add_tcase ( s, tc );
 
     tc = tcase_create ( "adfimage chdir" );
