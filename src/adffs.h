@@ -16,11 +16,7 @@ typedef
 struct adffs_state {
     char *       mountpoint;
     adfimage_t * adfimage;
-
-#ifdef DEBUG_ADFFS
     FILE *       logfile;
-#endif
-
 } adffs_state_t;
 
 static inline struct adffs_state * adffs_get_state()

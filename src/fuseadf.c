@@ -6,12 +6,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 typedef struct cmdline_options_s {
     char *       adf_filename;
     char *       mount_point;
     unsigned int adf_volume;
+    char *       logging_file;
     bool         help,
                  version;
 } cmdline_options_t;
@@ -74,14 +76,14 @@ int main ( int    argc,
     }
     adffs_data.mountpoint = options.mount_point;
 
-#ifdef DEBUG_ADFFS
-    const char * const log_filename = "fuseadf.log";
-    adffs_data.logfile = log_open ( log_filename );
-    if ( ! adffs_data.logfile ) {
-        fprintf ( stderr, "Cannot open log file: %s\n", log_filename );
-        exit ( EXIT_FAILURE );
+    if ( options.logging_file ) {
+        adffs_data.logfile = log_open ( options.logging_file );
+        if ( ! adffs_data.logfile ) {
+            fprintf ( stderr, "Cannot open log file: %s\n", options.logging_file );
+            exit ( EXIT_FAILURE );
+        }
+        printf ( "fuseadf logging file: %s\n", options.logging_file );
     }
-#endif
 
 #ifdef DEBUG_ADFFS
     fprintf ( stderr, "-> fuse_main()\n" );
@@ -100,8 +102,10 @@ int main ( int    argc,
 
 void usage()
 {
-    fprintf ( stderr, "usage:\tfuse [fuse/mount options] [-p partiion] diskimage_adf mount_point\n"
+    fprintf ( stderr, "usage:\tfuseadf [fuse/mount options] [-p partition] [-l logging_file] diskimage_adf mount_point\n"
               "\n\t-p partition - partition/volume number (0-10), default: 0\n"
+              "\t-l logfile   - enable logging and (optionally) specify logging file\n"
+              "\t               (default: fuseadf.log)\n"
               "\nFUSE options (for details see FUSE documentation):\n" 
               "\t-f\t\tforeground (do not daemonize)\n"
               "\t-d\t\tforeground with debug info\n"
@@ -113,15 +117,12 @@ bool parse_args (  int *               argc,
                    char **             argv,
                    cmdline_options_t * options )
 {
-    options->adf_filename = NULL;
-    options->mount_point  = NULL;
-    options->adf_volume   = 0;
-    options->help         = false;
-    options->version      = false;
+    memset ( options, 0, sizeof ( cmdline_options_t ) );
 
-    const char * valid_options = "p:dshv";
+    const char * valid_options = "p:l::dshv";
     int opt;
     while ( ( opt = getopt ( *argc, argv, valid_options ) ) != -1 ) {
+        //printf ( "optind %d, opt %c, optarg %s\n", optind, ( char ) opt, optarg );
         switch ( opt ) {
         case 'p': {
             // set partition number ...
@@ -142,6 +143,20 @@ bool parse_args (  int *               argc,
             drop_args ( argc, argv, optind, 2 );
             continue;
         }
+
+        case 'l': {
+            if ( optarg ) {
+                options->logging_file = optarg;
+                optind -= 2;
+                drop_args ( argc, argv, optind, 2 );
+            } else {
+                options->logging_file = "fuseadf.log";
+                optind--;
+                drop_arg ( argc, argv, optind );
+            }
+            continue;
+        }
+
         // fuse options ( /usr/include/fuse/fuse_common.h )
         case 'd':
         case 'f':
