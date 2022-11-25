@@ -307,12 +307,12 @@ int adffs_readdir ( const char *            path,
     filler ( buffer, "..", NULL, 0 );
 
     struct List * const dentries = adfGetDirEnt ( vol, vol->curDirPtr );
-    if ( ! dentries ) {
+    /*if ( ! dentries ) {
         log_info ( fs_state->logfile,
                    "adfimage_getdentry(): Error getting dir entries,"
                    "path %s\n", path );
         return -ENOENT; //?
-    }
+    }*/
 
     for ( struct List * lentry = dentries ;
           lentry ;
