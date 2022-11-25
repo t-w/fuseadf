@@ -186,7 +186,6 @@ int adffs_getattr ( const char *  path,
             statbuf->st_nlink = 1;
 
             struct File * afile = adfOpenFile ( vol, direntry_name, "r" );
-            free (direntry_buf);
             if ( afile ) {
                 statbuf->st_size = afile->fileHdr->byteSize;
             } else {
@@ -196,19 +195,30 @@ int adffs_getattr ( const char *  path,
             adfCloseFile ( afile );
 
         } else if ( dentry.type == ADFVOLUME_DENTRY_DIRECTORY ) {
-            free ( direntry_buf );
             statbuf->st_mode = S_IFDIR |
                 S_IRUSR | S_IXUSR |
                 S_IRGRP | S_IXGRP |
                 S_IROTH | S_IXOTH;
             statbuf->st_nlink = 1;
 
+        } else if ( dentry.type == ADFVOLUME_DENTRY_SOFTLINK ) {
+            statbuf->st_mode = S_IFLNK |
+                S_IRUSR | S_IXUSR |
+                S_IRGRP | S_IXGRP |
+                S_IROTH | S_IXOTH;
+            statbuf->st_nlink = 1;
+
+        } else if ( dentry.type == ADFVOLUME_DENTRY_UNKNOWN ) {
+            log_info ( fs_state->logfile,
+                       "adffs_getattr(): Unknown dir. entry: %s, adflib type: %d\n",
+                       path, dentry.adflib_type );
         } else {
             // file/dirname not found
             free ( direntry_buf );
             adfToRootDir ( vol );
             return -ENOENT;
-        }            
+        }
+        free ( direntry_buf );
         adfToRootDir ( vol );
     }
 
