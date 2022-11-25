@@ -117,7 +117,7 @@ bool parse_args (  int *               argc,
     options->mount_point  = NULL;
     options->adf_volume   = 0;
     options->help         = false;
-    options->help         = false;
+    options->version      = false;
 
     const char * valid_options = "p:dshv";
     int opt;
