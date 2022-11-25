@@ -65,6 +65,8 @@ void adffs_destroy ( void * private_data )
 int adffs_statfs ( const char *     path,
                    struct statvfs * stvfs )
 {
+    (void) path;
+
 #ifdef DEBUG_ADFFS
     const adffs_state_t * const fs_state =
         ( adffs_state_t * ) fuse_get_context()->private_data;
@@ -223,6 +225,8 @@ int adffs_read ( const char *            path,
                "    offset = %lld,\n"
                "    finfo  = 0x%" PRIxPTR " )\n",
                path, buffer, size, offset, finfo );
+#else
+    (void) finfo;
 #endif
 
     int bytes_read = adfimage_read ( fs_state->adfimage, path,
@@ -256,6 +260,8 @@ int adffs_readdir ( const char *            path,
                "    offset = %lld,\n"
                "    finfo  = 0x%" PRIxPTR " )\n",
                path, buffer, filler, offset, finfo );
+#else
+    (void) offset;  (void) finfo;
 #endif
     adfimage_t * const adfimage = fs_state->adfimage;
     struct Volume * const vol = adfimage->vol;
