@@ -115,10 +115,14 @@ int adffs_getattr ( const char *  path,
 
     memset ( statbuf, 0, sizeof ( *statbuf ) );
 
-    while ( *path == '/' ) // skip all leading '/' from the path
-        path++;            // (normally, fuse always starts with a single '/')
+    const char * path_relative = path;
 
-    if ( *path == '\0' ) {
+    // skip all leading '/' from the path
+    // (normally, fuse always starts with a single '/')
+    while ( *path_relative == '/' )
+        path_relative++;
+
+    if ( *path_relative == '\0' ) {
         // main directory
         statbuf->st_mode = S_IFDIR |
             S_IRUSR | S_IXUSR |
@@ -139,6 +143,12 @@ int adffs_getattr ( const char *  path,
         // first, find and enter the directory where is dir. entry to check
         char * dirpath_buf = strdup ( path );
         char * dir_path = dirname ( dirpath_buf );
+
+#ifdef DEBUG_ADFFS
+        log_info ( fs_state->logfile,
+                   "adffs_getattr(): Entering directory the directory %s.\n",
+                   dir_path );
+#endif
         if ( ! adfimage_chdir ( adfimage, dir_path ) ) {
             log_info ( fs_state->logfile,
                        "adffs_getattr(): Cannot chdir to the directory %s.\n",
@@ -147,8 +157,18 @@ int adffs_getattr ( const char *  path,
         }
         free ( dirpath_buf );
 
+#ifdef DEBUG_ADFFS
+        log_info ( fs_state->logfile,
+                   "adffs_getattr(): Current directory: %s.\n",
+                   adfimage_getcwd ( adfimage ) );
+#endif
         char * direntry_buf = strdup ( path );
         char * direntry_name = basename ( direntry_buf );
+
+#ifdef DEBUG_ADFFS
+        log_info ( fs_state->logfile, "adffs_getattr(): direntry name: %s.\n",
+                   direntry_name );
+#endif
         if ( *direntry_name == '\0' ) {
             // empty name means that given path is a directory
             // to which we entered above - so we need to check
