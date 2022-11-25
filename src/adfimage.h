@@ -33,12 +33,15 @@ void adfimage_close ( adfimage_t ** adfimage );
 enum {
     ADFVOLUME_DENTRY_NONE,
     ADFVOLUME_DENTRY_FILE,
-    ADFVOLUME_DENTRY_DIRECTORY
+    ADFVOLUME_DENTRY_DIRECTORY,
+    ADFVOLUME_DENTRY_SOFTLINK,
+    ADFVOLUME_DENTRY_UNKNOWN
 };
 
 typedef struct adfimage_dentry {
     // name ?
     int type;
+    int adflib_type;   // type as returned by ADFlib
     int size;
     // ...
 } adfimage_dentry_t;
