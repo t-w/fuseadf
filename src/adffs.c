@@ -140,8 +140,11 @@ int adffs_getattr ( const char *  path,
         char * dirpath_buf = strdup ( path );
         char * dir_path = dirname ( dirpath_buf );
         if ( ! adfimage_chdir ( adfimage, dir_path ) ) {
+#ifdef DEBUG_ADFFS
             log_info ( fs_state->logfile, "adffs_getattr(): Cannot chdir to the directory %s.\n",
                        dir_path );
+#endif
+            return -ENOENT;
         }
         free ( dirpath_buf );
 
@@ -167,9 +170,13 @@ int adffs_getattr ( const char *  path,
             free (direntry_buf);
             if ( afile ) {
                 statbuf->st_size = afile->fileHdr->byteSize;
-            } else
+            } else {
+#ifdef DEBUG_ADFFS
                 log_info ( fs_state->logfile,
                            "adffs_getattr(): Error opening file: %s\n", path );
+#endif
+            }
+            adfCloseFile ( afile );
 
         } else if ( dentry.type == ADFVOLUME_DENTRY_DIRECTORY ) {
             free ( direntry_buf );
@@ -258,8 +265,10 @@ int adffs_readdir ( const char *            path,
     adfimage_t * const adfimage = fs_state->adfimage;
     struct Volume * const vol = adfimage->vol;
     if ( ! adfimage_chdir ( adfimage, path ) ) {
+#ifdef DEBUG_ADFFS
         log_info ( fs_state->logfile, "adffs_read(): Cannot chdir to the directory %s.\n",
                    path );
+#endif
         adfToRootDir ( vol );
         return -ENOENT;
     }
@@ -269,8 +278,11 @@ int adffs_readdir ( const char *            path,
 
     struct List * const dentries = adfGetDirEnt ( vol, vol->curDirPtr );
     if ( ! dentries ) {
-        fprintf ( stderr, "adfimage_getdentry(): Error getting dir entries,"
+#ifdef DEBUG_ADFFS
+        log_info ( fs_state->logfile,
+                   "adfimage_getdentry(): Error getting dir entries,"
                   "filename %s\n", path );
+#endif
         return -ENOENT; //?
     }
 
@@ -288,7 +300,9 @@ int adffs_readdir ( const char *            path,
         //printEntry(struct Entry* entry);
         //printEntry ( dentry );    
         if ( filler ( buffer, dentry->name, NULL, 0 ) ) {
+#ifdef DEBUG_ADFFS
             log_info ( fs_state->logfile, "adffs_readdir: filler: buffer full\n" );
+#endif
             adfToRootDir ( vol );
             return -EAGAIN; // check what error return in such case(!)
                             // probably something from /usr/include/asm-generic/errno-base.h (?)
