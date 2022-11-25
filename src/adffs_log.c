@@ -2,9 +2,6 @@
 #include "adffs_log.h"
 
 #include "adffs.h"
-
-#ifdef DEBUG_ADFFS
-
 #include "log.h"
 
 #include <errno.h>
@@ -174,5 +171,3 @@ void log_fuse_file_info ( const struct fuse_file_info * const finfo )
         //finfo->poll_events
         );
 }
-
-#endif

@@ -17,10 +17,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#ifdef DEBUG_ADFFS
 #include "log.h"
 #include "adffs_log.h"
-#endif
 
 
 /*******************************************************
@@ -30,17 +28,17 @@
 void * adffs_init ( struct fuse_conn_info * conninfo )
 {
     struct fuse_context * const context = fuse_get_context();
+
+#ifdef DEBUG_ADFFS
     const adffs_state_t * const fs_state =
         ( adffs_state_t * ) context->private_data;
 
-#ifdef DEBUG_ADFFS
     log_info ( fs_state->logfile, "\nadffs_init ( conninfo = 0x%" PRIxPTR " )\n",
                conninfo );
     log_fuse_conn_info ( conninfo );
-#endif
-
-#ifdef DEBUG_ADFFS
     log_fuse_context ( context );
+#else
+    (void) conninfo;
 #endif
 
     return context->private_data;
@@ -67,10 +65,10 @@ void adffs_destroy ( void * private_data )
 int adffs_statfs ( const char *     path,
                    struct statvfs * stvfs )
 {
+#ifdef DEBUG_ADFFS
     const adffs_state_t * const fs_state =
         ( adffs_state_t * ) fuse_get_context()->private_data;
 
-#ifdef DEBUG_ADFFS 
     log_info ( fs_state->logfile,
                "\nadffs_statfs (\n"
                "    path  = \"%s\",\n"
@@ -140,10 +138,9 @@ int adffs_getattr ( const char *  path,
         char * dirpath_buf = strdup ( path );
         char * dir_path = dirname ( dirpath_buf );
         if ( ! adfimage_chdir ( adfimage, dir_path ) ) {
-#ifdef DEBUG_ADFFS
-            log_info ( fs_state->logfile, "adffs_getattr(): Cannot chdir to the directory %s.\n",
+            log_info ( fs_state->logfile,
+                       "adffs_getattr(): Cannot chdir to the directory %s.\n",
                        dir_path );
-#endif
             return -ENOENT;
         }
         free ( dirpath_buf );
@@ -171,10 +168,8 @@ int adffs_getattr ( const char *  path,
             if ( afile ) {
                 statbuf->st_size = afile->fileHdr->byteSize;
             } else {
-#ifdef DEBUG_ADFFS
                 log_info ( fs_state->logfile,
                            "adffs_getattr(): Error opening file: %s\n", path );
-#endif
             }
             adfCloseFile ( afile );
 
@@ -265,10 +260,9 @@ int adffs_readdir ( const char *            path,
     adfimage_t * const adfimage = fs_state->adfimage;
     struct Volume * const vol = adfimage->vol;
     if ( ! adfimage_chdir ( adfimage, path ) ) {
-#ifdef DEBUG_ADFFS
-        log_info ( fs_state->logfile, "adffs_read(): Cannot chdir to the directory %s.\n",
+        log_info ( fs_state->logfile,
+                   "adffs_read(): Cannot chdir to the directory %s.\n",
                    path );
-#endif
         adfToRootDir ( vol );
         return -ENOENT;
     }
@@ -278,11 +272,9 @@ int adffs_readdir ( const char *            path,
 
     struct List * const dentries = adfGetDirEnt ( vol, vol->curDirPtr );
     if ( ! dentries ) {
-#ifdef DEBUG_ADFFS
         log_info ( fs_state->logfile,
                    "adfimage_getdentry(): Error getting dir entries,"
-                  "filename %s\n", path );
-#endif
+                   "path %s\n", path );
         return -ENOENT; //?
     }
 
@@ -300,9 +292,7 @@ int adffs_readdir ( const char *            path,
         //printEntry(struct Entry* entry);
         //printEntry ( dentry );    
         if ( filler ( buffer, dentry->name, NULL, 0 ) ) {
-#ifdef DEBUG_ADFFS
             log_info ( fs_state->logfile, "adffs_readdir: filler: buffer full\n" );
-#endif
             adfToRootDir ( vol );
             return -EAGAIN; // check what error return in such case(!)
                             // probably something from /usr/include/asm-generic/errno-base.h (?)
