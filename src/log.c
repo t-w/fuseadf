@@ -24,7 +24,8 @@ void log_info ( FILE * const flog,
 {
     va_list ap;
     va_start ( ap, format );
-    vfprintf ( flog, format, ap );
+    if ( flog )
+        vfprintf ( flog, format, ap );
 }
 
 
