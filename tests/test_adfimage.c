@@ -151,6 +151,20 @@ START_TEST ( test_adfimage_chdir )
     dentry = adfimage_getdentry ( adf, "iffwriter.h" );
     ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_FILE );
 
+
+    // one more test (of one failing at some point...)
+    testdir = "/";
+    result = adfimage_chdir ( adf, testdir );
+    ck_assert ( result );
+    cwd = adfimage_getcwd ( adf );
+    ck_assert_str_eq ( testdir, cwd );
+
+    result = adfimage_chdir ( adf, "Multidef" );
+    ck_assert ( result );
+    cwd = adfimage_getcwd ( adf );
+    ck_assert_str_eq ( "/Multidef", cwd );
+
+
     adfimage_close ( &adf );
 }
 END_TEST
