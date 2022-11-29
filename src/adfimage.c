@@ -3,6 +3,7 @@
 
 #include "log.h"
 
+#include <adf_dir.h>
 #include <errno.h>
 #include <libgen.h>
 #include <stdio.h>
@@ -280,6 +281,92 @@ int adfimage_read ( adfimage_t * const adfimage,
     }
 
     return bytes_read;
+}
+
+// return value: 0 on success, -1 on error
+int adfimage_readlink ( adfimage_t * const adfimage,
+                        const char *       path,
+                        char *             buffer,
+                        size_t             len_max )
+{
+    int status = 0;
+
+    // if necessary (file path is not in the main dir) - enter the directory
+    // with the file to read
+    char * dirpath_buf = strdup ( path );
+    char * dir_path = dirname ( dirpath_buf );
+    char * cwd = NULL;
+    if ( strlen ( dir_path ) > 0 ) {
+        cwd = strdup ( adfimage->cwd );
+        if ( ! adfimage_chdir ( adfimage, dir_path ) ) {
+            //log_info ( fs_state->logfile, "adffs_readlink(): Cannot chdir to the directory %s.\n",
+            //           dir_path );
+            free ( cwd );
+            free ( dirpath_buf );
+            return -1;
+        }
+    }
+    free ( dirpath_buf );
+
+    // get the filename
+    char * filename_buf = strdup ( path );
+    char * filename = basename ( filename_buf );
+
+    // get block of the directory
+    struct Volume * const vol = adfimage->vol;
+    struct bEntryBlock parent;
+    if ( adfReadEntryBlock( vol, vol->curDirPtr, &parent ) != RC_OK ) {
+        status = -1;
+        goto readlink_cleanup;
+    }
+
+    // get block of the entry concerned (specified with path)
+    // SECTNUM adfNameToEntryBlk(struct Volume *vol, int32_t ht[], char* name,
+    //                           struct bEntryBlock *entry, SECTNUM *nUpdSect)
+
+    //struct bEntryBlock entry;
+    struct bLinkBlock entry;
+    SECTNUM nUpdSect;
+    SECTNUM sectNum = adfNameToEntryBlk ( adfimage->vol,
+                                          parent.hashTable,
+                                          filename,
+                                          ( struct bEntryBlock * )&entry,
+                                          &nUpdSect );
+    if ( sectNum == -1 ) {
+        status = -2;
+        goto readlink_cleanup;
+    }
+
+    memset ( buffer, 0, len_max );
+    if ( entry.secType == ST_LSOFT ) {
+        strncpy ( buffer, entry.realName,
+                  //entry.name,
+                  //min ( len_max - 1, entry.nameLen ) );
+                  len_max );
+    } else {
+        // hardlinks: ST_LFILE, ST_LDIR
+        if ( adfReadEntryBlock ( vol, entry.realEntry,
+                                 //entry.nextLink,
+                                 ( struct bEntryBlock * ) &entry ) != RC_OK )
+        {
+            status = -3;
+            goto readlink_cleanup;
+        }
+        strncpy ( buffer, //entry.realName,
+                  entry.name,
+                  //min ( len_max - 1, entry.nameLen ) );
+                  len_max );
+    }
+
+readlink_cleanup:
+    free ( filename_buf );
+    if ( cwd ) {
+        adfimage_chdir ( adfimage, cwd );
+        free ( cwd );
+    }
+
+    //strncpy ( buffer, "secret.S", len_max );
+    return status;
 }
 
 

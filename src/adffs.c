@@ -343,10 +343,37 @@ int adffs_readdir ( const char *            path,
     return 0;
 }
 
+
+int adffs_readlink ( const char * path,
+                     char *       buf,
+		     size_t       len )
+{
+    const adffs_state_t * const fs_state =
+        ( adffs_state_t * ) fuse_get_context()->private_data;
+#ifdef DEBUG_ADFFS
+    log_info ( fs_state->logfile,
+               "\nadffs_readlink (\n"
+               "    path = \"%s\",\n"
+               "    buf  = 0x%" PRIxPTR ",\n"
+               "    len  = %lld,\n",
+               path, buf, len );
+#endif
+    int status = adfimage_readlink ( fs_state->adfimage, path, buf, len );
+
+#ifdef DEBUG_ADFFS
+    log_info ( fs_state->logfile, "\nadffs_readlink:  buf  = %s, status %d\n",
+               buf, status );
+#endif
+    //strncpy ( buf, "secret.S", len );
+
+    return status;
+}
+
+
 // struct fuse_operations: /usr/include/fuse/fuse.h
 struct fuse_operations adffs_oper = {
     .getattr    = adffs_getattr,
-    .readlink   = NULL,
+    .readlink   = adffs_readlink,
     .getdir     = NULL,       // deprecated
     .mknod      = NULL,
     .mkdir      = NULL,

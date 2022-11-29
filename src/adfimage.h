@@ -59,4 +59,9 @@ int adfimage_read ( adfimage_t * const adfimage,
                     char *             buffer,
                     size_t             size,
                     off_t              offset );
+
+int adfimage_readlink ( adfimage_t * const adfimage,
+                        const char *       path,
+                        char *             buffer,
+                        size_t             len_max );
 #endif
