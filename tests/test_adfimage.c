@@ -65,6 +65,40 @@ START_TEST ( test_adfimage_getdentry )
 END_TEST
 
 
+START_TEST ( test_adfimage_getdentry_links )
+{
+    adfimage_t * adf = adfimage_open ( "testdata/testffs.adf", 0 );
+    ck_assert_ptr_nonnull ( adf );
+
+    adfimage_dentry_t dentry =
+        adfimage_getdentry ( adf, "non-existent.tst" );
+    ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_NONE );
+
+    dentry = adfimage_getdentry ( adf, "dir_1" );
+    ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_DIRECTORY );
+
+    dentry = adfimage_getdentry ( adf, "secret.S" );
+    //dentry = adfimage_getdentry ( adf, "emptyfile" );
+    ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_FILE );
+
+    dentry = adfimage_getdentry ( adf, "hlink_dir1" );
+    ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_LINKDIR );
+
+    dentry = adfimage_getdentry ( adf, "hlink_dir2" );
+    ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_LINKDIR );
+
+    dentry = adfimage_getdentry ( adf, "hlink_blue" );
+    ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_LINKFILE );
+
+    dentry = adfimage_getdentry ( adf, "slink_dir1" );
+    ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_SOFTLINK );
+
+    adfimage_close ( &adf );
+}
+END_TEST
+
+
+
 START_TEST ( test_adfimage_getcwd )
 {
     adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf", 0 );
@@ -279,6 +313,10 @@ Suite * adfimage_suite ( void )
 
     tc = tcase_create ( "adfimage getdentry" );
     tcase_add_test ( tc, test_adfimage_getdentry );
+    suite_add_tcase ( s, tc );
+
+    tc = tcase_create ( "adfimage getdentry_links" );
+    tcase_add_test ( tc, test_adfimage_getdentry_links );
     suite_add_tcase ( s, tc );
 
     tc = tcase_create ( "adfimage getcwd" );

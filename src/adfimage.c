@@ -147,21 +147,36 @@ adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
 
             adf_dentry.adflib_type = dentry->type;
 
+            // regular file
             if ( dentry->type == ST_FILE ) {
                 adf_dentry.type = ADFVOLUME_DENTRY_FILE;
             }
+
+            // directory
             else if ( dentry->type == ST_ROOT ||
                       dentry->type == ST_DIR )
             {
                 adf_dentry.type = ADFVOLUME_DENTRY_DIRECTORY;
             }
-            else if ( dentry->type == ST_LSOFT ||  // softlink?
-                      dentry->type == ST_LDIR ||   // "hard" directory link?
-                      dentry->type == ST_LFILE )   // "hard" file link?
-            {
+
+            // "hard" file link
+            else if ( dentry->type == ST_LFILE ) {
+                adf_dentry.type = ADFVOLUME_DENTRY_LINKFILE;
+            }
+
+            // "hard" directory link
+            else if ( dentry->type == ST_LDIR ) {
+                adf_dentry.type = ADFVOLUME_DENTRY_LINKDIR;
+            }
+
+            // softlink
+            else if ( dentry->type == ST_LSOFT ) {
                 adf_dentry.type = ADFVOLUME_DENTRY_SOFTLINK;
-            } else {
-                fprintf ( stderr, "adfimage_getdentry() error: unsupported type: %d\n",
+            }
+
+            else {
+                fprintf ( stderr,
+                          "adfimage_getdentry() error: unsupported type: %d\n",
                           dentry->type );
                 adf_dentry.type = ADFVOLUME_DENTRY_UNKNOWN;
             }
