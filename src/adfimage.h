@@ -43,8 +43,8 @@ enum {
 typedef struct adfimage_dentry {
     // name ?
     int type;
-    int adflib_type;   // type as returned by ADFlib
     int size;
+    struct Entry adflib_entry;   // entry as returned by ADFlib
     // ...
 } adfimage_dentry_t;
 

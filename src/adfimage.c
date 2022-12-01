@@ -99,6 +99,30 @@ void adfimage_close ( adfimage_t ** adfimage )
     adfEnvCleanUp();
 }
 
+static struct Entry * adflib_list_find ( struct List * const dentries,
+                                         const char * const  entry_name )
+{
+    for ( struct List * lentry = dentries ;
+          lentry ;
+          lentry = lentry->next )
+    {
+        struct Entry * const dentry =
+            ( struct Entry * ) lentry->content;
+        //printf (" type: %d, size: %d, name: %s, comment: %s\n",
+        //        dentry->type,
+        //        dentry->size,
+        //        dentry->name,
+        //        dentry->comment );
+        //printEntry(struct Entry* entry);
+        //printEntry ( dentry );
+
+        if ( strcmp ( dentry->name, entry_name ) == 0 ) {
+            return dentry;
+        }
+    }
+    return NULL;
+}
+
 
 adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
                                        const char * const pathname )
@@ -129,61 +153,46 @@ adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
     char * filename_buf = strdup ( pathname );
     char * filename = basename ( filename_buf );
 
-    for ( struct List * lentry = dentries ;
-          lentry ;
-          lentry = lentry->next )
-    {
-        struct Entry * const dentry =
-            ( struct Entry * ) lentry->content;
-        //printf (" type: %d, size: %d, name: %s, comment: %s\n",
-        //        dentry->type,
-        //        dentry->size,
-        //        dentry->name,
-        //        dentry->comment );
-        //printEntry(struct Entry* entry);
-        //printEntry ( dentry );
+    struct Entry * const dentry = adflib_list_find ( dentries, filename );
 
-        if ( strcmp ( dentry->name, filename ) == 0 ) {
+    if ( dentry ) {
+        adf_dentry.adflib_entry = *dentry;
 
-            adf_dentry.adflib_type = dentry->type;
+        // regular file
+        if ( dentry->type == ST_FILE ) {
+            adf_dentry.type = ADFVOLUME_DENTRY_FILE;
+        }
 
-            // regular file
-            if ( dentry->type == ST_FILE ) {
-                adf_dentry.type = ADFVOLUME_DENTRY_FILE;
-            }
+        // directory
+        else if ( dentry->type == ST_ROOT ||
+                  dentry->type == ST_DIR )
+        {
+            adf_dentry.type = ADFVOLUME_DENTRY_DIRECTORY;
+        }
 
-            // directory
-            else if ( dentry->type == ST_ROOT ||
-                      dentry->type == ST_DIR )
-            {
-                adf_dentry.type = ADFVOLUME_DENTRY_DIRECTORY;
-            }
+        // "hard" file link
+        else if ( dentry->type == ST_LFILE ) {
+            adf_dentry.type = ADFVOLUME_DENTRY_LINKFILE;
+        }
 
-            // "hard" file link
-            else if ( dentry->type == ST_LFILE ) {
-                adf_dentry.type = ADFVOLUME_DENTRY_LINKFILE;
-            }
+        // "hard" directory link
+        else if ( dentry->type == ST_LDIR ) {
+            adf_dentry.type = ADFVOLUME_DENTRY_LINKDIR;
+        }
 
-            // "hard" directory link
-            else if ( dentry->type == ST_LDIR ) {
-                adf_dentry.type = ADFVOLUME_DENTRY_LINKDIR;
-            }
+        // softlink
+        else if ( dentry->type == ST_LSOFT ) {
+            adf_dentry.type = ADFVOLUME_DENTRY_SOFTLINK;
+        }
 
-            // softlink
-            else if ( dentry->type == ST_LSOFT ) {
-                adf_dentry.type = ADFVOLUME_DENTRY_SOFTLINK;
-            }
-
-            else {
-                fprintf ( stderr,
-                          "adfimage_getdentry() error: unsupported type: %d\n",
-                          dentry->type );
-                adf_dentry.type = ADFVOLUME_DENTRY_UNKNOWN;
-            }
-
-            break;
+        else {
+            fprintf ( stderr,
+                      "adfimage_getdentry() error: unsupported type: %d\n",
+                      dentry->type );
+            adf_dentry.type = ADFVOLUME_DENTRY_UNKNOWN;
         }
     }
+
     free ( filename_buf );
     freeList ( dentries );
 

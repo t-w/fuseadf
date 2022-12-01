@@ -211,7 +211,7 @@ int adffs_getattr ( const char *  path,
         } else if ( dentry.type == ADFVOLUME_DENTRY_UNKNOWN ) {
             log_info ( fs_state->logfile,
                        "adffs_getattr(): Unknown dir. entry: %s, adflib type: %d\n",
-                       path, dentry.adflib_type );
+                       path, dentry.adflib_entry.type );
         } else {
             // file/dirname not found
             free ( direntry_buf );
