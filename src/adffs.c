@@ -178,7 +178,9 @@ int adffs_getattr ( const char *  path,
 
         adfimage_dentry_t dentry = adfimage_getdentry ( adfimage, direntry_name );
 
-        if ( dentry.type == ADFVOLUME_DENTRY_FILE ) {
+        if ( dentry.type == ADFVOLUME_DENTRY_FILE ||
+             dentry.type == ADFVOLUME_DENTRY_LINKFILE )
+        {
             statbuf->st_mode = S_IFREG |
                 S_IRUSR |
                 S_IRGRP |
@@ -194,7 +196,9 @@ int adffs_getattr ( const char *  path,
             }
             adfCloseFile ( afile );
 
-        } else if ( dentry.type == ADFVOLUME_DENTRY_DIRECTORY ) {
+        } else if ( dentry.type == ADFVOLUME_DENTRY_DIRECTORY ||
+                    dentry.type == ADFVOLUME_DENTRY_LINKDIR )
+        {
             statbuf->st_mode = S_IFDIR |
                 S_IRUSR | S_IXUSR |
                 S_IRGRP | S_IXGRP |
