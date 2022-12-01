@@ -291,6 +291,27 @@ START_TEST ( test_adfimage_read_large_file )
 END_TEST
 
 
+START_TEST ( test_adfimage_read_hard_link_file )
+{
+    adfimage_t * adf = adfimage_open ( "testdata/testffs.adf", 0 );
+    ck_assert_ptr_nonnull ( adf );
+
+    const char hlink_file[] = "hlink_blue";
+
+    adfimage_dentry_t dentry = adfimage_getdentry ( adf, hlink_file );
+    ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_LINKFILE );
+
+    char buf [ 128 ];
+
+    int bytes_read = adfimage_read ( adf, hlink_file, buf, 10, 0 );
+    ck_assert_int_eq ( bytes_read, 10 );
+    ck_assert_mem_eq ( buf, "GIF87a", 6 );
+
+    adfimage_close ( &adf );
+}
+END_TEST
+
+
 Suite * adfimage_suite ( void )
 {
     Suite * s = suite_create ( "adfimage" );
@@ -333,6 +354,10 @@ Suite * adfimage_suite ( void )
 
     tc = tcase_create ( "adfimage read large file" );
     tcase_add_test ( tc, test_adfimage_read_large_file );
+    suite_add_tcase ( s, tc );
+
+    tc = tcase_create ( "adfimage read hard link file" );
+    tcase_add_test ( tc, test_adfimage_read_hard_link_file );
     suite_add_tcase ( s, tc );
 
     return s;
