@@ -351,10 +351,10 @@ int adfimage_readlink ( adfimage_t * const adfimage,
     //struct bEntryBlock entry;
     struct bLinkBlock entry;
     SECTNUM nUpdSect;
-    SECTNUM sectNum = adfNameToEntryBlk ( adfimage->vol,
+    SECTNUM sectNum = adfNameToEntryBlk ( vol,
                                           parent.hashTable,
                                           filename,
-                                          ( struct bEntryBlock * )&entry,
+                                          ( struct bEntryBlock * ) &entry,
                                           &nUpdSect );
     if ( sectNum == -1 ) {
         status = -2;
@@ -368,6 +368,10 @@ int adfimage_readlink ( adfimage_t * const adfimage,
                   //min ( len_max - 1, entry.nameLen ) );
                   len_max );
     } else {
+        // readlink() is only for symlinks - hardlinks are just open()
+        // so normally this execution path should never happen
+        //assert (false);
+
         // hardlinks: ST_LFILE, ST_LDIR
         if ( adfReadEntryBlock ( vol, entry.realEntry,
                                  //entry.nextLink,
