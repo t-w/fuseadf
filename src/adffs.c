@@ -2,7 +2,7 @@
 #include "adffs.h"
 
 #include "config.h"
-//#include "cdimage.h"
+#include "adffs_util.h"
 
 #include <errno.h>
 #include <inttypes.h>
@@ -94,7 +94,6 @@ int adffs_statfs ( const char *     path,
 }
 
 
-
 /*******************************************************
  * File and directory operations ( read / stat / ... )
  *******************************************************/
@@ -122,13 +121,16 @@ int adffs_getattr ( const char *  path,
     while ( *path_relative == '/' )
         path_relative++;
 
+    adfimage_t * const adfimage = fs_state->adfimage;
+    adfimage_dentry_t dentry;
     if ( *path_relative == '\0' ) {
         // main directory
         statbuf->st_mode = S_IFDIR |
             S_IRUSR | S_IXUSR |
             S_IRGRP | S_IXGRP |
             S_IROTH | S_IXOTH;
-            
+
+        dentry = adfimage_getdentry ( adfimage, "." );
         //statbuf->st_size = cdimage->ntracks;
 
         // links count - always 1 (what should it be?)
@@ -137,7 +139,6 @@ int adffs_getattr ( const char *  path,
     } else {         // path is a non-empty string
                      // so anything besided main directory
 
-        adfimage_t * const adfimage = fs_state->adfimage;
         struct Volume * const vol = adfimage->vol;
 
         // first, find and enter the directory where is dir. entry to check
@@ -176,7 +177,7 @@ int adffs_getattr ( const char *  path,
             direntry_name = ".";
         }
 
-        adfimage_dentry_t dentry = adfimage_getdentry ( adfimage, direntry_name );
+        dentry = adfimage_getdentry ( adfimage, direntry_name );
 
         if ( dentry.type == ADFVOLUME_DENTRY_FILE ||
              dentry.type == ADFVOLUME_DENTRY_LINKFILE )
@@ -222,6 +223,7 @@ int adffs_getattr ( const char *  path,
             adfToRootDir ( vol );
             return -ENOENT;
         }
+
         free ( direntry_buf );
         adfToRootDir ( vol );
     }
@@ -229,10 +231,14 @@ int adffs_getattr ( const char *  path,
     statbuf->st_uid = geteuid();
     statbuf->st_gid = getegid();
 
-    //statbuf->st_atime = cdimage->fstat.st_atime;
-    //statbuf->st_mtime = cdimage->fstat.st_mtime;
-    //statbuf->st_ctime = cdimage->fstat.st_ctime;
-
+    statbuf->st_atime =
+    statbuf->st_mtime =
+    statbuf->st_ctime = ( time_t ) time_to_time_t ( dentry.adflib_entry.year,
+                                                    dentry.adflib_entry.month,
+                                                    dentry.adflib_entry.days,
+                                                    dentry.adflib_entry.hour,
+                                                    dentry.adflib_entry.mins,
+                                                    dentry.adflib_entry.secs );
 #ifdef DEBUG_ADFFS
     log_stat ( statbuf );
 #endif
