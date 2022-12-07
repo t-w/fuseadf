@@ -19,10 +19,29 @@ add_executable ( test_adfimage
   ../src/adfimage.h
 )
 
+add_executable ( test_time_to_time_t
+  test_time_to_time_t.c
+  ../src/adffs_util.c
+  ../src/adffs_util.h
+)
+
+
 add_test ( test_adfimage test_adfimage )
+add_test ( test_time_to_time_t test_time_to_time_t )
+
 
 target_link_libraries ( test_adfimage PUBLIC
   ${ADFLIB_LDFLAGS}
+  ${CHECK_LIBRARIES}
+  # -lcheck_pic
+  -pthread
+  #-lrt
+  #-lm
+  #-lsubunit
+)
+
+target_link_libraries ( test_time_to_time_t PUBLIC
+  #${ADFLIB_LDFLAGS}
   ${CHECK_LIBRARIES}
   # -lcheck_pic
   -pthread

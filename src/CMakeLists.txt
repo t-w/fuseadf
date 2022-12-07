@@ -10,6 +10,8 @@ add_executable ( fuseadf
   adffs_fuse_api.h
   adffs_log.c
   adffs_log.h
+  adffs_util.c
+  adffs_util.h
   adfimage.c
   adfimage.h
   fuseadf.c
