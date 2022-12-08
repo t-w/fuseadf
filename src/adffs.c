@@ -131,7 +131,9 @@ int adffs_getattr ( const char *  path,
             S_IROTH | S_IXOTH;
 
         dentry = adfimage_get_root_dentry ( adfimage );
-        //statbuf->st_size = dentry.adflib_entry.size;
+        //statbuf->st_size = dentry.adflib_entry.size;   // always 0 for directories(?)
+                                                         // (to improve in ADFlib?)
+        statbuf->st_size = adfimage_count_cwd_entries ( adfimage );
 
         // links count - always 1 (what should it be?)
         statbuf->st_nlink = 1;
@@ -204,6 +206,9 @@ int adffs_getattr ( const char *  path,
                 S_IRUSR | S_IXUSR |
                 S_IRGRP | S_IXGRP |
                 S_IROTH | S_IXOTH;
+            //statbuf->st_size = dentry.adflib_entry.size;   // always 0 for directories(?)
+                                                             // (to improve in ADFlib?)
+            statbuf->st_size = adfimage_count_dir_entries ( adfimage, path );
             statbuf->st_nlink = 1;
 
         } else if ( dentry.type == ADFVOLUME_DENTRY_SOFTLINK ) {
@@ -239,6 +244,7 @@ int adffs_getattr ( const char *  path,
                                                     dentry.adflib_entry.hour,
                                                     dentry.adflib_entry.mins,
                                                     dentry.adflib_entry.secs );
+    statbuf->st_blksize = 512;
 #ifdef DEBUG_ADFFS
     log_stat ( statbuf );
 #endif
