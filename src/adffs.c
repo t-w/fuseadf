@@ -130,8 +130,8 @@ int adffs_getattr ( const char *  path,
             S_IRGRP | S_IXGRP |
             S_IROTH | S_IXOTH;
 
-        dentry = adfimage_getdentry ( adfimage, "." );
-        //statbuf->st_size = cdimage->ntracks;
+        dentry = adfimage_get_root_dentry ( adfimage );
+        //statbuf->st_size = dentry.adflib_entry.size;
 
         // links count - always 1 (what should it be?)
         statbuf->st_nlink = 1;
