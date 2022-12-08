@@ -48,6 +48,10 @@ typedef struct adfimage_dentry {
     // ...
 } adfimage_dentry_t;
 
+int adfimage_count_cwd_entries ( adfimage_t * const adfimage );
+
+int adfimage_count_dir_entries ( adfimage_t * const adfimage,
+                                 const char * const dirname );
 
 adfimage_dentry_t adfimage_get_root_dentry ( adfimage_t * const adfimage );
 

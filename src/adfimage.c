@@ -102,6 +102,34 @@ void adfimage_close ( adfimage_t ** adfimage )
 }
 
 
+int adfimage_count_cwd_entries ( adfimage_t * const adfimage )
+{
+    struct Volume * const vol = adfimage->vol;
+    struct List * list, * cell;
+
+    int nentries = 0;
+    cell = list = adfGetDirEnt ( vol, vol->curDirPtr );
+    while ( cell ) {
+        //printEntry ( cell->content );
+        cell = cell->next;
+        nentries++;
+    }
+    adfFreeDirList ( list );
+    return nentries;
+}
+
+int adfimage_count_dir_entries ( adfimage_t * const adfimage,
+                                 const char * const dirpath )
+{
+    char cwd [ ADFIMAGE_MAX_PATH ];
+    strcpy ( cwd, adfimage->cwd );
+    adfimage_chdir ( adfimage, dirpath );
+    int nentries = adfimage_count_cwd_entries ( adfimage );
+    adfimage_chdir ( adfimage, cwd );
+    return nentries;
+}
+
+
 adfimage_dentry_t adfimage_get_root_dentry ( adfimage_t * const adfimage )
 {
     adfimage_dentry_t adf_dentry = {
