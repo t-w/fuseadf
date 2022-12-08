@@ -3,7 +3,9 @@
 
 #include "log.h"
 
+#include <adf_blk.h>
 #include <adf_dir.h>
+#include <adf_raw.h>
 #include <errno.h>
 #include <libgen.h>
 #include <stdio.h>
@@ -98,6 +100,33 @@ void adfimage_close ( adfimage_t ** adfimage )
 
     adfEnvCleanUp();
 }
+
+
+adfimage_dentry_t adfimage_get_root_dentry ( adfimage_t * const adfimage )
+{
+    adfimage_dentry_t adf_dentry = {
+        .type = ADFVOLUME_DENTRY_NONE
+    };
+
+    struct bRootBlock rootBlock;
+    struct Volume * const vol = adfimage->vol;
+
+    if ( adfReadRootBlock ( vol, vol->rootBlock, &rootBlock ) != RC_OK )
+        return adf_dentry;
+
+    struct Entry entry;
+    if ( adfEntBlock2Entry ( ( struct bEntryBlock * ) &rootBlock, &entry ) != RC_OK )
+        return adf_dentry;
+
+    if ( entry.type != ST_ROOT )
+        return adf_dentry;
+
+    adf_dentry.type = ADFVOLUME_DENTRY_DIRECTORY;
+    adf_dentry.adflib_entry = entry;
+
+    return adf_dentry;
+}
+
 
 static struct Entry * adflib_list_find ( struct List * const dentries,
                                          const char * const  entry_name )

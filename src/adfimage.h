@@ -48,6 +48,9 @@ typedef struct adfimage_dentry {
     // ...
 } adfimage_dentry_t;
 
+
+adfimage_dentry_t adfimage_get_root_dentry ( adfimage_t * const adfimage );
+
 adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
                                        const char * const name );
 
