@@ -244,6 +244,26 @@ int adffs_getattr ( const char *  path,
                                                     dentry.adflib_entry.hour,
                                                     dentry.adflib_entry.mins,
                                                     dentry.adflib_entry.secs );
+
+#ifdef DEBUG_ADFFS
+    log_info ( fs_state->logfile,
+               "\nadffs_getattr time:\n"
+               "    year   = %d\n"
+               "    month  = %d\n"
+               "    day    = %d\n"
+               "    hour   = %d\n"
+               "    min    = %d\n"
+               "    sec    = %d\n"
+               "    time_t = %lld\n\n",
+               dentry.adflib_entry.year,
+               dentry.adflib_entry.month,
+               dentry.adflib_entry.days,
+               dentry.adflib_entry.hour,
+               dentry.adflib_entry.mins,
+               dentry.adflib_entry.secs,
+               (long long) statbuf->st_ctime );
+#endif
+
     statbuf->st_blksize = 512;
 #ifdef DEBUG_ADFFS
     log_stat ( statbuf );
