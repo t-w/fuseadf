@@ -1,0 +1,11 @@
+fuseadf for Debian
+----------------------
+
+The source package is being created from the same directory, excluding
+files for Debian (like debian/ directory).
+
+TODO:
+- make the files/scripts generic, add patches for Debian
+
+
+ -- Tomasz Wolak <tomas.wolak@gmail.com>  Fri, 9 Dec 2022 19:33:55 +0100

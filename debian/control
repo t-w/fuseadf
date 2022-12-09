@@ -1,0 +1,26 @@
+Source: fuseadf
+Section: otherosfs
+Priority: optional
+Maintainer: Tomasz Wolak <tomas.wolak@gmail.com>
+Build-Depends: dh-autoreconf,
+               debhelper (>= 9),
+               libadf-dev,
+               libfuse-dev,
+               pkg-config
+Standards-Version: 4.3.0
+Homepage: https://gitlab.com/t-m/fuseadf
+Vcs-Git: https://gitlab.com/t-m/fuseadf.git
+Vcs-Browser: https://gitlab.com/t-m/fuseadf/tree/master
+
+Package: fuseadf
+Architecture: any
+Section: otherosfs
+Depends: libfuse2 (>= 2.6),
+         ${shlibs:Depends},
+         ${misc:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Description: Mount an ADF file with FUSE
+ fuseadf is a simple libfuse-based filesystem allowing to read data from files
+ stored in ADF files - Amiga Disk File images, used to store floppy or hard
+ disk images for Commodore Amiga computers.
+ 
