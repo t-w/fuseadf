@@ -193,6 +193,7 @@ int adffs_getattr ( const char *  path,
             struct File * afile = adfOpenFile ( vol, direntry_name, "r" );
             if ( afile ) {
                 statbuf->st_size = afile->fileHdr->byteSize;
+                statbuf->st_blocks = statbuf->st_size / 512 + 1;
             } else {
                 log_info ( fs_state->logfile,
                            "adffs_getattr(): Error opening file: %s\n", path );
@@ -264,7 +265,8 @@ int adffs_getattr ( const char *  path,
                (long long) statbuf->st_ctime );
 #endif
 
-    statbuf->st_blksize = 512;
+    statbuf->st_blksize = adfimage->fstat.st_blksize;
+
 #ifdef DEBUG_ADFFS
     log_stat ( statbuf );
 #endif
