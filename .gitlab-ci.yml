@@ -3,7 +3,7 @@ stages:
   - test
 
 #image: debian
-image: tmkwl/fusecuebin-build-debian
+image: tmkwl/fuseadf-build-debian
 
 #before_script:
 
