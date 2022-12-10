@@ -1,0 +1,70 @@
+stages:
+  - build
+  - test
+
+#image: debian
+image: tmkwl/fusecuebin-build-debian
+
+#before_script:
+
+build_cmake:
+  stage: build
+  when: manual
+  before_script:
+    - apt-get update &&
+      apt-get install -y
+        cmake &&
+      apt-get clean && rm -rf /var/lib/apt/lists/*
+  script:
+    - util/cmake_configure_release &&
+      util/cmake_build_release
+
+build_autotools:
+  stage: build
+  when: manual
+  before_script:
+    - apt-get update &&
+      apt-get install -y
+        autoconf
+        automake &&
+      apt-get clean && rm -rf /var/lib/apt/lists/*
+  script:
+    - ./autogen.sh &&
+      ./configure &&
+      make
+#      make check
+
+build_deb:
+  stage: build
+  when: always
+  before_script:
+    - apt-get update &&
+      apt-get install -y
+        autoconf
+        automake
+        devscripts
+        lintian &&
+      apt-get clean && rm -rf /var/lib/apt/lists/*
+  script:
+    - pwd &&
+      util/build_deb.sh
+  after_script:
+    - mv $CI_PROJECT_DIR/../*.deb $CI_PROJECT_DIR/../fuseadf*orig* $CI_PROJECT_DIR/
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/*.deb
+      - $CI_PROJECT_DIR/fuseadf*orig*
+    when: always
+    expire_in: 1 week
+
+
+install_deb:
+  stage: test
+  when: always
+  dependencies:
+    - build_deb
+  before_script:
+    - apt-get update &&
+      apt-get clean && rm -rf /var/lib/apt/lists/*
+  script:
+    - apt install -y $CI_PROJECT_DIR/fuseadf*.deb
