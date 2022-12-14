@@ -1,6 +1,7 @@
 stages:
   - build
   - test
+  - release
 
 #image: debian
 image: tmkwl/fuseadf-build-debian
@@ -68,3 +69,19 @@ install_deb:
       apt-get clean && rm -rf /var/lib/apt/lists/*
   script:
     - apt install -y $CI_PROJECT_DIR/fuseadf*.deb
+
+# https://docs.gitlab.com/ee/user/packages/generic_packages/index.html
+upload:
+  stage: release
+  when: manual
+  dependencies:
+    - build_deb
+    - install_deb
+  script:
+#    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file path/to/file.txt "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/my_package/0.0.1/file.txt"'
+    - 'cd ${CI_PROJECT_DIR} ; for FILE in *.deb *.tar.gz ; do curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${FILE} "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/fuseadf/0.1/${FILE}" ; done'
+
+#download:
+#  stage: download
+#  script:
+#    - 'wget --header="JOB-TOKEN: $CI_JOB_TOKEN" ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/my_package/0.0.1/file.txt'
