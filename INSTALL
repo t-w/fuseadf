@@ -1,6 +1,6 @@
 
 General information
--------------------
+--------------------
 
 fuseadf require ADFlib (link below) for building and operation (if shared
 library is used).
@@ -12,19 +12,24 @@ Obviously, a requirement for building is installation of the chosen one.
 
 
 Building with CMake
--------------------
+--------------------
 
-There are helper scripts in the util/ directory, which should help in quick
-builds, for instance, to build release version:
+There are helper scripts in the util/ directory, which should help doing quick
+builds. For instance, to build the release version:
 1. $ util/cmake_release_configure
 2. $ util/cmake_release_build
 
 Debug version (with gdb and address sanitizer) can be built in the same way,
 just replace "release" with "debug" in the commands above.
 
+To (eventually) remove the build subdirectory use:
+   $ util/cmake_clean
+
+(all have to be configured again for building).
+
 
 Building with Autotools
------------------------
+------------------------
 
 Standard way:
 1. $ ./autogen.sh
@@ -33,7 +38,7 @@ Standard way:
 
 
 Testing
--------
+--------
 
 Some tests require presence of test images. They are not stored in
 the repository and have to be downloaded using scripts in tests/testdata/.
@@ -43,7 +48,7 @@ The images are downloaded from:
 
 
 Testing with CMake
-------------------
+-------------------
 
 After successful building (see above), automatic tests can be started with:
 
@@ -52,7 +57,7 @@ After successful building (see above), automatic tests can be started with:
 
 
 Testing with Autotools
-----------------------
+-----------------------
 
 After successful building (see above), automatic tests can be started with:
 
@@ -60,7 +65,7 @@ After successful building (see above), automatic tests can be started with:
 
 
 Installation with CMake
------------------------
+------------------------
 
 To default location:
  
@@ -72,9 +77,9 @@ To a custom location:
 
 
 Installation with autotools
----------------------------
+----------------------------
 
-To configured location:
+To a configured location:
 
   $ make install
 
@@ -82,19 +87,23 @@ To change default location, do:
 
   $ ./configure --help
 
-and look for prefix options)
+and look for prefix options.
 
 
-Building a Debian package
+Building Debian packages
 -------------------------
 
 To build a .deb package for Debian (or any derivative), use the helper script:
 
-  $ util/build_deb.sh
+  $ util/deb_build.sh
 
-In the parent directory of the project(!), it will create:
-- source package (.tar.gz)
+In the parent(!) directory of the project, it will create:
+- a source package (.tar.gz)
 - binary packages (.deb)
+
+The source package alone can be created with:
+
+  $ util/deb_create_quilt3_archive.sh
 
 
 
