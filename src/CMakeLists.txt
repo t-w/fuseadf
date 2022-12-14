@@ -22,3 +22,6 @@ target_link_libraries ( fuseadf PUBLIC
   ${ADFLIB_LDFLAGS}
   ${FUSE_LDFLAGS}
 )
+
+#install(TARGETS fuseadf DESTINATION /usr/local/bin)
+install(TARGETS fuseadf)
