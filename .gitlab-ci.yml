@@ -61,7 +61,7 @@ build_deb:
 
 install_deb:
   stage: test
-  when: always
+  when: manual
   dependencies:
     - build_deb
   before_script:
