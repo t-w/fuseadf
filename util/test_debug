@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Execute tests for the debug version of the library
+# Execute tests for the debug version
 #
 
 CUR_DIR=`pwd`
