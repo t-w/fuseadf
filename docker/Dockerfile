@@ -11,7 +11,8 @@ RUN apt-get update && \
 
 COPY *.deb /tmp/
 
-RUN dpkg -i /tmp/*.deb
+RUN dpkg -i /tmp/*.deb && \
+    rm -f /tmp/*deb
 
 #EXPOSE 4000
 
