@@ -4,7 +4,7 @@ AC_PREREQ([2.54])
 AC_INIT([fuseadf], [0.1], [tomas.wolak@gmail.com])
 
 # https://www.gnu.org/software/automake/manual/html_node/List-of-Automake-options.html
-AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 
 AC_CONFIG_SRCDIR([src/fuseadf.c])
 AC_CONFIG_HEADERS([src/config.h])
@@ -16,6 +16,7 @@ AC_CHECK_HEADERS([errno.h inttypes.h limits.h stdarg.h stdio.h stdint.h \
 
 PKG_CHECK_MODULES(FUSE, fuse)
 PKG_CHECK_MODULES(ADF, adflib)
+PKG_CHECK_MODULES([CHECK], [check >= 0.9.6])
 
 AC_TYPE_UID_T
 AC_TYPE_MODE_T
@@ -32,5 +33,7 @@ AC_FUNC_MALLOC
 
 AC_CONFIG_FILES([
     Makefile
-    src/Makefile])
+    src/Makefile
+    tests/Makefile])
+
 AC_OUTPUT
