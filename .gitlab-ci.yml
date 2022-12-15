@@ -14,7 +14,8 @@ build_cmake:
   before_script:
     - apt-get update &&
       apt-get install -y
-        cmake &&
+        cmake
+        check &&
       apt-get clean && rm -rf /var/lib/apt/lists/*
   script:
     - util/cmake_release_configure &&
@@ -27,7 +28,8 @@ build_autotools:
     - apt-get update &&
       apt-get install -y
         autoconf
-        automake &&
+        automake
+        check &&
       apt-get clean && rm -rf /var/lib/apt/lists/*
   script:
     - ./autogen.sh &&
@@ -44,7 +46,8 @@ build_deb:
         autoconf
         automake
         devscripts
-        lintian &&
+        lintian
+        check &&
       apt-get clean && rm -rf /var/lib/apt/lists/*
   script:
     - pwd &&
