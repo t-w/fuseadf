@@ -48,7 +48,7 @@ build_deb:
       apt-get clean && rm -rf /var/lib/apt/lists/*
   script:
     - pwd &&
-      util/build_deb.sh
+      util/deb_build.sh
   after_script:
     - mv $CI_PROJECT_DIR/../*.deb $CI_PROJECT_DIR/../fuseadf*orig* $CI_PROJECT_DIR/
   artifacts:
