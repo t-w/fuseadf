@@ -29,7 +29,9 @@ build_autotools:
       apt-get install -y
         autoconf
         automake
-        check &&
+        check
+        unzip
+        wget &&
       apt-get clean && rm -rf /var/lib/apt/lists/*
   script:
     - ./autogen.sh &&
@@ -53,7 +55,9 @@ build_deb:
         automake
         devscripts
         lintian
-        check &&
+        check
+        unzip
+        wget &&
       apt-get clean && rm -rf /var/lib/apt/lists/*
   script:
     - pwd &&
