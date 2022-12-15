@@ -22,6 +22,7 @@ build_cmake:
   script:
     - util/cmake_release_configure &&
       util/cmake_release_build &&
+      util/cmake_release_test_prepare_data &&
       util/cmake_release_test
 
 
