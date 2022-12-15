@@ -39,6 +39,7 @@ build_autotools:
   artifacts:
     paths:
       - $CI_PROJECT_DIR/tests/*.log
+    when: on_failure
     expire_in: 1 week
 
 
