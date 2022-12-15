@@ -1,12 +1,12 @@
 #!/bin/sh
 #
-# Execute tests for the debug version
+# Prepare data for tests testing the debug version
 #
 
 CUR_DIR=`pwd`
 
 #[ ! -e build/debug/tests/testdata ] && { ln -vs -t build/debug/tests ${CUR_DIR}/tests/testdata ; }
 
-cd build/debug
-make test
+cd build/debug/tests
+../../../tests/prepare_test_data.sh
 cd ${CUR_DIR}

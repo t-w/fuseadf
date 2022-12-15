@@ -1,12 +1,12 @@
 #!/bin/sh
 #
-# Execute tests for release version
+# Prepare data for tests testing the release version
 #
 
 CUR_DIR=`pwd`
 
 #[ ! -e build/release/tests/testdata ] && { ln -vs -t build/release/tests ${CUR_DIR}/tests/testdata ; }
 
-cd build/release
-make test
+cd build/release/tests
+../../../tests/prepare_test_data.sh
 cd ${CUR_DIR}
