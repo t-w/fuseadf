@@ -1,5 +1,6 @@
 
 TESTS = \
+    prepare_test_data.sh \
     test_adfimage \
     test_time_to_time_t
 
