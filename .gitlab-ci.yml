@@ -15,11 +15,15 @@ build_cmake:
     - apt-get update &&
       apt-get install -y
         cmake
-        check &&
+        check
+        unzip
+        wget &&
       apt-get clean && rm -rf /var/lib/apt/lists/*
   script:
     - util/cmake_release_configure &&
-      util/cmake_release_build
+      util/cmake_release_build &&
+      util/cmake_release_test
+
 
 build_autotools:
   stage: build
