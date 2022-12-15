@@ -38,6 +38,7 @@ build_autotools:
         unzip
         wget &&
       apt-get clean && rm -rf /var/lib/apt/lists/*
+    - cd tests && ./prepare_test_data.sh
   script:
     - ./autogen.sh &&
       ./configure &&
@@ -64,6 +65,7 @@ build_deb:
         unzip
         wget &&
       apt-get clean && rm -rf /var/lib/apt/lists/*
+    - cd tests && ./prepare_test_data.sh
   script:
     - pwd &&
       util/deb_build.sh
