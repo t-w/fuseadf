@@ -3,7 +3,7 @@ TESTS = \
     test_adfimage \
     test_time_to_time_t
 
-bin_PROGRAMS = \
+check_PROGRAMS = \
     test_adfimage \
     test_time_to_time_t
 
