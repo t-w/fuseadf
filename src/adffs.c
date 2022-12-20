@@ -139,7 +139,7 @@ int adffs_getattr ( const char *  path,
         statbuf->st_nlink = 1;
 
     } else {         // path is a non-empty string
-                     // so anything besided main directory
+                     // so anything besides the main directory
 
         struct Volume * const vol = adfimage->vol;
 
