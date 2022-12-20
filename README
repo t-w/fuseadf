@@ -1,1 +1,28 @@
-fuseadf - mount ADF (Amiga Disk File) image with FUSE
+FUSEADF
+-------
+
+Fuseadf is a simple libfuse-based filesystem allowing to mount an ADF image of
+an Amiga floppy or a hard disk and to read its contents (volumes / partitions,
+directories and files).
+
+Volumes / partitions can be chosen with -p option (not needed for images with
+one volume only, ie. floppy disk images).
+
+Usage:
+
+fuseadf [options] <image_adf> <mount point>
+
+where options can be:
+       -p     Specify volume/partition (number) to mount (default: 0).
+       -v     Show version.
+       -h     Show usage info.
+
+
+Building, testing and installation - see INSTALL.
+
+Notes:
+- It should be considered a prototype, so please beware of, for instance,
+  security implications, especially if you get the disk images from uncertain
+  sources.
+- Writing on disk images is not supported, I may appear (or not...) in
+  the future.
