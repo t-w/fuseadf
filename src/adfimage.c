@@ -31,10 +31,10 @@ static long getFileSize ( const char * const filename );
 static void append_dir ( adfimage_t * const adfimage,
                          const char * const dir );
 
+
 adfimage_t * adfimage_open ( char * const filename,
                              unsigned int volume )
 {
-
     adfEnvInitDefault();
 
 #ifdef DEBUG_ADFIMAGE
@@ -117,6 +117,7 @@ int adfimage_count_cwd_entries ( adfimage_t * const adfimage )
     adfFreeDirList ( list );
     return nentries;
 }
+
 
 int adfimage_count_dir_entries ( adfimage_t * const adfimage,
                                  const char * const dirpath )
@@ -396,7 +397,7 @@ int adfimage_readlink ( adfimage_t * const adfimage,
     // get block of the directory
     struct Volume * const vol = adfimage->vol;
     struct bEntryBlock parent;
-    if ( adfReadEntryBlock( vol, vol->curDirPtr, &parent ) != RC_OK ) {
+    if ( adfReadEntryBlock ( vol, vol->curDirPtr, &parent ) != RC_OK ) {
         status = -1;
         goto readlink_cleanup;
     }
