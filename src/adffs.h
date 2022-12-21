@@ -7,7 +7,7 @@
 #include "adfimage.h"
 #include <stdio.h>
 
-#define DEBUG_ADFFS 1
+#define DEBUG_ADFFS 0
 
 //
 // adffs state
