@@ -408,13 +408,34 @@ int adffs_readlink ( const char * path,
 }
 
 
+int adffs_mkdir ( const char * dirpath,
+                  mode_t       mode )
+{
+    const adffs_state_t * const fs_state =
+        ( adffs_state_t * ) fuse_get_context()->private_data;
+
+#ifdef DEBUG_ADFFS
+    log_info ( fs_state->logfile,
+               "\nadffs_mkdir (\n"
+               "    dirpath = \"%s\",\n"
+               //"    mode    = 0x%" PRIxPTR ",\n"
+               "    mode    = %lld,\n",
+               dirpath, mode );
+#endif
+
+    int status = adfimage_mkdir ( fs_state->adfimage, dirpath, mode );
+
+    return status;
+}
+
+
 // struct fuse_operations: /usr/include/fuse/fuse.h
 struct fuse_operations adffs_oper = {
     .getattr    = adffs_getattr,
     .readlink   = adffs_readlink,
     .getdir     = NULL,       // deprecated
     .mknod      = NULL,
-    .mkdir      = NULL,
+    .mkdir      = adffs_mkdir,
     .unlink     = NULL,
     .rmdir      = NULL,
     .symlink    = NULL,
