@@ -455,7 +455,6 @@ readlink_cleanup:
 }
 
 
-
 // return value: 0 on success, != 0 on error
 int adfimage_mkdir ( adfimage_t * const adfimage,
                      const char *       newdirpath,
@@ -492,6 +491,53 @@ int adfimage_mkdir ( adfimage_t * const adfimage,
 
     //RETCODE adfCreateDir(struct Volume* vol, SECTNUM nParent, char* name);
     RETCODE status = adfCreateDir ( vol, vol->curDirPtr, ( char * ) dir_name );
+
+    free ( dir_name_buf );
+    adfToRootDir ( vol );
+
+    return status;
+}
+
+
+// return value: 0 on success, != 0 on error
+int adfimage_rmdir ( adfimage_t * const adfimage,
+                     const char *       rmdirpath )
+{
+    // not needed??? it seems fuse does check entry type itself
+    //adfimage_dentry_t dentry = adfimage_getdentry ( adfimage, rmdirpath );
+    //if ( dentry.type != ADFVOLUME_DENTRY_DIRECTORY )
+    //    return -ENOTDIR; // / EINVAL / ?
+
+    const char * path_relative = rmdirpath;
+
+    // skip all leading '/' from the path
+    // (normally, fuse always starts with a single '/')
+    while ( *path_relative == '/' )
+        path_relative++;
+
+    // fuse should never request removing root dir - but making sure
+    if ( *path_relative == '\0' ) {
+        // empty relative path means main directory (could be just '/') -> error
+        return -EPERM; // EPERM / EACCES / EINVAL / ?
+    }
+
+    struct Volume * const vol = adfimage->vol;
+    adfToRootDir ( vol );
+
+    // find and enter the directory where is the direntry (directory) to remove
+    char * dirpath_buf = strdup ( path_relative );
+    char * dir_path = dirname ( dirpath_buf );
+
+    if ( ! adfimage_chdir ( adfimage, dir_path ) ) {
+        return -ENOENT;  // ENOTDIR / EINVAL / ?
+    }
+    free ( dirpath_buf );
+
+    char * dir_name_buf = strdup ( path_relative );
+    char * dir_name = basename ( dir_name_buf );
+
+    //RETCODE adfRemoveEntry(struct Volume *vol, SECTNUM pSect, char *name)
+    RETCODE status = adfRemoveEntry ( vol, vol->curDirPtr, dir_name );
 
     free ( dir_name_buf );
     adfToRootDir ( vol );

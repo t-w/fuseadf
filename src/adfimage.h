@@ -78,4 +78,8 @@ int adfimage_readlink ( adfimage_t * const adfimage,
 int adfimage_mkdir ( adfimage_t * const adfimage,
                      const char *       dirpath,
                      mode_t             mode );
+
+int adfimage_rmdir ( adfimage_t * const adfimage,
+                     const char *       rmdirpath );
+
 #endif
