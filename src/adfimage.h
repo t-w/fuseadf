@@ -74,4 +74,8 @@ int adfimage_readlink ( adfimage_t * const adfimage,
                         const char *       path,
                         char *             buffer,
                         size_t             len_max );
+
+int adfimage_mkdir ( adfimage_t * const adfimage,
+                     const char *       dirpath,
+                     mode_t             mode );
 #endif

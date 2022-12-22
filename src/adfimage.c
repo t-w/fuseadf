@@ -455,6 +455,51 @@ readlink_cleanup:
 }
 
 
+
+// return value: 0 on success, != 0 on error
+int adfimage_mkdir ( adfimage_t * const adfimage,
+                     const char *       newdirpath,
+                     mode_t             mode )
+{
+    (void) mode;
+    const char * path_relative = newdirpath;
+
+    // skip all leading '/' from the path
+    // (normally, fuse always starts with a single '/')
+    while ( *path_relative == '/' )
+        path_relative++;
+
+    // fuse should never request creating root dir - but making sure
+    if ( *path_relative == '\0' ) {
+        // empty relative path means main directory (could be just '/') -> error
+        return -EEXIST; // EPERM / EACCES / EINVAL / ?
+    }
+
+    struct Volume * const vol = adfimage->vol;
+    adfToRootDir ( vol );
+
+    // first, find and enter the directory where the new should be created
+    char * dirpath_buf = strdup ( path_relative );
+    char * dir_path = dirname ( dirpath_buf );
+
+    if ( ! adfimage_chdir ( adfimage, dir_path ) ) {
+        return -ENOENT;  // ENOTDIR / EINVAL / ?
+    }
+    free ( dirpath_buf );
+
+    char * dir_name_buf = strdup ( path_relative );
+    char * dir_name = basename ( dir_name_buf );
+
+    //RETCODE adfCreateDir(struct Volume* vol, SECTNUM nParent, char* name);
+    RETCODE status = adfCreateDir ( vol, vol->curDirPtr, ( char * ) dir_name );
+
+    free ( dir_name_buf );
+    adfToRootDir ( vol );
+
+    return status;
+}
+
+
 static void show_version_info()
 {
     // afd version info only for now
