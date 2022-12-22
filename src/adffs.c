@@ -419,7 +419,7 @@ int adffs_mkdir ( const char * dirpath,
                "\nadffs_mkdir (\n"
                "    dirpath = \"%s\",\n"
                //"    mode    = 0x%" PRIxPTR ",\n"
-               "    mode    = %lld,\n",
+               "    mode    = %lld )\n",
                dirpath, mode );
 #endif
 
