@@ -429,6 +429,23 @@ int adffs_mkdir ( const char * dirpath,
 }
 
 
+int adffs_rmdir ( const char * dirpath )
+{
+    const adffs_state_t * const fs_state =
+        ( adffs_state_t * ) fuse_get_context()->private_data;
+
+#ifdef DEBUG_ADFFS
+    log_info ( fs_state->logfile,
+               "\nadffs_rmdir (\n"
+               "    dirpath = \"%s\",\n",
+               dirpath );
+#endif
+
+    int status = adfimage_rmdir ( fs_state->adfimage, dirpath );
+
+    return status;
+}
+
 // struct fuse_operations: /usr/include/fuse/fuse.h
 struct fuse_operations adffs_oper = {
     .getattr    = adffs_getattr,
@@ -437,7 +454,7 @@ struct fuse_operations adffs_oper = {
     .mknod      = NULL,
     .mkdir      = adffs_mkdir,
     .unlink     = NULL,
-    .rmdir      = NULL,
+    .rmdir      = adffs_rmdir,
     .symlink    = NULL,
     .rename     = NULL,
     .link       = NULL,
