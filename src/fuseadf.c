@@ -13,6 +13,7 @@ typedef struct cmdline_options_s {
     char *       adf_filename;
     char *       mount_point;
     unsigned int adf_volume;
+    bool         write_mode;
     char *       logging_file;
     bool         help,
                  version;
@@ -107,6 +108,7 @@ void usage()
               "\t-l logfile   - enable logging and (optionally) specify logging file\n"
               "\t               (default: fuseadf.log)\n"
               "\nFUSE options (for details see FUSE documentation):\n" 
+              "\t-o mount_option\tie. 'ro' for read-only mount (see: man fusermount)\n"
               "\t-f\t\tforeground (do not daemonize)\n"
               "\t-d\t\tforeground with debug info\n"
               "\t-s\t\tsingle-threaded\n" );
@@ -117,9 +119,12 @@ bool parse_args (  int *               argc,
                    char **             argv,
                    cmdline_options_t * options )
 {
+    // set default options
     memset ( options, 0, sizeof ( cmdline_options_t ) );
-
-    const char * valid_options = "p:l::dshv";
+    options->write_mode = true;
+    
+    //const char * valid_options = "p:l::o:dshvwquzV";
+    const char * valid_options = "p:l::o:dshvwV";
     int opt;
     while ( ( opt = getopt ( *argc, argv, valid_options ) ) != -1 ) {
         //printf ( "optind %d, opt %c, optarg %s\n", optind, ( char ) opt, optarg );
@@ -161,6 +166,14 @@ bool parse_args (  int *               argc,
         case 'd':
         case 'f':
         case 's':
+            //    https://github.com/libfuse/libfuse/blob/master/doc/fusermount3.1
+            //case 'q':
+            //case 'u':
+            //case 'z':
+        case 'V':
+        case 'o':
+            if ( strcmp ( optarg, "ro" ) == 0 )
+                options->write_mode = false;
             continue;
 
         case 'h':   // check what it is for in FUSE (for now use as "help")
