@@ -68,7 +68,8 @@ int main ( int    argc,
     struct adffs_state adffs_data;
 
     adffs_data.adfimage = adfimage_open ( options.adf_filename,
-                                          options.adf_volume );
+                                          options.adf_volume,
+                                          ! options.write_mode );
     if ( adffs_data.adfimage == NULL ) {
 	fprintf ( stderr, "Cannot mount adf image: %s, "
                   "volume/partition: %d - aborting...\n",

@@ -33,15 +33,14 @@ static void append_dir ( adfimage_t * const adfimage,
 
 
 adfimage_t * adfimage_open ( char * const filename,
-                             unsigned int volume )
+                             unsigned int volume,
+                             bool         read_only )
 {
     adfEnvInitDefault();
 
 #ifdef DEBUG_ADFIMAGE
     show_version_info();
 #endif
-
-    const int read_only = 1;
 
     struct Device * const dev = mount_dev ( filename, read_only );
     if ( ! dev ) {

@@ -24,7 +24,7 @@ END_TEST
 
 START_TEST ( test_adfimage_open_close )
 {
-    adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf", 0 );
+    adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf", 0, false );
     ck_assert_ptr_nonnull ( adf );
     
     adfimage_close ( &adf );
@@ -35,7 +35,7 @@ END_TEST
 
 START_TEST ( test_adfimage_properties )
 {
-    adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf", 0 );
+    adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf", 0, false );
 
     ck_assert_int_eq ( adf->size, 901120 );
     ck_assert_ptr_nonnull ( adf->dev );
@@ -48,7 +48,7 @@ END_TEST
 
 START_TEST ( test_adfimage_getdentry )
 {
-    adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf", 0 );
+    adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf", 0, false );
 
     adfimage_dentry_t dentry =
         adfimage_getdentry ( adf, "non-exestent-file.tst" );
@@ -67,7 +67,7 @@ END_TEST
 
 START_TEST ( test_adfimage_getdentry_links )
 {
-    adfimage_t * adf = adfimage_open ( "testdata/testffs.adf", 0 );
+    adfimage_t * adf = adfimage_open ( "testdata/testffs.adf", 0, false );
     ck_assert_ptr_nonnull ( adf );
 
     adfimage_dentry_t dentry =
@@ -101,7 +101,7 @@ END_TEST
 
 START_TEST ( test_adfimage_getcwd )
 {
-    adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf", 0 );
+    adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf", 0, false );
 
     const char * cwd = adfimage_getcwd ( adf );
     ck_assert_ptr_nonnull ( cwd );
@@ -115,7 +115,7 @@ END_TEST
 
 START_TEST ( test_adfimage_chdir )
 {
-    adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf", 0 );
+    adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf", 0, false );
 
     BOOL result = adfimage_chdir ( adf, "non-exestent-dir" );
     ck_assert ( ! result );
@@ -206,7 +206,7 @@ END_TEST
 
 START_TEST ( test_adfimage_read )
 {
-    adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf", 0 );
+    adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf", 0, false );
 
     char buf[1024];
 
@@ -235,7 +235,7 @@ END_TEST
 
 START_TEST ( test_adfimage_read_large_file )
 {
-    adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf", 0 );
+    adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf", 0, false );
 
     adfimage_dentry_t dentry = adfimage_getdentry ( adf, "Polygon/polynums.c" );
     ck_assert_int_eq ( dentry.type, ADFVOLUME_DENTRY_FILE );
@@ -293,7 +293,7 @@ END_TEST
 
 START_TEST ( test_adfimage_read_hard_link_file )
 {
-    adfimage_t * adf = adfimage_open ( "testdata/testffs.adf", 0 );
+    adfimage_t * adf = adfimage_open ( "testdata/testffs.adf", 0, false );
     ck_assert_ptr_nonnull ( adf );
 
     const char hlink_file[] = "hlink_blue";
