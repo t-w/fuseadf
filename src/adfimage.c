@@ -566,6 +566,7 @@ static struct Device *
     struct Device * const dev = adfMountDev ( adf_filename, read_only );
     if ( dev == NULL ) {
         fprintf ( stderr, "Error opening ADF file: %s\n", adf_filename );
+        return NULL;
     }
 
 #ifdef DEBUG_ADFIMAGE
@@ -589,6 +590,7 @@ struct Volume *
     struct Volume * const vol = adfMount ( dev, (int) partition, read_only );
     if ( vol == NULL ) {
         fprintf ( stderr,  "Error opening volume %d.\n", partition );
+        return NULL;
     }
 
 #ifdef DEBUG_ADFIMAGE

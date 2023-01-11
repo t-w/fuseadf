@@ -13,10 +13,7 @@ END_TEST
 
 START_TEST ( test_adfimage_open_fail )
 {
-    //adfimage_t * adf = adfimage_open ( "nonexistent.adf" );
-    // -> segfault after doing the above!!!
-    //    (cannot try to open non existent image file with adflib?)
-    adfimage_t * adf = NULL;
+    adfimage_t * adf = adfimage_open ( "nonexistent.adf", 0, true );
     ck_assert_ptr_null ( adf );
 }
 END_TEST
