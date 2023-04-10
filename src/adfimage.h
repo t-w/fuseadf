@@ -15,8 +15,8 @@ typedef struct adfimage {
     const char * filename;
     long size;
 
-    struct Device * dev;
-    struct Volume * vol;
+    struct AdfDevice * dev;
+    struct AdfVolume * vol;
 
     struct stat fstat;
 
@@ -45,7 +45,7 @@ typedef struct adfimage_dentry {
     // name ?
     int type;
     int size;
-    struct Entry adflib_entry;   // entry as returned by ADFlib
+    struct AdfEntry adflib_entry;   // entry as returned by ADFlib
     // ...
 } adfimage_dentry_t;
 

@@ -17,12 +17,12 @@
 
 static void show_version_info();
 
-static struct Device *
+static struct AdfDevice *
     mount_dev ( char * const adf_filename,
                 const BOOL   read_only );
 
-static struct Volume *
-    mount_volume ( struct Device * const dev,
+static struct AdfVolume *
+    mount_volume ( struct AdfDevice * const dev,
                    unsigned int          partition,
                    BOOL                  read_only );
 
@@ -42,13 +42,13 @@ adfimage_t * adfimage_open ( char * const filename,
     show_version_info();
 #endif
 
-    struct Device * const dev = mount_dev ( filename, read_only );
+    struct AdfDevice * const dev = mount_dev ( filename, read_only );
     if ( ! dev ) {
         adfEnvCleanUp();
         return NULL;
     }
 
-    struct Volume * const vol = mount_volume ( dev, volume, read_only );
+    struct AdfVolume * const vol = mount_volume ( dev, volume, read_only );
     if ( ! vol ) {
         adfUnMountDev ( dev );
         adfEnvCleanUp();
@@ -103,8 +103,8 @@ void adfimage_close ( adfimage_t ** adfimage )
 
 int adfimage_count_cwd_entries ( adfimage_t * const adfimage )
 {
-    struct Volume * const vol = adfimage->vol;
-    struct List * list, * cell;
+    struct AdfVolume * const vol = adfimage->vol;
+    struct AdfList * list, * cell;
 
     int nentries = 0;
     cell = list = adfGetDirEnt ( vol, vol->curDirPtr );
@@ -137,12 +137,12 @@ adfimage_dentry_t adfimage_get_root_dentry ( adfimage_t * const adfimage )
     };
 
     struct bRootBlock rootBlock;
-    struct Volume * const vol = adfimage->vol;
+    struct AdfVolume * const vol = adfimage->vol;
 
     if ( adfReadRootBlock ( vol, vol->rootBlock, &rootBlock ) != RC_OK )
         return adf_dentry;
 
-    struct Entry entry;
+    struct AdfEntry entry;
     if ( adfEntBlock2Entry ( ( struct bEntryBlock * ) &rootBlock, &entry ) != RC_OK )
         return adf_dentry;
 
@@ -156,15 +156,15 @@ adfimage_dentry_t adfimage_get_root_dentry ( adfimage_t * const adfimage )
 }
 
 
-static struct Entry * adflib_list_find ( struct List * const dentries,
-                                         const char * const  entry_name )
+static struct AdfEntry * adflib_list_find ( struct AdfList * const dentries,
+                                            const char * const  entry_name )
 {
-    for ( struct List * lentry = dentries ;
+    for ( struct AdfList * lentry = dentries ;
           lentry ;
           lentry = lentry->next )
     {
-        struct Entry * const dentry =
-            ( struct Entry * ) lentry->content;
+        struct AdfEntry * const dentry =
+            ( struct AdfEntry * ) lentry->content;
         //printf (" type: %d, size: %d, name: %s, comment: %s\n",
         //        dentry->type,
         //        dentry->size,
@@ -199,8 +199,8 @@ adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
     free ( dirpath_buf );
 
     // get directory list entries (for current directory)
-    struct Volume * const vol = adfimage->vol;
-    struct List * const dentries = adfGetDirEnt ( vol, vol->curDirPtr );
+    struct AdfVolume * const vol = adfimage->vol;
+    struct AdfList * const dentries = adfGetDirEnt ( vol, vol->curDirPtr );
     if ( ! dentries ) {
         fprintf ( stderr, "adfimage_getdentry(): Error getting dir entries,"
                   "filename %s\n", pathname );
@@ -210,7 +210,7 @@ adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
     char * filename_buf = strdup ( pathname );
     char * filename = basename ( filename_buf );
 
-    struct Entry * const dentry = adflib_list_find ( dentries, filename );
+    struct AdfEntry * const dentry = adflib_list_find ( dentries, filename );
 
     if ( dentry ) {
         adf_dentry.adflib_entry = *dentry;
@@ -272,7 +272,7 @@ const char * adfimage_getcwd ( const adfimage_t * const adfimage )
 BOOL adfimage_chdir ( adfimage_t * const adfimage,
                       const char *       path )
 {
-    struct Volume * const vol = adfimage->vol;
+    struct AdfVolume * const vol = adfimage->vol;
 
     if ( ! vol || ! path || strlen ( path ) < 1 )
         return false;
@@ -339,8 +339,8 @@ int adfimage_read ( adfimage_t * const adfimage,
     char * filename = basename ( filename_buf );
 
     // open the file
-    struct Volume * const vol = adfimage->vol;
-    struct File * file = adfOpenFile ( vol, filename, "r" );
+    struct AdfVolume * const vol = adfimage->vol;
+    struct AdfFile * file = adfFileOpen ( vol, filename, "r" );
     free ( filename_buf );
     if ( ! file ) {
         //log_info ( fs_state->logfile,
@@ -350,10 +350,10 @@ int adfimage_read ( adfimage_t * const adfimage,
 
     // seek and read the file
     adfFileSeek ( file, offset );
-    int32_t bytes_read = adfReadFile ( file, size, ( unsigned char * ) buffer );
+    int32_t bytes_read = adfFileRead ( file, size, ( unsigned char * ) buffer );
 
     // ... and close it
-    adfCloseFile ( file );
+    adfFileClose ( file );
 
     // go back to the working directory (if necessary)
     if ( cwd ) {
@@ -394,7 +394,7 @@ int adfimage_readlink ( adfimage_t * const adfimage,
     char * filename = basename ( filename_buf );
 
     // get block of the directory
-    struct Volume * const vol = adfimage->vol;
+    struct AdfVolume * const vol = adfimage->vol;
     struct bEntryBlock parent;
     if ( adfReadEntryBlock ( vol, vol->curDirPtr, &parent ) != RC_OK ) {
         status = -1;
@@ -474,7 +474,7 @@ int adfimage_mkdir ( adfimage_t * const adfimage,
         return -EEXIST; // EPERM / EACCES / EINVAL / ?
     }
 
-    struct Volume * const vol = adfimage->vol;
+    struct AdfVolume * const vol = adfimage->vol;
     adfToRootDir ( vol );
 
     // first, find and enter the directory where the new should be created
@@ -521,7 +521,7 @@ int adfimage_rmdir ( adfimage_t * const adfimage,
         return -EPERM; // EPERM / EACCES / EINVAL / ?
     }
 
-    struct Volume * const vol = adfimage->vol;
+    struct AdfVolume * const vol = adfimage->vol;
     adfToRootDir ( vol );
 
     // find and enter the directory where is the direntry (directory) to remove
@@ -555,7 +555,7 @@ static void show_version_info()
 
 
 
-static struct Device *
+static struct AdfDevice *
     mount_dev ( char * const adf_filename,
                 const BOOL   read_only )
 {
@@ -563,7 +563,7 @@ static struct Device *
 #ifdef DEBUG_ADFIMAGE
     printf ("Mounting file: %s\n", adf_filename );
 #endif
-    struct Device * const dev = adfMountDev ( adf_filename, read_only );
+    struct AdfDevice * const dev = adfMountDev ( adf_filename, read_only );
     if ( dev == NULL ) {
         fprintf ( stderr, "Error opening ADF file: %s\n", adf_filename );
         return NULL;
@@ -578,16 +578,16 @@ static struct Device *
     return dev;
 }
 
-struct Volume *
-    mount_volume ( struct Device * const dev,
-                   unsigned int          partition,
-                   BOOL                  read_only )
+struct AdfVolume *
+    mount_volume ( struct AdfDevice * const dev,
+                   unsigned int             partition,
+                   BOOL                     read_only )
 {
     // mount volume (volume/partition number, for floppies always 0 (?))
 #ifdef DEBUG_ADFIMAGE
     printf ("\nMounting volume (partition) %d\n", partition );
 #endif
-    struct Volume * const vol = adfMount ( dev, (int) partition, read_only );
+    struct AdfVolume * const vol = adfMount ( dev, (int) partition, read_only );
     if ( vol == NULL ) {
         fprintf ( stderr,  "Error opening volume %d.\n", partition );
         return NULL;
