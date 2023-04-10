@@ -3,7 +3,7 @@ cmake_minimum_required ( VERSION 2.6 )
 
 project ( fuseadf C )
 set ( fuseadf_VERSION_MAJOR 0 )
-set ( fuseadf_VERSION_MINOR 1 )
+set ( fuseadf_VERSION_MINOR 2 )
 
 find_package( PkgConfig REQUIRED )
 #find_package ( fuse REQUIRED )
