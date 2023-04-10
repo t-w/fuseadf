@@ -78,10 +78,19 @@ int adffs_statfs ( const char *     path,
                path, stvfs );
 #endif
 
-    stvfs->f_flag = ST_RDONLY | ST_NOSUID;
+    stvfs->f_flag = //ST_RDONLY |
+        ST_NOSUID;
 //        | ST_NODEV | ST_NOEXEC | ST_IMMUTABLE | ST_NOATIME | ST_NODIRATIME;
     // ^^^^ for some reason these are not available here???
-    // <sys/statvfs.h> 
+    // <sys/statvfs.h>
+
+    adfimage_t * const adfimage = fs_state->adfimage;
+    struct AdfVolume * const vol = adfimage->vol;
+    uint32_t blocks_free = adfCountFreeBlocks ( vol );
+
+    if ( vol->readOnly )
+        stvfs->f_flag |= ST_RDONLY;
+
     stvfs->f_bfree =
     stvfs->f_bavail =
     stvfs->f_ffree = 0;
