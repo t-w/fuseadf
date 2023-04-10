@@ -91,9 +91,24 @@ int adffs_statfs ( const char *     path,
     if ( vol->readOnly )
         stvfs->f_flag |= ST_RDONLY;
 
-    stvfs->f_bfree =
-    stvfs->f_bavail =
     stvfs->f_ffree = 0;
+
+    stvfs->f_bsize  = vol->blockSize; // 512;    /* Filesystem block size */
+    stvfs->f_frsize = vol->blockSize;            /* Fragment size */
+
+    stvfs->f_blocks = vol->lastBlock -           /* Size of fs in f_frsize units */
+                      vol->firstBlock - 2;
+    stvfs->f_bfree =                             /* Number of free blocks */
+    stvfs->f_bavail = blocks_free;               /* Number of free blocks for
+                                                    unprivileged users */
+
+    stvfs->f_files   = 1;                         /* Number of inodes */
+    stvfs->f_ffree   = 1;                         /* Number of free inodes */
+    stvfs->f_favail  = 1;                         /* Number of free inodes for
+                                                     unprivileged users */
+    //stvfs->f_fsid    = 0;                         /* Filesystem ID */
+    //stvfs->f_flag    = 0x00000002;              /* Mount flags */
+    stvfs->f_namemax = 30;                        /* Maximum filename length */
 
 #ifdef DEBUG_ADFFS
     log_statvfs ( stvfs );
