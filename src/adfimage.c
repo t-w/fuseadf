@@ -311,6 +311,56 @@ BOOL adfimage_chdir ( adfimage_t * const adfimage,
 }
 
 
+struct AdfFile * adfimage_file_open ( adfimage_t * const adfimage,
+                                      const char *       path )
+{
+    // if necessary (file path is not in the main dir) - enter the directory
+    // with the file to read
+    char * dirpath_buf = strdup ( path );
+    char * dir_path = dirname ( dirpath_buf );
+    char * cwd = NULL;
+    if ( strlen ( dir_path ) > 0 ) {
+        cwd = strdup ( adfimage->cwd );
+        if ( ! adfimage_chdir ( adfimage, dir_path ) ) {
+            //log_info ( fs_state->logfile, "adffs_read(): Cannot chdir to the directory %s.\n",
+            //           dir_path );
+            free ( cwd );
+            free ( dirpath_buf );
+            return NULL;
+        }
+    }
+    free ( dirpath_buf );
+
+    // get the filename
+    char * filename_buf = strdup ( path );
+    char * filename = basename ( filename_buf );
+
+    // open the file
+    struct AdfVolume * const vol = adfimage->vol;
+    struct AdfFile * file = adfFileOpen ( vol, filename, "r" );
+    free ( filename_buf );
+    if ( ! file ) {
+        //log_info ( fs_state->logfile,
+        //           "Error opening file: %s\n", path );
+        return NULL;
+    }
+
+    // go back to the working directory (if necessary)
+    if ( cwd ) {
+        adfimage_chdir ( adfimage, cwd );
+        free ( cwd );
+    }
+
+    return file;
+}
+
+
+void adfimage_file_close ( struct AdfFile * file )
+{
+    adfFileClose ( file );
+}
+
+
 int adfimage_read ( adfimage_t * const adfimage,
                     const char *       path,
                     char *             buffer,
@@ -363,6 +413,62 @@ int adfimage_read ( adfimage_t * const adfimage,
 
     return bytes_read;
 }
+
+
+int adfimage_write ( adfimage_t * const adfimage,
+                     const char *       path,
+                     char *             buffer,
+                     size_t             size,
+                     off_t              offset )
+{
+    // if necessary (file path is not in the main dir) - enter the directory
+    // with the file to read
+    char * dirpath_buf = strdup ( path );
+    char * dir_path = dirname ( dirpath_buf );
+    char * cwd = NULL;
+    if ( strlen ( dir_path ) > 0 ) {
+        cwd = strdup ( adfimage->cwd );
+        if ( ! adfimage_chdir ( adfimage, dir_path ) ) {
+            //log_info ( fs_state->logfile, "adffs_read(): Cannot chdir to the directory %s.\n",
+            //           dir_path );
+            free ( cwd );
+            free ( dirpath_buf );
+            return -ENOENT;
+        }
+    }
+    free ( dirpath_buf );
+
+    // get the filename
+    char * filename_buf = strdup ( path );
+    char * filename = basename ( filename_buf );
+
+    // open the file
+    struct AdfVolume * const vol = adfimage->vol;
+    struct AdfFile * file = adfFileOpen ( vol, filename, "w" );
+    free ( filename_buf );
+    if ( ! file ) {
+        //log_info ( fs_state->logfile,
+        //           "Error opening file: %s\n", path );
+        return -ENOENT;  // ?
+    }
+
+    // seek and write the file
+    adfFileSeek ( file, offset );
+    int32_t bytes_written = adfFileWrite (
+        file, size, ( unsigned char * ) buffer );
+
+    // ... and close it
+    adfFileClose ( file );
+
+    // go back to the working directory (if necessary)
+    if ( cwd ) {
+        adfimage_chdir ( adfimage, cwd );
+        free ( cwd );
+    }
+
+    return bytes_written;
+}
+
 
 // return value: 0 on success, -1 on error
 int adfimage_readlink ( adfimage_t * const adfimage,
@@ -500,15 +606,10 @@ int adfimage_mkdir ( adfimage_t * const adfimage,
 
 
 // return value: 0 on success, != 0 on error
-int adfimage_rmdir ( adfimage_t * const adfimage,
-                     const char *       rmdirpath )
+static int adfimage_remove_entry ( adfimage_t * const adfimage,
+                                   const char *       rmpath )
 {
-    // not needed??? it seems fuse does check entry type itself
-    //adfimage_dentry_t dentry = adfimage_getdentry ( adfimage, rmdirpath );
-    //if ( dentry.type != ADFVOLUME_DENTRY_DIRECTORY )
-    //    return -ENOTDIR; // / EINVAL / ?
-
-    const char * path_relative = rmdirpath;
+    const char * path_relative = rmpath;
 
     // skip all leading '/' from the path
     // (normally, fuse always starts with a single '/')
@@ -540,6 +641,80 @@ int adfimage_rmdir ( adfimage_t * const adfimage,
     RETCODE status = adfRemoveEntry ( vol, vol->curDirPtr, dir_name );
 
     free ( dir_name_buf );
+    adfToRootDir ( vol );
+
+    return status;
+}
+
+
+// return value: 0 on success, != 0 on error
+int adfimage_rmdir ( adfimage_t * const adfimage,
+                     const char *       rmdirpath )
+{
+    // not needed??? it seems fuse does check entry type itself
+    //adfimage_dentry_t dentry = adfimage_getdentry ( adfimage, rmdirpath );
+    //if ( dentry.type != ADFVOLUME_DENTRY_DIRECTORY )
+    //    return -ENOTDIR; // / EINVAL / ?
+
+    return adfimage_remove_entry ( adfimage, rmdirpath );
+}
+
+
+// return value: 0 on success, != 0 on error
+int adfimage_unlink ( adfimage_t * const adfimage,
+                      const char *       unlinkpath )
+{
+    // not needed??? it seems fuse does check entry type itself
+    //adfimage_dentry_t dentry = adfimage_getdentry ( adfimage, rmdirpath );
+    //if ( dentry.type != ADFVOLUME_DENTRY_FILE )
+    //    return -ENOTDIR; // / EINVAL / ?
+
+    return adfimage_remove_entry ( adfimage, unlinkpath );
+}
+
+
+
+
+// return value: 0 on success, != 0 on error
+int adfimage_create ( adfimage_t * const adfimage,
+                      const char *       newfilepath,
+                      mode_t             mode )
+{
+    (void) mode;
+    const char * path_relative = newfilepath;
+
+    // skip all leading '/' from the path
+    // (normally, fuse always starts with a single '/')
+    while ( *path_relative == '/' )
+        path_relative++;
+
+    // fuse should never request creating file with empty name - but make sure
+    if ( *path_relative == '\0' ) {
+        // empty relative path means main directory (could be just '/') -> error
+        return -EINVAL; // EEXIST / EPERM / EACCES / EINVAL / ?
+    }
+
+    struct AdfVolume * const vol = adfimage->vol;
+    adfToRootDir ( vol );
+
+    // first, find and enter the directory where the new should be created
+    char * dirpath_buf = strdup ( path_relative );
+    char * dir_path = dirname ( dirpath_buf );
+
+    if ( ! adfimage_chdir ( adfimage, dir_path ) ) {
+        return -ENOENT;  // ENOTDIR / EINVAL / ?
+    }
+    free ( dirpath_buf );
+
+    char * file_name_buf = strdup ( path_relative );
+    char * file_name = basename ( file_name_buf );
+
+    //RETCODE adfCreateDir(struct Volume* vol, SECTNUM nParent, char* name);
+    struct bFileHeaderBlock fhdr;
+    int status = ( adfCreateFile ( vol, vol->curDirPtr,
+                                   ( char * ) file_name, &fhdr ) == RC_OK ) ?
+        0 : -1;
+    free ( file_name_buf );
     adfToRootDir ( vol );
 
     return status;

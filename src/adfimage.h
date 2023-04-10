@@ -64,11 +64,25 @@ const char * adfimage_getcwd ( const adfimage_t * const adfimage );
 BOOL adfimage_chdir ( adfimage_t * const adfimage,
                       const char *       path );
 
+
+struct AdfFile * adfimage_file_open ( adfimage_t * const adfimage,
+                                   const char *       path );
+
+void adfimage_file_close ( struct AdfFile * file );
+
+
+
 int adfimage_read ( adfimage_t * const adfimage,
                     const char *       path,
                     char *             buffer,
                     size_t             size,
                     off_t              offset );
+
+int adfimage_write ( adfimage_t * const adfimage,
+                     const char *       path,
+                     char *             buffer,
+                     size_t             size,
+                     off_t              offset );
 
 int adfimage_readlink ( adfimage_t * const adfimage,
                         const char *       path,
@@ -81,5 +95,13 @@ int adfimage_mkdir ( adfimage_t * const adfimage,
 
 int adfimage_rmdir ( adfimage_t * const adfimage,
                      const char *       rmdirpath );
+
+int adfimage_create ( adfimage_t * const adfimage,
+                      const char *       newfilepath,
+                      mode_t             mode );
+
+
+int adfimage_unlink ( adfimage_t * const adfimage,
+                      const char *       unlinkpath );
 
 #endif
