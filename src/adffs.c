@@ -67,10 +67,10 @@ int adffs_statfs ( const char *     path,
 {
     (void) path;
 
-#ifdef DEBUG_ADFFS
     const adffs_state_t * const fs_state =
         ( adffs_state_t * ) fuse_get_context()->private_data;
 
+#ifdef DEBUG_ADFFS
     log_info ( fs_state->logfile,
                "\nadffs_statfs (\n"
                "    path  = \"%s\",\n"
