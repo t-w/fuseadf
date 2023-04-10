@@ -67,6 +67,11 @@ int main ( int    argc,
 
     struct adffs_state adffs_data;
 
+    printf ( "Opening image: %s, volume: %d. mode: %s\n",
+             options.adf_filename,
+             options.adf_volume,
+             ( options.write_mode ) ? "read-write" : "read-only" );
+
     adffs_data.adfimage = adfimage_open ( options.adf_filename,
                                           options.adf_volume,
                                           ! options.write_mode );
@@ -77,6 +82,12 @@ int main ( int    argc,
         exit ( EXIT_FAILURE );
     }
     adffs_data.mountpoint = options.mount_point;
+
+    if ( options.write_mode == true &&
+         adffs_data.adfimage->dev->readOnly == TRUE )
+    {
+        printf ("Note: image opened in read-only mode.\n");
+    }
 
     if ( options.logging_file ) {
         adffs_data.logfile = log_open ( options.logging_file );
