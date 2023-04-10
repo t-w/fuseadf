@@ -165,7 +165,7 @@ int adffs_getattr ( const char *  path,
     } else {         // path is a non-empty string
                      // so anything besides the main directory
 
-        struct Volume * const vol = adfimage->vol;
+        struct AdfVolume * const vol = adfimage->vol;
 
         // first, find and enter the directory where is dir. entry to check
         char * dirpath_buf = strdup ( path );
@@ -214,7 +214,7 @@ int adffs_getattr ( const char *  path,
                 S_IROTH;
             statbuf->st_nlink = 1;
 
-            struct File * afile = adfOpenFile ( vol, direntry_name, "r" );
+            struct AdfFile * afile = adfFileOpen ( vol, direntry_name, "r" );
             if ( afile ) {
                 statbuf->st_size = afile->fileHdr->byteSize;
                 statbuf->st_blocks = statbuf->st_size / 512 + 1;
@@ -222,7 +222,7 @@ int adffs_getattr ( const char *  path,
                 log_info ( fs_state->logfile,
                            "adffs_getattr(): Error opening file: %s\n", path );
             }
-            adfCloseFile ( afile );
+            adfFileClose ( afile );
 
         } else if ( dentry.type == ADFVOLUME_DENTRY_DIRECTORY ||
                     dentry.type == ADFVOLUME_DENTRY_LINKDIR )
@@ -356,7 +356,7 @@ int adffs_readdir ( const char *            path,
     (void) offset;  (void) finfo;
 #endif
     adfimage_t * const adfimage = fs_state->adfimage;
-    struct Volume * const vol = adfimage->vol;
+    struct AdfVolume * const vol = adfimage->vol;
     if ( ! adfimage_chdir ( adfimage, path ) ) {
         log_info ( fs_state->logfile,
                    "adffs_read(): Cannot chdir to the directory %s.\n",
@@ -368,7 +368,7 @@ int adffs_readdir ( const char *            path,
     filler ( buffer, ".", NULL, 0 );
     filler ( buffer, "..", NULL, 0 );
 
-    struct List * const dentries = adfGetDirEnt ( vol, vol->curDirPtr );
+    struct AdfList * const dentries = adfGetDirEnt ( vol, vol->curDirPtr );
     /*if ( ! dentries ) {
         log_info ( fs_state->logfile,
                    "adfimage_getdentry(): Error getting dir entries,"
@@ -376,12 +376,12 @@ int adffs_readdir ( const char *            path,
         return -ENOENT; //?
     }*/
 
-    for ( struct List * lentry = dentries ;
+    for ( struct AdfList * lentry = dentries ;
           lentry ;
           lentry = lentry->next )
     {
-        struct Entry * const dentry =
-            ( struct Entry * ) lentry->content;
+        struct AdfEntry * const dentry =
+            ( struct AdfEntry * ) lentry->content;
         //printf (" type: %d, size: %d, name: %s, comment: %s\n",
         //        dentry->type,
         //        dentry->size,
