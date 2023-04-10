@@ -172,6 +172,7 @@ bool parse_args (  int *               argc,
             //case 'u':
             //case 'z':
         case 'V':
+            continue;
         case 'o':
             if ( strcmp ( optarg, "ro" ) == 0 )
                 options->write_mode = false;
