@@ -77,5 +77,6 @@ time_t time_to_time_t ( int year,
     time_tm.tm_min  = min;
     time_tm.tm_sec  = sec;
 
-    return mktime ( &time_tm );  // note that mktime is inverse function of localtime()!!!
+    return //mktime ( &time_tm );  // note that mktime is inverse function of localtime()!!!
+        timegm ( &time_tm );
 }

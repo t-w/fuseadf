@@ -22,22 +22,27 @@ START_TEST ( test_epoch )
     struct tm epoch_tm;
     //struct tm *gmtime_r(const time_t *timep, struct tm *result);
     //struct tm *localtime_r(const time_t *timep, struct tm *result);
-    localtime_r ( &epoch, &epoch_tm );
+    //localtime_r ( &epoch, &epoch_tm );
+    gmtime_r ( &epoch, &epoch_tm );
 
     long timezone_hours = timezone / 3600;  // timezone as +/- hours vs UTC
 
     ck_assert_int_eq ( epoch_tm.tm_year, 70 );
     ck_assert_int_eq ( epoch_tm.tm_mon, 0 );
     ck_assert_int_eq ( epoch_tm.tm_mday, 1 );
-    ck_assert_int_eq ( epoch_tm.tm_hour,
-                       -timezone_hours ); // mktime is inverted function for localtime()!!!
+
+    //ck_assert_int_eq ( epoch_tm.tm_hour,
+    //                   -timezone_hours ); // mktime is inverted function for localtime()!!!
                                           // ( so eg. for CET is +1 )
+    ck_assert_int_eq ( epoch_tm.tm_hour, 0 );
+
     ck_assert_int_eq ( epoch_tm.tm_min, 0 );
     ck_assert_int_eq ( epoch_tm.tm_sec, 0 );
     
     time_t epoch_calculated = time_to_time_t (
         1970, 1, 1,
-        -timezone_hours,  // same thing as with above - epoch for eg. CET is UTC+1)
+        //-timezone_hours,  // same thing as with above - epoch for eg. CET is UTC+1)
+        0,
         0, 0 );
 
     ck_assert_int_eq ( epoch, epoch_calculated );
@@ -48,7 +53,7 @@ END_TEST
 
 START_TEST ( test_now )
 {
-    tzset();
+    //tzset();
     time_t now_orig = time ( NULL );
 
     //struct timeval tv;
@@ -57,7 +62,8 @@ START_TEST ( test_now )
     struct tm now_tm;
     //struct tm *gmtime_r(const time_t *timep, struct tm *result);
     //struct tm *localtime_r(const time_t *timep, struct tm *result);
-    localtime_r ( &now_orig, &now_tm );
+    //localtime_r ( &now_orig, &now_tm );
+    gmtime_r ( &now_orig, &now_tm );
 
     time_t now_2 = time_to_time_t ( now_tm.tm_year + 1900,
                                     now_tm.tm_mon + 1,
