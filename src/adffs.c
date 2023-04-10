@@ -150,7 +150,7 @@ int adffs_getattr ( const char *  path,
     if ( *path_relative == '\0' ) {
         // main directory
         statbuf->st_mode = S_IFDIR |
-            S_IRUSR | S_IXUSR |
+            S_IRUSR | S_IXUSR | S_IWUSR |
             S_IRGRP | S_IXGRP |
             S_IROTH | S_IXOTH;
 
@@ -209,7 +209,7 @@ int adffs_getattr ( const char *  path,
              dentry.type == ADFVOLUME_DENTRY_LINKFILE )
         {
             statbuf->st_mode = S_IFREG |
-                S_IRUSR |
+                S_IRUSR | S_IWUSR |
                 S_IRGRP |
                 S_IROTH;
             statbuf->st_nlink = 1;
@@ -228,9 +228,9 @@ int adffs_getattr ( const char *  path,
                     dentry.type == ADFVOLUME_DENTRY_LINKDIR )
         {
             statbuf->st_mode = S_IFDIR |
-                S_IRUSR | S_IXUSR |
-                S_IRGRP | S_IXGRP |
-                S_IROTH | S_IXOTH;
+                S_IRUSR | S_IWUSR | S_IXUSR |
+                S_IRGRP |           S_IXGRP |
+                S_IROTH |           S_IXOTH;
             //statbuf->st_size = dentry.adflib_entry.size;   // always 0 for directories(?)
                                                              // (to improve in ADFlib?)
             statbuf->st_size = adfimage_count_dir_entries ( adfimage, path );
@@ -331,6 +331,41 @@ int adffs_read ( const char *            path,
 #endif
 
     return bytes_read;
+}
+
+
+int adffs_write ( const char *            path,
+                  const char *            buffer,
+                  size_t                  size,
+                  off_t                   offset,
+                  struct fuse_file_info * finfo )
+{
+    const adffs_state_t * const fs_state =
+        ( adffs_state_t * ) fuse_get_context()->private_data;
+
+#ifdef DEBUG_ADFFS
+    log_info ( fs_state->logfile,
+               "\nadffs_write (\n"
+               "    path   = \"%s\",\n"
+               "    buf    = 0x%" PRIxPTR ",\n"
+               "    size   = %d,\n"
+               "    offset = %lld,\n"
+               "    finfo  = 0x%" PRIxPTR " )\n",
+               path, buffer, size, offset, finfo );
+#else
+    (void) finfo;
+#endif
+
+    int bytes_written = adfimage_write ( fs_state->adfimage, path,
+                                         ( char * ) buffer, size, offset );
+
+#ifdef DEBUG_ADFFS
+    log_info ( fs_state->logfile,
+               "adffs_write () => %d (%s)\n", bytes_written,
+               size == (size_t) bytes_written ? "OK" : "WRITE ERROR" );
+#endif
+
+    return bytes_written;
 }
 
 
@@ -470,6 +505,94 @@ int adffs_rmdir ( const char * dirpath )
     return status;
 }
 
+
+int adffs_create ( const char *           filepath,
+                   mode_t                 mode,
+                   struct fuse_file_info *finfo )
+{
+    const adffs_state_t * const fs_state =
+        ( adffs_state_t * ) fuse_get_context()->private_data;
+
+#ifdef DEBUG_ADFFS
+    log_info ( fs_state->logfile,
+               "\nadffs_create (\n"
+               "    filepath = \"%s\",\n"
+               "    mode     = %lld )\n",
+               filepath, mode );
+#endif
+
+    return adfimage_create ( fs_state->adfimage, filepath, mode );
+}
+
+int adffs_unlink ( const char * filepath )
+{
+   const adffs_state_t * const fs_state =
+        ( adffs_state_t * ) fuse_get_context()->private_data;
+
+#ifdef DEBUG_ADFFS
+    log_info ( fs_state->logfile,
+               "\nadffs_unlink (\n"
+               "    filepath = \"%s\",\n",
+               filepath );
+#endif
+
+    int status = adfimage_unlink ( fs_state->adfimage, filepath );
+
+    return status;
+}
+
+
+
+int adffs_open ( const char *            filepath,
+                 struct fuse_file_info * finfo )
+{
+    const adffs_state_t * const fs_state =
+        ( adffs_state_t * ) fuse_get_context()->private_data;
+
+#ifdef DEBUG_ADFFS
+    log_info ( fs_state->logfile,
+               "\nadffs_open (\n"
+               "    filepath = \"%s\",\n",
+               filepath );
+#endif
+
+    struct AdfFile * file = adfimage_file_open ( fs_state->adfimage,
+                                                 filepath );
+    int status = ( file != NULL ) ? 0 : -1;
+    adfimage_file_close ( file );
+
+    return status;
+}
+
+
+int adffs_chmod ( const char * path,
+                  mode_t       mode )
+{
+    return 0;
+}
+
+
+int adffs_chown ( const char * path,
+                  uid_t        uid,
+                  gid_t        gid )
+{
+    return 0;
+}
+
+/** Change the size of a file */
+int adffs_truncate ( const char * path,
+                     off_t        offset )
+{
+    return 0;
+}
+
+//int (*utimens) (const char *, const struct timespec tv[2]);
+int adffs_utimens ( const char *          path,
+                    const struct timespec tv[2] )
+{
+    return 0;
+}
+
 // struct fuse_operations: /usr/include/fuse/fuse.h
 struct fuse_operations adffs_oper = {
     .getattr    = adffs_getattr,
@@ -477,18 +600,18 @@ struct fuse_operations adffs_oper = {
     .getdir     = NULL,       // deprecated
     .mknod      = NULL,
     .mkdir      = adffs_mkdir,
-    .unlink     = NULL,
+    .unlink     = adffs_unlink,
     .rmdir      = adffs_rmdir,
     .symlink    = NULL,
     .rename     = NULL,
     .link       = NULL,
-    .chmod      = NULL,
-    .chown      = NULL,
-    .truncate   = NULL,
+    .chmod      = adffs_chmod,
+    .chown      = adffs_chown,
+    .truncate   = adffs_truncate,
     .utime      = NULL,
-    .open       = NULL,
+    .open       = adffs_open,
     .read       = adffs_read,
-    .write      = NULL,
+    .write      = adffs_write,
     .statfs     = adffs_statfs,
     .flush      = NULL,
     .release    = NULL,
@@ -500,11 +623,11 @@ struct fuse_operations adffs_oper = {
     .init       = adffs_init,
     .destroy    = adffs_destroy,
     .access     = NULL,
-    .create     = NULL,
+    .create     = adffs_create,
     .ftruncate  = NULL,
     .fgetattr   = NULL,
     .lock       = NULL,
-    .utimens    = NULL,
+    .utimens    = adffs_utimens,
     .bmap       = NULL,
     .ioctl      = NULL,
     .poll       = NULL,
