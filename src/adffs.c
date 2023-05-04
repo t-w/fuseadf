@@ -615,6 +615,22 @@ int adffs_truncate ( const char * path,
 }
 
 
+int adffs_rename ( const char * old_name,
+                   const char * new_name )
+{
+    const adffs_state_t * const fs_state =
+        ( adffs_state_t * ) fuse_get_context()->private_data;
+
+#ifdef DEBUG_ADFFS
+    log_info ( fs_state->logfile,
+               "\nadffs_rename (\n"
+               "    old_name = \"%s\", new_name = \"%s\" )\n",
+               old_name, new_name );
+#endif
+    return 0;
+}
+
+
 //int (*utimens) (const char *, const struct timespec tv[2]);
 int adffs_utimens ( const char *          path,
                     const struct timespec tv[2] )
@@ -641,7 +657,7 @@ struct fuse_operations adffs_oper = {
     .unlink     = adffs_unlink,
     .rmdir      = adffs_rmdir,
     .symlink    = NULL,
-    .rename     = NULL,
+    .rename     = adffs_rename,
     .link       = NULL,
     .chmod      = adffs_chmod,
     .chown      = adffs_chown,
