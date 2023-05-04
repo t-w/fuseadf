@@ -105,4 +105,7 @@ int adfimage_create ( adfimage_t * const adfimage,
 int adfimage_unlink ( adfimage_t * const adfimage,
                       const char *       unlinkpath );
 
+int adfimage_file_truncate ( adfimage_t * const adfimage,
+                             const char *       path,
+                             const size_t       new_size );
 #endif

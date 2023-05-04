@@ -721,6 +721,24 @@ int adfimage_create ( adfimage_t * const adfimage,
     return status;
 }
 
+// return value: 0 on success, != 0 on error
+int adfimage_file_truncate ( adfimage_t * const adfimage,
+                             const char *       path,
+                             const size_t       new_size )
+{
+    struct AdfFile * const file = adfimage_file_open ( adfimage, path, "w" );
+    if ( ! file ) {
+        //log_info ( fs_state->logfile,
+        //           "Error opening file: %s\n", path );
+        return -ENOENT;
+    }
+
+    RETCODE rc = adfFileTruncate ( file, new_size );
+    adfimage_file_close ( file );
+
+    return ( rc == RC_OK ? 0 : -1 );
+}
+
 
 static void show_version_info()
 {
