@@ -557,7 +557,7 @@ int adffs_open ( const char *            filepath,
 #endif
 
     struct AdfFile * file = adfimage_file_open ( fs_state->adfimage,
-                                                 filepath );
+                                                 filepath, "r" );
     int status = ( file != NULL ) ? 0 : -1;
     adfimage_file_close ( file );
 

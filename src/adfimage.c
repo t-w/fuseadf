@@ -312,7 +312,8 @@ BOOL adfimage_chdir ( adfimage_t * const adfimage,
 
 
 struct AdfFile * adfimage_file_open ( adfimage_t * const adfimage,
-                                      const char *       path )
+                                      const char *       path,
+                                      const char * const mode )
 {
     // if necessary (file path is not in the main dir) - enter the directory
     // with the file to read
@@ -337,7 +338,7 @@ struct AdfFile * adfimage_file_open ( adfimage_t * const adfimage,
 
     // open the file
     struct AdfVolume * const vol = adfimage->vol;
-    struct AdfFile * file = adfFileOpen ( vol, filename, "r" );
+    struct AdfFile * file = adfFileOpen ( vol, filename, mode );
     free ( filename_buf );
     if ( ! file ) {
         //log_info ( fs_state->logfile,
