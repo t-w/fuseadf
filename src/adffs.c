@@ -581,10 +581,21 @@ int adffs_chown ( const char * path,
 
 /** Change the size of a file */
 int adffs_truncate ( const char * path,
-                     off_t        offset )
+                     off_t        new_size )
 {
-    return 0;
+    const adffs_state_t * const fs_state =
+        ( adffs_state_t * ) fuse_get_context()->private_data;
+
+#ifdef DEBUG_ADFFS
+    log_info ( fs_state->logfile,
+               "\nadffs_truncate (\n"
+               "    filepath = \"%s\", size = %lu )\n",
+               path, new_size );
+#endif
+    int status = adfimage_file_truncate ( fs_state->adfimage, path, new_size );
+    return ( status == 0 ? 0 : -1 );
 }
+
 
 //int (*utimens) (const char *, const struct timespec tv[2]);
 int adffs_utimens ( const char *          path,
