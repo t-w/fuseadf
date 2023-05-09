@@ -615,8 +615,8 @@ int adffs_truncate ( const char * path,
 }
 
 
-int adffs_rename ( const char * old_name,
-                   const char * new_name )
+int adffs_rename ( const char * src_path,
+                   const char * dst_path )
 {
     const adffs_state_t * const fs_state =
         ( adffs_state_t * ) fuse_get_context()->private_data;
@@ -624,10 +624,10 @@ int adffs_rename ( const char * old_name,
 #ifdef DEBUG_ADFFS
     log_info ( fs_state->logfile,
                "\nadffs_rename (\n"
-               "    old_name = \"%s\", new_name = \"%s\" )\n",
-               old_name, new_name );
+               "    src_path = \"%s\", dst_path = \"%s\" )\n",
+               src_path, dst_path );
 #endif
-    return 0;
+    return adfimage_file_rename ( fs_state->adfimage, src_path, dst_path );
 }
 
 
