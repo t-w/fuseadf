@@ -144,15 +144,12 @@ adfimage_dentry_t adfimage_get_root_dentry ( adfimage_t * const adfimage )
     if ( adfReadRootBlock ( vol, vol->rootBlock, &rootBlock ) != RC_OK )
         return adf_dentry;
 
-    struct AdfEntry entry;
-    if ( adfEntBlock2Entry ( ( struct bEntryBlock * ) &rootBlock, &entry ) != RC_OK )
+    if ( adfEntBlock2Entry ( ( struct bEntryBlock * ) &rootBlock,
+                             &adf_dentry.adflib_entry ) != RC_OK )
         return adf_dentry;
 
-    if ( entry.type != ST_ROOT )
-        return adf_dentry;
-
-    adf_dentry.type = ADFVOLUME_DENTRY_DIRECTORY;
-    adf_dentry.adflib_entry = entry;
+    if ( adf_dentry.adflib_entry.type == ST_ROOT )
+        adf_dentry.type = ADFVOLUME_DENTRY_DIRECTORY;
 
     return adf_dentry;
 }
