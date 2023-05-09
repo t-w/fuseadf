@@ -724,6 +724,7 @@ int adfimage_create ( adfimage_t * const adfimage,
     char * dir_path = dirname ( dirpath_buf );
 
     if ( ! adfimage_chdir ( adfimage, dir_path ) ) {
+        free ( dirpath_buf );
         return -ENOENT;  // ENOTDIR / EINVAL / ?
     }
     free ( dirpath_buf );
