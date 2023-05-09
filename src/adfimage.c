@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "util.h"
+
 //#define DEBUG_ADFIMAGE 1
 
 static void show_version_info();
