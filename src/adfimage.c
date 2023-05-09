@@ -186,6 +186,9 @@ static struct AdfEntry * adflib_list_find ( struct AdfList * const dentries,
 adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
                                        const char * const pathname )
 {
+    assert ( adfimage != NULL );
+    assert ( pathname != NULL );
+
     adfimage_dentry_t adf_dentry = {
         .type = ADFVOLUME_DENTRY_NONE
     };
