@@ -703,12 +703,7 @@ int adfimage_create ( adfimage_t * const adfimage,
                       mode_t             mode )
 {
     (void) mode;
-    const char * path_relative = newfilepath;
-
-    // skip all leading '/' from the path
-    // (normally, fuse always starts with a single '/')
-    while ( *path_relative == '/' )
-        path_relative++;
+    const char * const path_relative = pathstr_get_relative ( newfilepath );
 
     // fuse should never request creating file with empty name - but make sure
     if ( *path_relative == '\0' ) {
