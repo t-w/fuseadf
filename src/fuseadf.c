@@ -44,6 +44,7 @@ int main ( int    argc,
         exit ( EXIT_FAILURE );
     }
 
+    // parse command-line options
     cmdline_options_t options;
     //show_argv ( argc, argv );
     if ( ! parse_args ( &argc, argv, &options ) ) {
@@ -67,6 +68,17 @@ int main ( int    argc,
 
     struct adffs_state adffs_data;
 
+    // open logfile
+    if ( options.logging_file ) {
+        adffs_data.logfile = log_open ( options.logging_file );
+        if ( ! adffs_data.logfile ) {
+            fprintf ( stderr, "Cannot open log file: %s\n", options.logging_file );
+            exit ( EXIT_FAILURE );
+        }
+        printf ( "fuseadf logging file: %s\n", options.logging_file );
+    }
+
+    // open adf image
     printf ( "Opening image: %s, volume: %d. mode: %s\n",
              options.adf_filename,
              options.adf_volume,
@@ -74,7 +86,8 @@ int main ( int    argc,
 
     adffs_data.adfimage = adfimage_open ( options.adf_filename,
                                           options.adf_volume,
-                                          ! options.write_mode );
+                                          ! options.write_mode,
+                                          adffs_data.logfile );
     if ( adffs_data.adfimage == NULL ) {
 	fprintf ( stderr, "Cannot mount adf image: %s, "
                   "volume/partition: %d - aborting...\n",
@@ -89,15 +102,7 @@ int main ( int    argc,
         printf ("Note: image opened in read-only mode.\n");
     }
 
-    if ( options.logging_file ) {
-        adffs_data.logfile = log_open ( options.logging_file );
-        if ( ! adffs_data.logfile ) {
-            fprintf ( stderr, "Cannot open log file: %s\n", options.logging_file );
-            exit ( EXIT_FAILURE );
-        }
-        printf ( "fuseadf logging file: %s\n", options.logging_file );
-    }
-
+    // pass control to FUSE
 #ifdef DEBUG_ADFFS
     fprintf ( stderr, "-> fuse_main()\n" );
 #endif

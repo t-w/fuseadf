@@ -34,7 +34,8 @@ static void append_dir ( adfimage_t * const adfimage,
 
 adfimage_t * adfimage_open ( char * const filename,
                              unsigned int volume,
-                             bool         read_only )
+                             bool         read_only,
+                             FILE *       log )
 {
     adfEnvInitDefault();
 
@@ -57,7 +58,7 @@ adfimage_t * adfimage_open ( char * const filename,
 
     adfimage_t * const adfimage = malloc ( sizeof ( adfimage_t ) );
     if ( ! adfimage ) {
-        fprintf ( stderr, "Error: Cannot allocate memory for adfimage data\n" );
+        log_info ( log, "adfimage_open: error: Cannot allocate memory for adfimage data\n" );
         adfUnMount ( vol );
         adfUnMountDev ( dev );
         adfEnvCleanUp();
@@ -73,9 +74,10 @@ adfimage_t * adfimage_open ( char * const filename,
     stat ( adfimage->filename, &adfimage->fstat );
 
 #ifdef DEBUG_ADFIMAGE
-    printf ("\nfile size: %ld\n", adfimage->size );
+    log_info ( log, "\nfile size: %ld\n", adfimage->size );
 #endif
 
+    adfimage->logfile = log;
     return adfimage;
 }
 

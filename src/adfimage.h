@@ -21,12 +21,15 @@ typedef struct adfimage {
     struct stat fstat;
 
     char cwd [ ADFIMAGE_MAX_PATH ];
+
+    FILE * logfile;
 } adfimage_t;
 
 
 adfimage_t * adfimage_open ( char * const filename,
                              unsigned int volume,
-                             bool         read_only );
+                             bool         read_only,
+                             FILE *       log );
 
 //void adfimage_close ( adfimage_t * const adfimage );
 void adfimage_close ( adfimage_t ** adfimage );

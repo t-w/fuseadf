@@ -17,6 +17,8 @@ add_executable ( test_adfimage
   test_adfimage.c
   ../src/adfimage.c
   ../src/adfimage.h
+  ../src/log.c
+  ../src/log.h
 )
 
 add_executable ( test_time_to_time_t
