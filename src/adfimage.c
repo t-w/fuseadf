@@ -220,8 +220,8 @@ adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
     // get directory list entries (for current directory)
     struct AdfList * const dentries = adfGetDirEnt ( vol, vol->curDirPtr );
     if ( ! dentries ) {
-        fprintf ( stderr, "adfimage_getdentry(): Error getting dir entries,"
-                  "filename %s\n", pathname );
+        log_info ( adfimage->logfile, "adfimage_getdentry(): Error getting dir entries,"
+                   "filename %s\n", pathname );
         return adf_dentry;
     }
 
@@ -261,9 +261,9 @@ adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
         }
 
         else {
-            fprintf ( stderr,
-                      "adfimage_getdentry() error: unsupported type: %d\n",
-                      dentry->type );
+            log_info ( adfimage->logfile,
+                       "adfimage_getdentry() error: unsupported type: %d\n",
+                       dentry->type );
             adf_dentry.type = ADFVOLUME_DENTRY_UNKNOWN;
         }
     }
