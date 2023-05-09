@@ -757,6 +757,157 @@ int adfimage_file_truncate ( adfimage_t * const adfimage,
 }
 
 
+// return value: 0 on success, != 0 on error
+int adfimage_file_rename ( adfimage_t * const adfimage,
+                           const char * const src_pathstr,
+                           const char * const dst_pathstr )
+{
+#ifdef DEBUG_ADFIMAGE
+    log_info ( adfimage->logfile,
+               "adfimage_file_rename (. '%s',  '%s')\n",
+               src_pathstr, dst_pathstr );
+#endif
+
+    path_t * const src_path = path_create ( src_pathstr );
+    path_t * const dst_path = path_create ( dst_pathstr );
+    if ( ! ( path_is_entryname_non_empty ( src_path ) &&
+             path_is_entryname_non_empty ( dst_path ) ) )
+    {
+        return -EINVAL;
+    }
+
+#ifdef DEBUG_ADFIMAGE
+    log_info ( adfimage->logfile,
+               "adfimage_file_rename,   src: dir '%s', entry '%s'\n"
+               "                        dst: dir '%s', entry '%s'\n",
+               src_path->dirpath, src_path->entryname,
+               dst_path->dirpath, dst_path->entryname );
+#endif
+
+    // convert (FUSE to AmigaDOS) and sanitize paths
+    pathstr_fuse2amigados ( src_path->dirpath );
+    pathstr_fuse2amigados ( dst_path->dirpath );
+
+#ifdef DEBUG_ADFIMAGE
+    log_info ( adfimage->logfile,
+               "adfimage_file_rename 2, src: dir '%s', entry '%s'\n"
+               "                        dst: dir '%s', entry '%s'\n",
+               src_path->dirpath, src_path->entryname,
+               dst_path->dirpath, dst_path->entryname );
+#endif
+    struct AdfVolume * const vol = adfimage->vol;
+    adfToRootDir ( vol );   // precaution, maybe not needed...
+
+    // get and check parent entry for source
+    adfimage_dentry_t src_parent_entry =
+        adfimage_getdentry ( adfimage, src_path->dirpath );
+
+    if ( src_parent_entry.type == ADFVOLUME_DENTRY_NONE ) {
+        log_info ( adfimage->logfile,
+                   "adfimage_file_rename: no such dir path: '%s'\n",
+                   src_path->dirpath );
+        return -ENOENT;
+    }
+
+    if ( src_parent_entry.type != ADFVOLUME_DENTRY_DIRECTORY &&
+         src_parent_entry.type != ADFVOLUME_DENTRY_LINKDIR )
+    {
+        return -EINVAL;
+    }
+
+    // get and check parent entry for destination
+    adfimage_dentry_t dst_parent_entry =
+        adfimage_getdentry ( adfimage, dst_path->dirpath );
+
+    if ( dst_parent_entry.type == ADFVOLUME_DENTRY_NONE )
+        return -ENOENT;
+
+    if ( dst_parent_entry.type != ADFVOLUME_DENTRY_DIRECTORY &&
+         dst_parent_entry.type != ADFVOLUME_DENTRY_LINKDIR )
+    {
+        return -EINVAL;
+    }
+
+    /*
+    // get and check parent entry for source
+    adfimage_dentry_t parent_entry_src =
+        adfimage_getdentry ( adfimage, path_src->dirpath );
+
+    if ( parent_entry_src.type == ADFVOLUME_DENTRY_NONE )
+        return -ENOENT;
+
+    if ( parent_entry_src.type != ADFVOLUME_DENTRY_FILE &&
+         parent_entry_src.type != ADFVOLUME_DENTRY_DIRECTORY &&
+         parent_entry_src.type != ADFVOLUME_DENTRY_LINKFILE &&
+         parent_entry_src.type != ADFVOLUME_DENTRY_LINKDIR
+
+         // if relative path inside - not that simple... probably won't implement it
+         //&& parent_entry_src.type != ADFVOLUME_DENTRY_SOFTLINK
+        )
+    {
+        return -EINVAL;
+    }
+    */
+    //struct AdfVolume * const vol = adfimage->vol;
+    adfToRootDir ( vol );   // precaution, maybe not needed...
+
+
+    SECTNUM src_parent_sector =
+        ( src_parent_entry.type == ADFVOLUME_DENTRY_DIRECTORY ?
+          src_parent_entry.adflib_entry.sector :
+          // ( src_parent_entry.type == ADFVOLUME_DENTRY_LINKDIR )
+          src_parent_entry.adflib_entry.real );
+    if ( src_parent_sector < 2 ) {
+        log_info ( adfimage->logfile,
+                   "adfimage_file_rename: invalid src parent sector: %d\n",
+                   src_parent_sector );
+        return -1;
+    }
+    //assert ( src_parent_sector > 1 );   // not in bootblock...
+
+    SECTNUM dst_parent_sector =
+        ( dst_parent_entry.type == ADFVOLUME_DENTRY_DIRECTORY ?
+          dst_parent_entry.adflib_entry.sector :
+          // ( dst_parent_entry.type == ADFVOLUME_DENTRY_LINKDIR )
+          dst_parent_entry.adflib_entry.real );
+    if ( dst_parent_sector < 2 ) {
+        log_info ( adfimage->logfile,
+                   "adfimage_file_rename: invalid dst parent sector: %d\n"
+                   "dst_parent_entry.adflib_entry.sector %d\n"
+                   "dst_parent_entry.adflib_entry.real %d\n",
+                   dst_parent_sector,
+                   dst_parent_entry.adflib_entry.sector,
+                   dst_parent_entry.adflib_entry.real );
+        return -1;
+    }
+    //assert ( dst_parent_sector > 1 );   // not in bootblock...
+
+#ifdef DEBUG_ADFIMAGE
+    log_info ( adfimage->logfile,
+               "adfimage_file_rename: calling adfRenameEntry (\n"
+               "   ... , old parent sect: %d\n"
+               "         old name       : %s\n"
+               "   ... , new parent sect: %d\n"
+               "         new name       : %s\n",
+               src_parent_sector, src_path->entryname,
+               dst_parent_sector, dst_path->entryname );
+#endif
+    /*RETCODE adfRenameEntry ( struct AdfVolume * const vol,
+                             const SECTNUM            pSect,
+                             const char * const       oldName,
+                             const SECTNUM            nPSect,
+                             const char * const       newName ) */
+    RETCODE rc = adfRenameEntry ( vol,
+                                  src_parent_sector, src_path->entryname,
+                                  dst_parent_sector, dst_path->entryname );
+#ifdef DEBUG_ADFIMAGE
+    log_info ( adfimage->logfile,
+               "adfimage_file_rename: adfRenameEntry() => %d\n", rc );
+#endif
+    return ( rc == RC_OK ? 0 : -1 );
+}
+
+
 static void show_version_info()
 {
     // afd version info only for now

@@ -111,4 +111,8 @@ int adfimage_unlink ( adfimage_t * const adfimage,
 int adfimage_file_truncate ( adfimage_t * const adfimage,
                              const char *       path,
                              const size_t       new_size );
+
+int adfimage_file_rename ( adfimage_t * const adfimage,
+                           const char * const src_pathstr,
+                           const char * const dst_pathstr );
 #endif
