@@ -750,7 +750,7 @@ int adfimage_file_truncate ( adfimage_t * const adfimage,
         return -ENOENT;
     }
 
-    RETCODE rc = adfFileTruncate ( file, new_size );
+    RETCODE rc = adfFileTruncate ( file, (unsigned) new_size );
     adfimage_file_close ( file );
 
     return ( rc == RC_OK ? 0 : -1 );
