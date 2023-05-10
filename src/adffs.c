@@ -547,6 +547,7 @@ int adffs_unlink ( const char * filepath )
 int adffs_open ( const char *            filepath,
                  struct fuse_file_info * finfo )
 {
+    (void) finfo;
     const adffs_state_t * const fs_state =
         ( adffs_state_t * ) fuse_get_context()->private_data;
 
