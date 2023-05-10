@@ -143,7 +143,7 @@ adfimage_dentry_t adfimage_get_root_dentry ( adfimage_t * const adfimage )
     struct bRootBlock rootBlock;
     struct AdfVolume * const vol = adfimage->vol;
 
-    if ( adfReadRootBlock ( vol, vol->rootBlock, &rootBlock ) != RC_OK )
+    if ( adfReadRootBlock ( vol, (unsigned) vol->rootBlock, &rootBlock ) != RC_OK )
         return adf_dentry;
 
     if ( adfEntBlock2Entry ( ( struct bEntryBlock * ) &rootBlock,
