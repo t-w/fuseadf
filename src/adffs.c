@@ -570,14 +570,15 @@ int adffs_open ( const char *            filepath,
 int adffs_chmod ( const char * path,
                   mode_t       mode )
 {
+#ifdef DEBUG_ADFFS
     const adffs_state_t * const fs_state =
         ( adffs_state_t * ) fuse_get_context()->private_data;
-
-#ifdef DEBUG_ADFFS
     log_info ( fs_state->logfile,
                "\nadffs_chmod (\n"
                "    path = \"%s\", mode = %o\n",
                path, mode );
+#else
+    (void) path, (void) mode;
 #endif
     return 0;
 }
@@ -587,14 +588,15 @@ int adffs_chown ( const char * path,
                   uid_t        uid,
                   gid_t        gid )
 {
+#ifdef DEBUG_ADFFS
     const adffs_state_t * const fs_state =
         ( adffs_state_t * ) fuse_get_context()->private_data;
-
-#ifdef DEBUG_ADFFS
     log_info ( fs_state->logfile,
                "\nadffs_chown (\n"
                "    path = \"%s\", uid = %u, gid = %u\n",
                path, uid, gid );
+#else
+    (void) path, (void) uid, (void) gid;
 #endif
     return 0;
 }
