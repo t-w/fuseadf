@@ -639,14 +639,15 @@ int adffs_rename ( const char * src_path,
 int adffs_utimens ( const char *          path,
                     const struct timespec tv[2] )
 {
+#ifdef DEBUG_ADFFS
     const adffs_state_t * const fs_state =
         ( adffs_state_t * ) fuse_get_context()->private_data;
-
-#ifdef DEBUG_ADFFS
     log_info ( fs_state->logfile,
                "\nadffs_utimens (\n"
                "    path = \"%s\", timespec[0] = %u, timespec[1] = %u )\n",
                path, tv[0], tv[1] );
+#else
+    (void) path, (void) tv;
 #endif
     return 0;
 }
