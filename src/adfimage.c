@@ -150,8 +150,12 @@ adfimage_dentry_t adfimage_get_root_dentry ( adfimage_t * const adfimage )
                              &adf_dentry.adflib_entry ) != RC_OK )
         return adf_dentry;
 
-    if ( adf_dentry.adflib_entry.type == ST_ROOT )
+    if ( adf_dentry.adflib_entry.type == ST_ROOT ) {
         adf_dentry.type = ADFVOLUME_DENTRY_DIRECTORY;
+        adf_dentry.adflib_entry.sector = vol->rootBlock;
+        adf_dentry.adflib_entry.real   = 0;
+        adf_dentry.adflib_entry.parent = 0;
+    }
 
     return adf_dentry;
 }
@@ -188,26 +192,16 @@ adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
     assert ( adfimage != NULL );
     assert ( pathname != NULL );
 
-    adfimage_dentry_t adf_dentry = {
-        .type = ADFVOLUME_DENTRY_NONE
-    };
-
-    struct AdfVolume * const vol = adfimage->vol;
-
     // special case first - root directory / entry
     if ( strcmp ( pathname, "/" ) == 0 )
         //|| strcmp ( pathname, "" ) == 0 )
     {
-        adf_dentry = adfimage_get_root_dentry ( adfimage );
-        if ( adf_dentry.type != ADFVOLUME_DENTRY_DIRECTORY )
-            return adf_dentry;
-
-        adf_dentry.adflib_entry.sector = vol->rootBlock;
-        adf_dentry.adflib_entry.real   = 0;
-        adf_dentry.adflib_entry.parent = 0;
-
-        return adf_dentry;
+        return adfimage_get_root_dentry ( adfimage );
     }
+
+    adfimage_dentry_t adf_dentry = {
+        .type = ADFVOLUME_DENTRY_NONE
+    };
 
     // change the directory first (if necessary)
     char * dirpath_buf = strdup ( pathname );
@@ -218,6 +212,8 @@ adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
         adfimage_chdir ( adfimage, dir_path );
     }
     free ( dirpath_buf );
+
+    struct AdfVolume * const vol = adfimage->vol;
 
     // get directory list entries (for current directory)
     struct AdfList * const dentries = adfGetDirEnt ( vol, vol->curDirPtr );
