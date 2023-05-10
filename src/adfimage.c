@@ -343,6 +343,7 @@ struct AdfFile * adfimage_file_open ( adfimage_t * const adfimage,
             //log_info ( fs_state->logfile, "adffs_read(): Cannot chdir to the directory %s.\n",
             //           dir_path );
             free ( cwd );
+            free ( path );
             return NULL;
         }
     }
@@ -392,6 +393,7 @@ int adfimage_read ( adfimage_t * const adfimage,
             //log_info ( fs_state->logfile, "adffs_read(): Cannot chdir to the directory %s.\n",
             //           dir_path );
             free ( cwd );
+            free ( path );
             return -ENOENT;
         }
     }
