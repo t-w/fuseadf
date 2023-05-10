@@ -93,8 +93,11 @@ int adffs_statfs ( const char *     path,
 
     stvfs->f_ffree = 0;
 
-    stvfs->f_bsize  = vol->blockSize; // 512;    /* Filesystem block size */
-    stvfs->f_frsize = vol->blockSize;            /* Fragment size */
+    /*
+    https://stackoverflow.com/questions/54823541/what-do-f-bsize-and-f-frsize-in-struct-statvfs-stand-for
+    */
+    stvfs->f_bsize  =  // 512;                   /* Filesystem block size */
+    stvfs->f_frsize = vol->datablockSize;        /* Fragment size */
 
     stvfs->f_blocks =                            /* Size of fs in f_frsize units */
         (unsigned) ( vol->lastBlock - vol->firstBlock - 2 );
