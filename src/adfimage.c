@@ -17,8 +17,6 @@
 
 //#define DEBUG_ADFIMAGE 1
 
-static void show_version_info();
-
 static struct AdfDevice *
     mount_dev ( char * const adf_filename,
                 const BOOL   read_only );
@@ -869,14 +867,15 @@ int adfimage_file_rename ( adfimage_t * const adfimage,
     return ( rc == RC_OK ? 0 : -1 );
 }
 
-
-static void show_version_info()
+char * get_adflib_version ( void )
 {
-    // afd version info only for now
-    printf ( "libadf version: %s\n", adfGetVersionNumber() );
-    printf ( "libadf date:    %s\n", adfGetVersionDate() );
+    return adfGetVersionNumber();
 }
 
+char * get_adflib_date ( void )
+{
+    return adfGetVersionDate();
+}
 
 
 static struct AdfDevice *
