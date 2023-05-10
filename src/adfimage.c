@@ -484,32 +484,29 @@ int adfimage_write ( adfimage_t * const adfimage,
 
 // return value: 0 on success, -1 on error
 int adfimage_readlink ( adfimage_t * const adfimage,
-                        const char *       path,
+                        const char *       pathstr,
                         char *             buffer,
                         size_t             len_max )
 {
     int status = 0;
 
+    path_t * path = path_create ( pathstr );
+    if ( path == NULL )
+        return -EINVAL; //-ENOENT;
+
     // if necessary (file path is not in the main dir) - enter the directory
     // with the file to read
-    char * dirpath_buf = strdup ( path );
-    char * dir_path = dirname ( dirpath_buf );
     char * cwd = NULL;
-    if ( strlen ( dir_path ) > 0 ) {
+    if ( strlen ( path->dirpath ) > 0 ) {
         cwd = strdup ( adfimage->cwd );
-        if ( ! adfimage_chdir ( adfimage, dir_path ) ) {
+        if ( ! adfimage_chdir ( adfimage, path->dirpath ) ) {
             //log_info ( fs_state->logfile, "adffs_readlink(): Cannot chdir to the directory %s.\n",
             //           dir_path );
             free ( cwd );
-            free ( dirpath_buf );
+            free ( path );
             return -1;
         }
     }
-    free ( dirpath_buf );
-
-    // get the filename
-    char * filename_buf = strdup ( path );
-    char * filename = basename ( filename_buf );
 
     // get block of the directory
     struct AdfVolume * const vol = adfimage->vol;
@@ -528,7 +525,7 @@ int adfimage_readlink ( adfimage_t * const adfimage,
     SECTNUM nUpdSect;
     SECTNUM sectNum = adfNameToEntryBlk ( vol,
                                           parent.hashTable,
-                                          filename,
+                                          path->entryname,
                                           ( struct bEntryBlock * ) &entry,
                                           &nUpdSect );
     if ( sectNum == -1 ) {
@@ -562,7 +559,7 @@ int adfimage_readlink ( adfimage_t * const adfimage,
     }
 
 readlink_cleanup:
-    free ( filename_buf );
+    free ( path );
     if ( cwd ) {
         adfimage_chdir ( adfimage, cwd );
         free ( cwd );
