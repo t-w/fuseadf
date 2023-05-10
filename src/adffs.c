@@ -614,7 +614,8 @@ int adffs_truncate ( const char * path,
                "    filepath = \"%s\", size = %lu )\n",
                path, new_size );
 #endif
-    int status = adfimage_file_truncate ( fs_state->adfimage, path, new_size );
+    int status = adfimage_file_truncate ( fs_state->adfimage, path,
+                                          (long unsigned) new_size );
     return ( status == 0 ? 0 : -1 );
 }
 
