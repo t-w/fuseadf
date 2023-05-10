@@ -258,11 +258,14 @@ static const char * get_logo ( unsigned logoidx );
 void show_version(void)
 {
     printf ( "\n%s\n  " PACKAGE_STRING
-             ", powered by:\n      FUSE build version %d.%d, runtime library version %d"
-             "\n      ADFlib %s ( %s )\n\n",
+             ", powered by:\n\n      FUSE:    build version    %d.%d"
+             "\n               runtime version  %d\n"
+             "\n      ADFlib:  build version    %s ( %s )"
+             "\n               runtime version  %s ( %s )\n\n",
              (char *) get_logo(0),
              FUSE_MAJOR_VERSION, FUSE_MINOR_VERSION, fuse_version(),
-             get_adflib_version(), get_adflib_date() );
+             get_adflib_build_version(), get_adflib_build_date(),
+             get_adflib_runtime_version(), get_adflib_runtime_date() );
 }
 
 static const char * get_logo ( unsigned logoidx )

@@ -116,7 +116,10 @@ int adfimage_file_rename ( adfimage_t * const adfimage,
                            const char * const src_pathstr,
                            const char * const dst_pathstr );
 
-char * get_adflib_version ( void );
-char * get_adflib_date ( void );
+char * get_adflib_build_version ( void );
+char * get_adflib_build_date ( void );
+char * get_adflib_runtime_version ( void );
+char * get_adflib_runtime_date ( void );
+
 
 #endif

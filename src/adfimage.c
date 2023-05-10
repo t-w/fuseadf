@@ -867,12 +867,22 @@ int adfimage_file_rename ( adfimage_t * const adfimage,
     return ( rc == RC_OK ? 0 : -1 );
 }
 
-char * get_adflib_version ( void )
+char * get_adflib_build_version ( void )
+{
+    return ADFLIB_VERSION;
+}
+
+char * get_adflib_build_date ( void )
+{
+    return ADFLIB_DATE;
+}
+
+char * get_adflib_runtime_version ( void )
 {
     return adfGetVersionNumber();
 }
 
-char * get_adflib_date ( void )
+char * get_adflib_runtime_date ( void )
 {
     return adfGetVersionDate();
 }
