@@ -203,15 +203,16 @@ adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
         .type = ADFVOLUME_DENTRY_NONE
     };
 
+    path_t * path = path_create ( pathname );
+    if ( path == NULL )
+        return adf_dentry;
+
     // change the directory first (if necessary)
-    char * dirpath_buf = strdup ( pathname );
-    char * dir_path = dirname ( dirpath_buf );
     char * cwd = NULL;
-    if ( strlen ( dir_path ) > 0 ) {
+    if ( strlen ( path->dirpath ) > 0 ) {
         cwd = strdup ( adfimage->cwd );
-        adfimage_chdir ( adfimage, dir_path );
+        adfimage_chdir ( adfimage, path->dirpath );
     }
-    free ( dirpath_buf );
 
     struct AdfVolume * const vol = adfimage->vol;
 
@@ -220,13 +221,13 @@ adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
     if ( ! dentries ) {
         log_info ( adfimage->logfile, "adfimage_getdentry(): Error getting dir entries,"
                    "filename %s\n", pathname );
+        free ( path );
         return adf_dentry;
     }
 
-    char * filename_buf = strdup ( pathname );
-    char * filename = basename ( filename_buf );
-
-    struct AdfEntry * const dentry = adflib_list_find ( dentries, filename );
+    // find entry in the list
+    struct AdfEntry * const dentry = adflib_list_find ( dentries, path->entryname );
+    free ( path );
 
     if ( dentry ) {
         adf_dentry.adflib_entry = *dentry;
@@ -260,13 +261,11 @@ adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
 
         else {
             log_info ( adfimage->logfile,
-                       "adfimage_getdentry() error: unsupported type: %d\n",
-                       dentry->type );
+                       "adfimage_getdentry(): pathname '%s' has unsupported type: %d, \n",
+                       pathname, dentry->type );
             adf_dentry.type = ADFVOLUME_DENTRY_UNKNOWN;
         }
     }
-
-    free ( filename_buf );
     freeList ( dentries );
 
     // go back to the working directory (if necessary)
