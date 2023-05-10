@@ -417,8 +417,10 @@ int adfimage_read ( adfimage_t * const adfimage,
 
     // seek and read the file
     int32_t bytes_read = 0;
-    if ( adfFileSeek ( file, offset ) == RC_OK )
-        bytes_read = adfFileRead ( file, size, ( unsigned char * ) buffer );
+    if ( adfFileSeek ( file, (unsigned) offset ) == RC_OK ) {
+        bytes_read = (int32_t) adfFileRead ( file, (unsigned) size,
+                                             ( unsigned char * ) buffer );
+    }
 
     // ... and close it
     adfFileClose ( file );
