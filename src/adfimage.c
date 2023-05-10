@@ -933,29 +933,6 @@ struct AdfVolume *
 }
 
 
-static long getFileSize ( const char * const filename )
-{
-    FILE * const file = fopen ( filename, "r" );
-    if ( ! file ) {
-        fprintf ( stderr, "Cannot open the file: %s\n", filename );
-        return -1;
-    }
-
-    if ( fseek ( file, 0L, SEEK_END ) != 0 ) {
-        fprintf ( stderr, "Cannot fseek the file: %s\n", filename );
-        fclose ( file );
-        return -1;
-    }
-
-    long flen = ftell ( file );
-    if ( flen < 0 ) {
-        fprintf ( stderr, "Incorrect size (%ld) of the file: %s.\n", flen, filename );
-        fclose ( file );
-        return -1;
-    }
-    return flen;
-}
-
 static void append_dir ( adfimage_t * const adfimage,
                          const char * const dir )
 {
