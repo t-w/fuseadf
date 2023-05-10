@@ -327,35 +327,31 @@ BOOL adfimage_chdir ( adfimage_t * const adfimage,
 
 
 struct AdfFile * adfimage_file_open ( adfimage_t * const adfimage,
-                                      const char *       path,
+                                      const char *       pathstr,
                                       const char * const mode )
 {
+    path_t * path = path_create ( pathstr );
+    if ( path == NULL )
+        return NULL;
+
     // if necessary (file path is not in the main dir) - enter the directory
     // with the file to read
-    char * dirpath_buf = strdup ( path );
-    char * dir_path = dirname ( dirpath_buf );
     char * cwd = NULL;
-    if ( strlen ( dir_path ) > 0 ) {
+    if ( strlen ( path->dirpath ) > 0 ) {
         cwd = strdup ( adfimage->cwd );
-        if ( ! adfimage_chdir ( adfimage, dir_path ) ) {
+        if ( ! adfimage_chdir ( adfimage, path->dirpath ) ) {
             //log_info ( fs_state->logfile, "adffs_read(): Cannot chdir to the directory %s.\n",
             //           dir_path );
             free ( cwd );
-            free ( dirpath_buf );
             return NULL;
         }
     }
-    free ( dirpath_buf );
-
-    // get the filename
-    char * filename_buf = strdup ( path );
-    char * filename = basename ( filename_buf );
 
     // open the file
     struct AdfVolume * const vol = adfimage->vol;
-    struct AdfFile * file = adfFileOpen ( vol, filename, mode );
-    free ( filename_buf );
-    if ( ! file ) {
+    struct AdfFile * file = adfFileOpen ( vol, path->entryname, mode );
+    free ( path );
+    if ( file == NULL ) {
         //log_info ( fs_state->logfile,
         //           "Error opening file: %s\n", path );
         return NULL;
