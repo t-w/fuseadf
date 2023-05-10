@@ -749,7 +749,10 @@ int adfimage_file_rename ( adfimage_t * const adfimage,
                            const char * const src_pathstr,
                            const char * const dst_pathstr )
 {
+
 #ifdef DEBUG_ADFIMAGE
+    if ( src_pathstr == NULL || dst_pathstr == NULL )
+        return -EINVAL;
     log_info ( adfimage->logfile,
                "adfimage_file_rename (. '%s',  '%s')\n",
                src_pathstr, dst_pathstr );
@@ -757,8 +760,10 @@ int adfimage_file_rename ( adfimage_t * const adfimage,
 
     path_t * const src_path = path_create ( src_pathstr );
     path_t * const dst_path = path_create ( dst_pathstr );
-    if ( ! ( path_is_entryname_non_empty ( src_path ) &&
-             path_is_entryname_non_empty ( dst_path ) ) )
+    if ( src_path == NULL ||
+         dst_path == NULL ||
+         ( ! ( path_is_entryname_non_empty ( src_path ) &&
+               path_is_entryname_non_empty ( dst_path ) ) ) )
     {
         return -EINVAL;
     }
