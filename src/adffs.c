@@ -96,8 +96,8 @@ int adffs_statfs ( const char *     path,
     stvfs->f_bsize  = vol->blockSize; // 512;    /* Filesystem block size */
     stvfs->f_frsize = vol->blockSize;            /* Fragment size */
 
-    stvfs->f_blocks = vol->lastBlock -           /* Size of fs in f_frsize units */
-                      vol->firstBlock - 2;
+    stvfs->f_blocks =                            /* Size of fs in f_frsize units */
+        (unsigned) ( vol->lastBlock - vol->firstBlock - 2 );
     stvfs->f_bfree =                             /* Number of free blocks */
     stvfs->f_bavail = blocks_free;               /* Number of free blocks for
                                                     unprivileged users */
