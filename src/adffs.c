@@ -510,6 +510,7 @@ int adffs_create ( const char *           filepath,
                    mode_t                 mode,
                    struct fuse_file_info *finfo )
 {
+    (void) finfo;
     const adffs_state_t * const fs_state =
         ( adffs_state_t * ) fuse_get_context()->private_data;
 
