@@ -787,8 +787,6 @@ int adfimage_file_rename ( adfimage_t * const adfimage,
                src_path->dirpath, src_path->entryname,
                dst_path->dirpath, dst_path->entryname );
 #endif
-    struct AdfVolume * const vol = adfimage->vol;
-    adfToRootDir ( vol );   // precaution, maybe not needed...
 
     // get and check parent entry for source
     adfimage_dentry_t src_parent_entry =
@@ -819,30 +817,6 @@ int adfimage_file_rename ( adfimage_t * const adfimage,
     {
         return -EINVAL;
     }
-
-    /*
-    // get and check parent entry for source
-    adfimage_dentry_t parent_entry_src =
-        adfimage_getdentry ( adfimage, path_src->dirpath );
-
-    if ( parent_entry_src.type == ADFVOLUME_DENTRY_NONE )
-        return -ENOENT;
-
-    if ( parent_entry_src.type != ADFVOLUME_DENTRY_FILE &&
-         parent_entry_src.type != ADFVOLUME_DENTRY_DIRECTORY &&
-         parent_entry_src.type != ADFVOLUME_DENTRY_LINKFILE &&
-         parent_entry_src.type != ADFVOLUME_DENTRY_LINKDIR
-
-         // if relative path inside - not that simple... probably won't implement it
-         //&& parent_entry_src.type != ADFVOLUME_DENTRY_SOFTLINK
-        )
-    {
-        return -EINVAL;
-    }
-    */
-    //struct AdfVolume * const vol = adfimage->vol;
-    adfToRootDir ( vol );   // precaution, maybe not needed...
-
 
     SECTNUM src_parent_sector =
         ( src_parent_entry.type == ADFVOLUME_DENTRY_DIRECTORY ?
@@ -884,12 +858,8 @@ int adfimage_file_rename ( adfimage_t * const adfimage,
                src_parent_sector, src_path->entryname,
                dst_parent_sector, dst_path->entryname );
 #endif
-    /*RETCODE adfRenameEntry ( struct AdfVolume * const vol,
-                             const SECTNUM            pSect,
-                             const char * const       oldName,
-                             const SECTNUM            nPSect,
-                             const char * const       newName ) */
-    RETCODE rc = adfRenameEntry ( vol,
+
+    RETCODE rc = adfRenameEntry ( adfimage->vol,
                                   src_parent_sector, src_path->entryname,
                                   dst_parent_sector, dst_path->entryname );
 #ifdef DEBUG_ADFIMAGE
