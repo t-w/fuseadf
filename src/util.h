@@ -110,7 +110,7 @@ static inline path_t * path_create ( const char * const path_str )
     return path;
 }
 
-static inline void path_free ( path_t ** path )
+static inline void path_free ( path_t ** const path )
 {
     free ( (*path)->dirpath_buf );
     free ( (*path)->entryname_buf );
