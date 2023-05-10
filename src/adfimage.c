@@ -473,9 +473,10 @@ int adfimage_write ( adfimage_t * const adfimage,
     }
 
     // seek and write the file
-    adfFileSeek ( file, offset );
-    int32_t bytes_written = adfFileWrite (
-        file, size, ( unsigned char * ) buffer );
+    int32_t bytes_written = 0;
+    if ( adfFileSeek ( file, offset ) == RC_OK ) {
+        bytes_written = adfFileWrite ( file, size, ( unsigned char * ) buffer );
+    }
 
     // ... and close it
     adfFileClose ( file );
