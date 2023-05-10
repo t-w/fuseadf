@@ -271,6 +271,8 @@ void show_version(void)
 static const char * get_logo ( unsigned logoidx )
 {
     const char * const logo[] = {
+        /* created with:  http://www.network-science.de/ascii/  */
+
         "      _/_/                                                _/      _/_/   \n"
         "   _/      _/    _/    _/_/_/    _/_/      _/_/_/    _/_/_/    _/        \n"
         "_/_/_/_/  _/    _/  _/_/      _/_/_/_/  _/    _/  _/    _/  _/_/_/_/     \n"
