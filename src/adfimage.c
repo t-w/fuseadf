@@ -103,18 +103,25 @@ void adfimage_close ( adfimage_t ** adfimage )
 }
 
 
-int adfimage_count_cwd_entries ( adfimage_t * const adfimage )
+static int adflist_count_entries ( const struct AdfList * const list )
 {
-    struct AdfVolume * const vol = adfimage->vol;
-    struct AdfList * list, * cell;
-
+    assert ( list != NULL );
+    const struct AdfList * cell = list;
     int nentries = 0;
-    cell = list = adfGetDirEnt ( vol, vol->curDirPtr );
     while ( cell ) {
         //printEntry ( cell->content );
         cell = cell->next;
         nentries++;
     }
+    return nentries;
+}
+
+
+int adfimage_count_cwd_entries ( adfimage_t * const adfimage )
+{
+    struct AdfVolume * const vol = adfimage->vol;
+    struct AdfList * const list = adfGetDirEnt ( vol, vol->curDirPtr );
+    int nentries = adflist_count_entries ( list );
     adfFreeDirList ( list );
     return nentries;
 }
