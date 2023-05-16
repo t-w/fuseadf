@@ -26,8 +26,6 @@ static struct AdfVolume *
                    unsigned int          partition,
                    BOOL                  read_only );
 
-static long getFileSize ( const char * const filename );
-
 static void append_dir ( adfimage_t * const adfimage,
                          const char * const dir );
 
