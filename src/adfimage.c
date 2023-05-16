@@ -138,6 +138,34 @@ int adfimage_count_dir_entries ( adfimage_t * const adfimage,
     return nentries;
 }
 
+/*
+typedef struct adfimage_array_str_s {
+    char **  str;
+    unsigned nstr;
+} adfimage_array_str;
+
+adfimage_array_str adfimage_get_cwd_entries ( adfimage_t * const adfimage )
+{
+    struct AdfVolume * const vol = adfimage->vol;
+    adfimage_array_str entry_names = { NULL, 0 };
+    struct AdfList * list = adfGetDirEnt ( vol, vol->curDirPtr );
+    unsigned nentries = adflist_count_entries ( list );
+    unsigned i = 0;
+    for ( struct AdfList * cell = list ;
+          cell != NULL ;
+          cell = cell->next, i++ )
+    {
+        //printEntry ( cell->content );
+        struct AdfEntry * const dentry =
+            ( struct AdfEntry * ) cell->content;
+        entry_names.str[i] = malloc ( strlen ( dentry->name ) + 1 );
+        strcpy ( entry_names.str[i], dentry->name );
+    }
+    adfFreeDirList ( list );
+    entry_names.nstr = nentries;
+    return entry_names;
+}
+*/
 
 adfimage_dentry_t adfimage_get_root_dentry ( adfimage_t * const adfimage )
 {
