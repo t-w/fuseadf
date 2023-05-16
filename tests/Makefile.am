@@ -7,7 +7,11 @@ check_PROGRAMS = \
     test_adfimage \
     test_time_to_time_t
 
-AM_CFLAGS = -I$(srcdir) \
+AM_CFLAGS = -Wall -Wextra -pedantic -pedantic-errors \
+    -Wconversion -Wsign-conversion \
+    -Werror-implicit-function-declaration \
+    -Werror=incompatible-pointer-types \
+    -I$(srcdir) \
     -I$(top_srcdir)/src \
     @ADF_CFLAGS@ \
     @CHECK_CFLAGS@

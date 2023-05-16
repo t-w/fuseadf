@@ -23,6 +23,8 @@ add_compile_options(
   -Wsign-conversion
   -pedantic
   -pedantic-errors
+  -Werror-implicit-function-declaration
+  -Werror=incompatible-pointer-types
 #  $<$<CONFIG:DEBUG>:-g3>
 #  $<$<CONFIG:DEBUG>:-Og>
   $<$<CONFIG:DEBUG>:-ggdb>
