@@ -38,5 +38,7 @@ Notes:
 - It should be used only in FUSE's single-thread mode(!). Running in
   multithreaded mode, with multiple processes accessing the filesystem in
   parallel, may result in corrupted data, so beware (esp. when writing data).
+
   (Single threaded mode may be enforced in the future - but it is not at
-  the moment!).
+  the moment and the default for FUSE is multithreaded mode(!), so always
+  use -s option).
