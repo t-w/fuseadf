@@ -1,7 +1,7 @@
 
 AC_PREREQ([2.54])
 
-AC_INIT([fuseadf], [0.2], [tomas.wolak@gmail.com])
+AC_INIT([fuseadf], [0.3], [tomas.wolak@gmail.com])
 
 # https://www.gnu.org/software/automake/manual/html_node/List-of-Automake-options.html
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
