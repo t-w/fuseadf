@@ -105,11 +105,11 @@ void adfimage_close ( adfimage_t ** adfimage )
 
 static int adflist_count_entries ( const struct AdfList * const list )
 {
-    const struct AdfList * cell = list;
     int nentries = 0;
-    while ( cell ) {
-        //printEntry ( cell->content );
-        cell = cell->next;
+    for ( const struct AdfList * cell = list;
+          cell != NULL;
+          cell = cell->next )
+    {
         nentries++;
     }
     return nentries;
