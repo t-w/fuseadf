@@ -33,7 +33,13 @@ Execute in foreground with debug output.
 .B \-s
 Single-threaded mode.
 .SH BUGS
+It should be used only in FUSE's single-threaded mode(!). Running in
+multithreaded mode, with multiple processes accessing the filesystem in
+parallel, may result in corrupted data, so beware (esp. when writing data).
 
+(Single-threaded mode may be enforced in the future - but it is not at
+the moment and the default for FUSE is multithreaded mode(!), so always
+use -s option).
 .SH SEE ALSO
 .BR fusermount (1), adflib (1)
 .SH AUTHOR
