@@ -20,7 +20,6 @@ Depends: libfuse2 (>= 2.6),
          ${misc:Depends}
 Pre-Depends: ${misc:Pre-Depends}
 Description: Mount an ADF file with FUSE
- fuseadf is a simple libfuse-based filesystem allowing to read data from files
- stored in ADF files - Amiga Disk File images, used to store floppy or hard
- disk images for Commodore Amiga computers.
- 
+ fuseadf is a simple libfuse-based filesystem allowing to mount a volume
+ of an ADF image (of an Amiga floppy or a hard disk) and to browse/read/write
+ files and directories it contains.
