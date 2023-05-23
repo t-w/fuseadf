@@ -103,8 +103,18 @@ static inline path_t * path_create ( const char * const path_str )
         return NULL;
 
     path->dirpath_buf   = strdup ( path_str );
+    if ( path->dirpath_buf == NULL ) {
+        free ( path );
+        return NULL;
+    }
     path->dirpath       = dirname ( path->dirpath_buf );
+
     path->entryname_buf = strdup ( path_str );
+    if ( path->entryname_buf == NULL ) {
+        free ( path->dirpath_buf );
+        free ( path );
+        return NULL;
+    }
     path->entryname     = basename ( path->entryname_buf );
 
     return path;
