@@ -28,9 +28,9 @@ More info:
 
 Notes:
 
-- It should be considered a prototype, so please beware of, for instance,
-  security implications, especially if you get the disk images from uncertain
-  sources.
+- It should be considered a (working) prototype, so please beware of,
+  for instance, security implications, especially if you get the disk images
+  from uncertain sources.
 
 - It relies on the ADFlib (https://github.com/lclevy/ADFlib) for accessing
   ADF disk images.
@@ -39,6 +39,5 @@ Notes:
   multithreaded mode, with multiple processes accessing the filesystem in
   parallel, may result in corrupted data, so beware (esp. when writing data).
 
-  (Single-threaded mode may be enforced in the future - but it is not at
-  the moment and the default for FUSE is multithreaded mode(!), so always
-  use -s option).
+  (Since 0.3, the FUSE's single-threaded mode is enforced, adding -s is no
+  longer needed).
