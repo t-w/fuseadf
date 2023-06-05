@@ -8,7 +8,7 @@ set ( fuseadf_VERSION_MINOR 3 )
 find_package( PkgConfig REQUIRED )
 #find_package ( fuse REQUIRED )
 pkg_check_modules ( FUSE REQUIRED fuse )
-pkg_check_modules ( ADFLIB REQUIRED adflib )
+pkg_check_modules ( ADFLIB REQUIRED adflib>=0.8.0 )
 
 #set ( extraFlags "-Wall -Wextra -Weffc++ -pedantic -pedantic-errors -std=c++14" )
 
