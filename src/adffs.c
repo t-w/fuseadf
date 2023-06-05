@@ -217,7 +217,8 @@ int adffs_getattr ( const char *  path,
                 S_IROTH;
             statbuf->st_nlink = 1;
 
-            struct AdfFile * afile = adfFileOpen ( vol, direntry_name, "r" );
+            struct AdfFile * afile = adfFileOpen ( vol, direntry_name,
+                                                   ADF_FILE_MODE_READ );
             if ( afile ) {
                 statbuf->st_size = afile->fileHdr->byteSize;
                 statbuf->st_blocks = statbuf->st_size / 512 + 1;
@@ -562,7 +563,7 @@ int adffs_open ( const char *            filepath,
 #endif
 
     struct AdfFile * file = adfimage_file_open ( fs_state->adfimage,
-                                                 filepath, "r" );
+                                                 filepath, ADF_FILE_MODE_READ );
     int status = ( file != NULL ) ? 0 : -1;
     adfimage_file_close ( file );
 

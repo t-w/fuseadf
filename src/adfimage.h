@@ -70,7 +70,7 @@ BOOL adfimage_chdir ( adfimage_t * const adfimage,
 
 struct AdfFile * adfimage_file_open ( adfimage_t * const adfimage,
                                       const char *       path,
-                                      const char * const mode );
+                                      const AdfFileMode  mode );
 
 void adfimage_file_close ( struct AdfFile * file );
 

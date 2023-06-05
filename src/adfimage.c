@@ -358,7 +358,7 @@ BOOL adfimage_chdir ( adfimage_t * const adfimage,
 
 struct AdfFile * adfimage_file_open ( adfimage_t * const adfimage,
                                       const char *       pathstr,
-                                      const char * const mode )
+                                      const AdfFileMode  mode )
 {
     path_t * path = path_create ( pathstr );
     if ( path == NULL )
@@ -430,7 +430,8 @@ int adfimage_read ( adfimage_t * const adfimage,
 
     // open the file
     struct AdfVolume * const vol = adfimage->vol;
-    struct AdfFile * file = adfFileOpen ( vol, path->entryname, "r" );
+    struct AdfFile * file = adfFileOpen ( vol, path->entryname,
+                                          ADF_FILE_MODE_READ );
     free ( path );
     if ( file == NULL ) {
         //log_info ( fs_state->logfile,
@@ -484,7 +485,8 @@ int adfimage_write ( adfimage_t * const adfimage,
 
     // open the file
     struct AdfVolume * const vol = adfimage->vol;
-    struct AdfFile * file = adfFileOpen ( vol, path->entryname, "w" );
+    struct AdfFile * file = adfFileOpen ( vol, path->entryname,
+                                          ADF_FILE_MODE_WRITE );
     free ( path );
     if ( file == NULL ) {
         //log_info ( fs_state->logfile,
@@ -760,7 +762,8 @@ int adfimage_file_truncate ( adfimage_t * const adfimage,
                              const char *       path,
                              const size_t       new_size )
 {
-    struct AdfFile * const file = adfimage_file_open ( adfimage, path, "w" );
+    struct AdfFile * const file = adfimage_file_open ( adfimage, path,
+                                                       ADF_FILE_MODE_WRITE );
     if ( ! file ) {
         //log_info ( fs_state->logfile,
         //           "Error opening file: %s\n", path );
