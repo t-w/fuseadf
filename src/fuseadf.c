@@ -14,6 +14,7 @@ typedef struct cmdline_options_s {
     char *       mount_point;
     unsigned int adf_volume;
     bool         write_mode;
+    bool         single_threaded_fuse_mode_set;
     char *       logging_file;
     bool         help,
                  version;
@@ -27,6 +28,10 @@ bool parse_args (  int *               argc,
 
 void drop_arg ( int * argc, char ** argv, int index );
 void drop_args ( int * argc, char ** argv, int index, int num );
+void add_arg ( int * const         argc,
+               const char ** const argv,
+               const char * const  arg );
+
 void show_argv ( int argc, char ** argv );
 
 void drop_nonfuse_args ( int *   argc,
@@ -64,6 +69,11 @@ int main ( int    argc,
     if ( options.version ) {
         show_version();
         exit ( EXIT_SUCCESS );
+    }
+
+    // enforce single-threaded FUSE mode
+    if ( ! options.single_threaded_fuse_mode_set ) {
+        add_arg ( &argc, (const char ** const) argv, "-s" );
     }
 
     struct adffs_state adffs_data;
@@ -180,9 +190,10 @@ bool parse_args (  int *               argc,
         }
 
         // fuse options ( /usr/include/fuse/fuse_common.h )
+        case 's':
+            options->single_threaded_fuse_mode_set = true;
         case 'd':
         case 'f':
-        case 's':
             //    https://github.com/libfuse/libfuse/blob/master/doc/fusermount3.1
             //case 'q':
             //case 'u':
@@ -242,6 +253,14 @@ void drop_args ( int * argc, char ** argv, int index, int num )
         argv [ i ] = NULL;
 
     (*argc) -= num;
+}
+
+void add_arg ( int * const         argc,
+               const char ** const argv,
+               const char * const  arg )
+{
+    argv[ *argc ] = arg;
+    (*argc)++;
 }
 
 /*
