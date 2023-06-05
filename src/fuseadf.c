@@ -43,7 +43,7 @@ void show_version();
 int main ( int    argc,
            char * argv[] )
 {
-    // forbid running as root (a prototype program interacting with kernel space...)
+    // for now - forbid running as root (a prototype program...)
     if ( ( getuid() == 0 ) ||
          ( geteuid() == 0 ) )
     {
@@ -142,9 +142,9 @@ void usage()
 }
 
 
-bool parse_args (  int *               argc,
-                   char **             argv,
-                   cmdline_options_t * options )
+bool parse_args ( int *               argc,
+                  char **             argv,
+                  cmdline_options_t * options )
 {
     // set default options
     memset ( options, 0, sizeof ( cmdline_options_t ) );
