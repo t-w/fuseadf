@@ -138,7 +138,7 @@ void usage()
               "\t-o mount_option\tie. 'ro' for read-only mount (see: man fusermount)\n"
               "\t-f\t\tforeground (do not daemonize)\n"
               "\t-d\t\tforeground with debug info\n"
-              "\t-s\t\tsingle-threaded\n" );
+              "\t-s\t\tsingle-threaded (enforced - no need to provide it)\n" );
 }
 
 
@@ -357,7 +357,7 @@ static const char * get_logo ( unsigned logoidx )
 " / / /        / / /___/ / //_/\__/ / /  / / /______  / /_________/\ \ \\ \ \__/ / // / /          "
 "/ / /        / / /____\/ / \ \/___/ /  / / /_______\/ / /_       __\ \_\\ \___\/ // / /           "
 "\/_/         \/_________/   \_____\/   \/__________/\_\___\     /____/_/ \/_____/ \/_/            "
-*/
+
 
 "         _      _                  _            _            _                _            _      \n"
 "        /\\ \\   /\\_\\               / /\\         /\\ \\         / /\\             /\\ \\         /\\ \\    \n"
