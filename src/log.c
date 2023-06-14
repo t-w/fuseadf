@@ -26,10 +26,9 @@ void log_close ( FILE * const flog )
 
 
 void vlog_info ( FILE * const       flog,
-                 const char * const format, ... )
+                 const char * const format,
+                 va_list            ap )
 {
-    va_list ap;
-    va_start ( ap, format );
     if ( flog ) {
         vfprintf ( flog, format, ap );
         fprintf ( flog, "\n" );

@@ -13,7 +13,8 @@ FILE * log_open ( const char * const log_file_path );
 void log_close ( FILE * const       flog );
 
 void vlog_info ( FILE * const       flog,
-                 const char * const format, ... );
+                 const char * const format,
+                 va_list            ap );
 
 void log_info ( FILE * const       flog,
                 const char * const format, ... );

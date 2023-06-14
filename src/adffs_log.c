@@ -29,13 +29,13 @@ void adffs_log_close ( void )
 
 void adffs_log_info ( const char * const format, ... )
 {
+    if ( flog == NULL)
+        return;
+
     va_list ap;
-    //va_start ( ap, format );
-    if ( flog ) {
-        //vfprintf ( flog, format, ap );
-        //fprintf ( flog, "\n" );
-        log_info ( flog, format, ap );
-    }
+    va_start ( ap, format );
+    vlog_info ( flog, format, ap );
+    va_end ( ap );
 }
 
 
