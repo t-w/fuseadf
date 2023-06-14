@@ -5,3 +5,4 @@ http://lclevy.free.fr/adflib/
 http://lclevy.free.fr/adflib/adf_info.html
 https://wiki.amigaos.net/wiki/DCFS_and_LNFS_Low_Level_Data_Structures
 https://www.kernel.org/doc/html/v5.10/filesystems/affs.html
+https://wiki.osdev.org/FFS_(Amiga)
