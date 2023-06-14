@@ -10,10 +10,7 @@
 //} log_t;
 
 FILE * log_open ( const char * const log_file_path );
-
-void log_info ( FILE * const       flog,
-                const char * const format, ... );
-
-void log_error ( FILE * const       flog,
-                 const char * const error_context );
+void log_close ( void );
+void log_info ( const char * const format, ... );
+void log_error ( const char * const error_context );
 #endif

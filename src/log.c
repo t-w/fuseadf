@@ -5,10 +5,11 @@
 #include <stdarg.h>
 #include <string.h>
 
+static FILE * flog = NULL;
 
 FILE * log_open ( const char * const log_file_path )
 {
-    FILE *flog = fopen ( log_file_path, "w" );
+    flog = fopen ( log_file_path, "w" );
     if ( flog == NULL ) {
 	fprintf ( stderr, "Error opening log file %s: %s",
                   log_file_path, strerror ( errno ) );
@@ -18,19 +19,24 @@ FILE * log_open ( const char * const log_file_path )
     return flog;
 }
 
+void log_close ( void )
+{
+    fclose ( flog );
+}
 
-void log_info ( FILE * const flog,
-                const char * const format, ... )
+void log_info ( const char * const format, ... )
 {
     va_list ap;
     va_start ( ap, format );
-    if ( flog )
+    if ( flog ) {
         vfprintf ( flog, format, ap );
+        fprintf ( flog, "\n" );
+    }
 }
 
 
-void log_error ( FILE * const flog,
-                 const char * const error_context )
+void log_error ( const char * const error_context )
 {
-    log_info ( flog, "ERROR %s: %s\n", error_context, strerror ( errno ) );
+    log_info ( //flog,
+               "ERROR %s: %s\n", error_context, strerror ( errno ) );
 }

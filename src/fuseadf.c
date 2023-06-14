@@ -96,12 +96,12 @@ int main ( int    argc,
 
     adffs_data.adfimage = adfimage_open ( options.adf_filename,
                                           options.adf_volume,
-                                          ! options.write_mode,
-                                          adffs_data.logfile );
+                                          ! options.write_mode );
     if ( adffs_data.adfimage == NULL ) {
 	fprintf ( stderr, "Cannot mount adf image: %s, "
                   "volume/partition: %d - aborting...\n",
                   options.adf_filename, options.adf_volume );
+        log_close();
         exit ( EXIT_FAILURE );
     }
     adffs_data.mountpoint = options.mount_point;
