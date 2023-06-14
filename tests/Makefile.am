@@ -19,8 +19,14 @@ AM_CFLAGS = -Wall -Wextra -pedantic -pedantic-errors \
 test_adfimage_SOURCES = test_adfimage.c \
     ../src/adfimage.c \
     ../src/adfimage.h \
+    ../src/adffs_log.c \
+    ../src/adffs_log.h \
     ../src/log.c \
     ../src/log.h
+
+test_adfimage_CFLAGS = \
+    @ADF_CFLAGS@ \
+    @FUSE_CFLAGS@
 
 test_adfimage_LDADD = \
     @ADF_LIBS@ \

@@ -14,12 +14,36 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+static FILE * flog = NULL;
+
+FILE * adffs_log_open ( const char * const log_file_path )
+{
+    flog = log_open ( log_file_path );
+    return flog;
+}
+
+void adffs_log_close ( void )
+{
+    log_close ( flog );
+}
+
+void adffs_log_info ( const char * const format, ... )
+{
+    va_list ap;
+    //va_start ( ap, format );
+    if ( flog ) {
+        //vfprintf ( flog, format, ap );
+        //fprintf ( flog, "\n" );
+        log_info ( flog, format, ap );
+    }
+}
+
 
 // struct stat:
 //   /usr/include/bits/struct_stat.h
-void log_stat ( const struct stat * const ststat )
+void adffs_log_stat ( const struct stat * const ststat )
 {
-    log_info (
+    adffs_log_info (
         "\nstat {\n"
         "    .st_dev     = %lld\n"
         "    .st_ino     = %lld\n"
@@ -51,9 +75,9 @@ void log_stat ( const struct stat * const ststat )
 
 // struct statvfs:
 //   /usr/include/bits/statvfs.h
-void log_statvfs ( const struct statvfs * const stvfs )
+void adffs_log_statvfs ( const struct statvfs * const stvfs )
 {
-    log_info (
+    adffs_log_info (
         "\nstatvfs {\n"
         "    .f_bsize   = %ld\n"
         "    .f_frsize  = %ld\n"
@@ -82,9 +106,9 @@ void log_statvfs ( const struct statvfs * const stvfs )
 
 // struct fuse_context:
 //   https://github.com/libfuse/libfuse/blob/master/include/fuse.h#L814
-void log_fuse_context ( const struct fuse_context * const context )
+void adffs_log_fuse_context ( const struct fuse_context * const context )
 {    
-    log_info (
+    adffs_log_info (
         "\nfuse_context {\n"
         "    .fuse  = 0x%" PRIxPTR "\n"
         "    .uid   = %d\n"
@@ -100,7 +124,7 @@ void log_fuse_context ( const struct fuse_context * const context )
     // private data
     const struct adffs_state * const private_data =
         ( struct adffs_state * ) context->private_data;
-    log_info (
+    adffs_log_info (
         "    .private_data = 0x%" PRIxPTR "\n"
         "    .logfile      = 0x%" PRIxPTR "\n"
         "    .mountpoint   = %s } \n"
@@ -111,9 +135,9 @@ void log_fuse_context ( const struct fuse_context * const context )
 
 // struct fuse_conn_info
 //   https://github.com/libfuse/libfuse/blob/master/include/fuse_common.h#L425
-void log_fuse_conn_info ( const struct fuse_conn_info * const conn )
+void adffs_log_fuse_conn_info ( const struct fuse_conn_info * const conn )
 {
-    log_info (
+    adffs_log_info (
         "\nfuse_conn_info {\n"
         "    .proto_major          = %d\n"
         "    .proto_minor          = %d\n"
@@ -139,9 +163,9 @@ void log_fuse_conn_info ( const struct fuse_conn_info * const conn )
 // struct fuse_file_info:
 //   https://github.com/libfuse/libfuse/blob/master/include/fuse_common.h#L44
 // or (better) /usr/include/fuse/fuse_common.h as it may vary...
-void log_fuse_file_info ( const struct fuse_file_info * const finfo )
+void adffs_log_fuse_file_info ( const struct fuse_file_info * const finfo )
 {
-    log_info (
+    adffs_log_info (
         "\nfuse_file_info { \n"
         "    .flags         = 0x%08x\n"
         "    .writepage     = %d\n"

@@ -2,7 +2,7 @@
 #include "config.h"
 #include "adffs.h"
 
-#include "log.h"
+#include "adffs_log.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -80,7 +80,7 @@ int main ( int    argc,
 
     // open logfile
     if ( options.logging_file ) {
-        adffs_data.logfile = log_open ( options.logging_file );
+        adffs_data.logfile = adffs_log_open ( options.logging_file );
         if ( ! adffs_data.logfile ) {
             fprintf ( stderr, "Cannot open log file: %s\n", options.logging_file );
             exit ( EXIT_FAILURE );
@@ -101,7 +101,7 @@ int main ( int    argc,
 	fprintf ( stderr, "Cannot mount adf image: %s, "
                   "volume/partition: %d - aborting...\n",
                   options.adf_filename, options.adf_volume );
-        log_close();
+        adffs_log_close();
         exit ( EXIT_FAILURE );
     }
     adffs_data.mountpoint = options.mount_point;

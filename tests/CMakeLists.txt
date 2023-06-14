@@ -17,6 +17,8 @@ add_executable ( test_adfimage
   test_adfimage.c
   ../src/adfimage.c
   ../src/adfimage.h
+  ../src/adffs_log.c
+  ../src/adffs_log.h
   ../src/log.c
   ../src/log.h
 )

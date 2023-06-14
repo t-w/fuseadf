@@ -33,8 +33,8 @@ void * adffs_init ( struct fuse_conn_info * conninfo )
     const adffs_state_t * const fs_state =
         ( adffs_state_t * ) context->private_data;
 
-    log_info ( "\nadffs_init ( conninfo = 0x%" PRIxPTR " )\n",
-               conninfo );
+    adffs_log_info ( "\nadffs_init ( conninfo = 0x%" PRIxPTR " )\n",
+                     conninfo );
     log_fuse_conn_info ( conninfo );
     log_fuse_context ( context );
 #else
@@ -50,7 +50,8 @@ void adffs_destroy ( void * private_data )
     adffs_state_t * const fs_state = ( adffs_state_t * ) private_data;
     
 #ifdef DEBUG_ADFFS
-    log_info ( "\nadffs_destroy ( userdata = 0x%" PRIxPTR " )\n", private_data );
+    adffs_log_info ( "\nadffs_destroy ( userdata = 0x%" PRIxPTR " )\n",
+                     private_data );
 #endif
 
     if ( fs_state->adfimage )
@@ -59,7 +60,7 @@ void adffs_destroy ( void * private_data )
     free ( fs_state->mountpoint );
     fs_state->mountpoint = NULL;
 
-    log_close();
+    adffs_log_close();
 }
 
 
@@ -72,10 +73,10 @@ int adffs_statfs ( const char *     path,
         ( adffs_state_t * ) fuse_get_context()->private_data;
 
 #ifdef DEBUG_ADFFS
-    log_info ( "\nadffs_statfs (\n"
-               "    path  = \"%s\",\n"
-               "    statv = 0x%" PRIxPTR " )\n",
-               path, stvfs );
+    adffs_log_info ( "\nadffs_statfs (\n"
+                     "    path  = \"%s\",\n"
+                     "    statv = 0x%" PRIxPTR " )\n",
+                     path, stvfs );
 #endif
 
     stvfs->f_flag = //ST_RDONLY |
@@ -132,9 +133,9 @@ int adffs_getattr ( const char *  path,
         ( adffs_state_t * ) fuse_get_context()->private_data;
 
 #ifdef DEBUG_ADFFS
-    log_info ( "\nadffs_getattr (\n"
-               "    path    = \"%s\",\n"
-               "    statbuf = 0x%" PRIxPTR " )\n",
+    adffs_log_info ( "\nadffs_getattr (\n"
+                     "    path    = \"%s\",\n"
+                     "    statbuf = 0x%" PRIxPTR " )\n",
           path, statbuf );
 #endif
 
@@ -174,26 +175,26 @@ int adffs_getattr ( const char *  path,
         char * dir_path = dirname ( dirpath_buf );
 
 #ifdef DEBUG_ADFFS
-        log_info ( "adffs_getattr(): Entering directory the directory %s.\n",
-                   dir_path );
+        adffs_log_info ( "adffs_getattr(): Entering directory the directory %s.\n",
+                         dir_path );
 #endif
         if ( ! adfimage_chdir ( adfimage, dir_path ) ) {
-            log_info ( "adffs_getattr(): Cannot chdir to the directory %s.\n",
-                       dir_path );
+            adffs_log_info ( "adffs_getattr(): Cannot chdir to the directory %s.\n",
+                             dir_path );
             return -ENOENT;
         }
         free ( dirpath_buf );
 
 #ifdef DEBUG_ADFFS
-        log_info ( "adffs_getattr(): Current directory: %s.\n",
-                   adfimage_getcwd ( adfimage ) );
+        adffs_log_info ( "adffs_getattr(): Current directory: %s.\n",
+                         adfimage_getcwd ( adfimage ) );
 #endif
         char * direntry_buf = strdup ( path );
         char * direntry_name = basename ( direntry_buf );
 
 #ifdef DEBUG_ADFFS
-        log_info ( "adffs_getattr(): direntry name: %s.\n",
-                   direntry_name );
+        adffs_log_info ( "adffs_getattr(): direntry name: %s.\n",
+                         direntry_name );
 #endif
         if ( *direntry_name == '\0' ) {
             // empty name means that given path is a directory
@@ -219,7 +220,7 @@ int adffs_getattr ( const char *  path,
                 statbuf->st_size = afile->fileHdr->byteSize;
                 statbuf->st_blocks = statbuf->st_size / 512 + 1;
             } else {
-                log_info ( "adffs_getattr(): Error opening file: %s\n", path );
+                adffs_log_info ( "adffs_getattr(): Error opening file: %s\n", path );
             }
             adfFileClose ( afile );
 
@@ -243,9 +244,9 @@ int adffs_getattr ( const char *  path,
             statbuf->st_nlink = 1;
 
         } else if ( dentry.type == ADFVOLUME_DENTRY_UNKNOWN ) {
-            log_info ( "adffs_getattr(): Unknown dir. entry: %s, "
-                       "adflib type: %d\n",
-                       path, dentry.adflib_entry.type );
+            adffs_log_info ( "adffs_getattr(): Unknown dir. entry: %s, "
+                             "adflib type: %d\n",
+                             path, dentry.adflib_entry.type );
         } else {
             // file/dirname not found
             free ( direntry_buf );
@@ -270,21 +271,21 @@ int adffs_getattr ( const char *  path,
                                                     dentry.adflib_entry.secs );
 
 #ifdef DEBUG_ADFFS
-    log_info ( "\nadffs_getattr time:\n"
-               "    year   = %d\n"
-               "    month  = %d\n"
-               "    day    = %d\n"
-               "    hour   = %d\n"
-               "    min    = %d\n"
-               "    sec    = %d\n"
-               "    time_t = %lld\n\n",
-               dentry.adflib_entry.year,
-               dentry.adflib_entry.month,
-               dentry.adflib_entry.days,
-               dentry.adflib_entry.hour,
-               dentry.adflib_entry.mins,
-               dentry.adflib_entry.secs,
-               (long long) statbuf->st_ctime );
+    adffs_log_info ( "\nadffs_getattr time:\n"
+                     "    year   = %d\n"
+                     "    month  = %d\n"
+                     "    day    = %d\n"
+                     "    hour   = %d\n"
+                     "    min    = %d\n"
+                     "    sec    = %d\n"
+                     "    time_t = %lld\n\n",
+                     dentry.adflib_entry.year,
+                     dentry.adflib_entry.month,
+                     dentry.adflib_entry.days,
+                     dentry.adflib_entry.hour,
+                     dentry.adflib_entry.mins,
+                     dentry.adflib_entry.secs,
+                     (long long) statbuf->st_ctime );
 #endif
 
     statbuf->st_blksize = adfimage->fstat.st_blksize;
@@ -307,13 +308,13 @@ int adffs_read ( const char *            path,
         ( adffs_state_t * ) fuse_get_context()->private_data;
     
 #ifdef DEBUG_ADFFS
-    log_info ( "\nadffs_read (\n"
-               "    path   = \"%s\",\n"
-               "    buf    = 0x%" PRIxPTR ",\n"
-               "    size   = %d,\n"
-               "    offset = %lld,\n"
-               "    finfo  = 0x%" PRIxPTR " )\n",
-               path, buffer, size, offset, finfo );
+    adffs_log_info ( "\nadffs_read (\n"
+                     "    path   = \"%s\",\n"
+                     "    buf    = 0x%" PRIxPTR ",\n"
+                     "    size   = %d,\n"
+                     "    offset = %lld,\n"
+                     "    finfo  = 0x%" PRIxPTR " )\n",
+                     path, buffer, size, offset, finfo );
 #else
     (void) finfo;
 #endif
@@ -322,7 +323,7 @@ int adffs_read ( const char *            path,
                                      buffer, size, offset );
 
 #ifdef DEBUG_ADFFS
-    //log_info ( fs_state->logfile,
+    //adffs_log_info ( fs_state->logfile,
     //           "adffs_read () => %d (%s)\n", bytes_read,
     //           size == (size_t) bytes_read ? "OK" : "READ ERROR" );
 #endif
@@ -341,13 +342,13 @@ int adffs_write ( const char *            path,
         ( adffs_state_t * ) fuse_get_context()->private_data;
 
 #ifdef DEBUG_ADFFS
-    log_info ( "\nadffs_write (\n"
-               "    path   = \"%s\",\n"
-               "    buf    = 0x%" PRIxPTR ",\n"
-               "    size   = %d,\n"
-               "    offset = %lld,\n"
-               "    finfo  = 0x%" PRIxPTR " )\n",
-               path, buffer, size, offset, finfo );
+    adffs_log_info ( "\nadffs_write (\n"
+                     "    path   = \"%s\",\n"
+                     "    buf    = 0x%" PRIxPTR ",\n"
+                     "    size   = %d,\n"
+                     "    offset = %lld,\n"
+                     "    finfo  = 0x%" PRIxPTR " )\n",
+                     path, buffer, size, offset, finfo );
 #else
     (void) finfo;
 #endif
@@ -356,8 +357,8 @@ int adffs_write ( const char *            path,
                                          ( char * ) buffer, size, offset );
 
 #ifdef DEBUG_ADFFS
-    log_info ( "adffs_write () => %d (%s)\n", bytes_written,
-               size == (size_t) bytes_written ? "OK" : "WRITE ERROR" );
+    adffs_log_info ( "adffs_write () => %d (%s)\n", bytes_written,
+                     size == (size_t) bytes_written ? "OK" : "WRITE ERROR" );
 #endif
 
     return bytes_written;
@@ -374,21 +375,21 @@ int adffs_readdir ( const char *            path,
         ( adffs_state_t * ) fuse_get_context()->private_data;
 
 #ifdef DEBUG_ADFFS
-    log_info ( "\nadffs_readdir (\n"
-               "    path   = \"%s\",\n"
-               "    buf    = 0x%" PRIxPTR ",\n"
-               "    filler = 0x%"  PRIxPTR ",\n"
-               "    offset = %lld,\n"
-               "    finfo  = 0x%" PRIxPTR " )\n",
-               path, buffer, filler, offset, finfo );
+    adffs_log_info ( "\nadffs_readdir (\n"
+                     "    path   = \"%s\",\n"
+                     "    buf    = 0x%" PRIxPTR ",\n"
+                     "    filler = 0x%"  PRIxPTR ",\n"
+                     "    offset = %lld,\n"
+                     "    finfo  = 0x%" PRIxPTR " )\n",
+                     path, buffer, filler, offset, finfo );
 #else
     (void) offset;  (void) finfo;
 #endif
     adfimage_t * const adfimage = fs_state->adfimage;
     struct AdfVolume * const vol = adfimage->vol;
     if ( ! adfimage_chdir ( adfimage, path ) ) {
-        log_info ( "adffs_read(): Cannot chdir to the directory %s.\n",
-                   path );
+        adffs_log_info ( "adffs_read(): Cannot chdir to the directory %s.\n",
+                         path );
         adfToRootDir ( vol );
         return -ENOENT;
     }
@@ -398,7 +399,7 @@ int adffs_readdir ( const char *            path,
 
     struct AdfList * const dentries = adfGetDirEnt ( vol, vol->curDirPtr );
     /*if ( ! dentries ) {
-        log_info ( fs_state->logfile,
+        adffs_log_info ( fs_state->logfile,
                    "adfimage_getdentry(): Error getting dir entries,"
                    "path %s\n", path );
         return -ENOENT; //?
@@ -418,7 +419,7 @@ int adffs_readdir ( const char *            path,
         //printEntry(struct Entry* entry);
         //printEntry ( dentry );    
         if ( filler ( buffer, dentry->name, NULL, 0 ) ) {
-            log_info ( "adffs_readdir: filler: buffer full\n" );
+            adffs_log_info ( "adffs_readdir: filler: buffer full\n" );
             adfToRootDir ( vol );
             return -EAGAIN; // check what error return in such case(!)
                             // probably something from /usr/include/asm-generic/errno-base.h (?)
@@ -441,17 +442,17 @@ int adffs_readlink ( const char * path,
     const adffs_state_t * const fs_state =
         ( adffs_state_t * ) fuse_get_context()->private_data;
 #ifdef DEBUG_ADFFS
-    log_info ( "\nadffs_readlink (\n"
-               "    path = \"%s\",\n"
-               "    buf  = 0x%" PRIxPTR ",\n"
-               "    len  = %lld,\n",
-               path, buf, len );
+    adffs_log_info ( "\nadffs_readlink (\n"
+                     "    path = \"%s\",\n"
+                     "    buf  = 0x%" PRIxPTR ",\n"
+                     "    len  = %lld,\n",
+                     path, buf, len );
 #endif
     int status = adfimage_readlink ( fs_state->adfimage, path, buf, len );
 
 #ifdef DEBUG_ADFFS
-    log_info ( "\nadffs_readlink:  buf  = %s, status %d\n",
-               buf, status );
+    adffs_log_info ( "\nadffs_readlink:  buf  = %s, status %d\n",
+                     buf, status );
 #endif
     //strncpy ( buf, "secret.S", len );
 
@@ -466,11 +467,11 @@ int adffs_mkdir ( const char * dirpath,
         ( adffs_state_t * ) fuse_get_context()->private_data;
 
 #ifdef DEBUG_ADFFS
-    log_info ( "\nadffs_mkdir (\n"
-               "    dirpath = \"%s\",\n"
-               //"    mode    = 0x%" PRIxPTR ",\n"
-               "    mode    = %lld )\n",
-               dirpath, mode );
+    adffs_log_info ( "\nadffs_mkdir (\n"
+                     "    dirpath = \"%s\",\n"
+                     //"    mode    = 0x%" PRIxPTR ",\n"
+                     "    mode    = %lld )\n",
+                     dirpath, mode );
 #endif
 
     int status = adfimage_mkdir ( fs_state->adfimage, dirpath, mode );
@@ -485,9 +486,9 @@ int adffs_rmdir ( const char * dirpath )
         ( adffs_state_t * ) fuse_get_context()->private_data;
 
 #ifdef DEBUG_ADFFS
-    log_info ( "\nadffs_rmdir (\n"
-               "    dirpath = \"%s\",\n",
-               dirpath );
+    adffs_log_info ( "\nadffs_rmdir (\n"
+                     "    dirpath = \"%s\",\n",
+                     dirpath );
 #endif
 
     int status = adfimage_rmdir ( fs_state->adfimage, dirpath );
@@ -505,10 +506,10 @@ int adffs_create ( const char *           filepath,
         ( adffs_state_t * ) fuse_get_context()->private_data;
 
 #ifdef DEBUG_ADFFS
-    log_info ( "\nadffs_create (\n"
-               "    filepath = \"%s\",\n"
-               "    mode     = %lld )\n",
-               filepath, mode );
+    adffs_log_info ( "\nadffs_create (\n"
+                     "    filepath = \"%s\",\n"
+                     "    mode     = %lld )\n",
+                     filepath, mode );
 #endif
 
     return adfimage_create ( fs_state->adfimage, filepath, mode );
@@ -520,9 +521,9 @@ int adffs_unlink ( const char * filepath )
         ( adffs_state_t * ) fuse_get_context()->private_data;
 
 #ifdef DEBUG_ADFFS
-    log_info ( "\nadffs_unlink (\n"
-               "    filepath = \"%s\",\n",
-               filepath );
+    adffs_log_info ( "\nadffs_unlink (\n"
+                     "    filepath = \"%s\",\n",
+                     filepath );
 #endif
 
     int status = adfimage_unlink ( fs_state->adfimage, filepath );
@@ -540,9 +541,9 @@ int adffs_open ( const char *            filepath,
         ( adffs_state_t * ) fuse_get_context()->private_data;
 
 #ifdef DEBUG_ADFFS
-    log_info ( "\nadffs_open (\n"
-               "    filepath = \"%s\",\n",
-               filepath );
+    adffs_log_info ( "\nadffs_open (\n"
+                     "    filepath = \"%s\",\n",
+                     filepath );
 #endif
 
     struct AdfFile * file = adfimage_file_open ( fs_state->adfimage,
@@ -560,9 +561,9 @@ int adffs_chmod ( const char * path,
 #ifdef DEBUG_ADFFS
     const adffs_state_t * const fs_state =
         ( adffs_state_t * ) fuse_get_context()->private_data;
-    log_info ( "\nadffs_chmod (\n"
-               "    path = \"%s\", mode = %o\n",
-               path, mode );
+    adffs_log_info ( "\nadffs_chmod (\n"
+                     "    path = \"%s\", mode = %o\n",
+                     path, mode );
 #else
     (void) path, (void) mode;
 #endif
@@ -577,9 +578,9 @@ int adffs_chown ( const char * path,
 #ifdef DEBUG_ADFFS
     const adffs_state_t * const fs_state =
         ( adffs_state_t * ) fuse_get_context()->private_data;
-    log_info ( "\nadffs_chown (\n"
-               "    path = \"%s\", uid = %u, gid = %u\n",
-               path, uid, gid );
+    adffs_log_info ( "\nadffs_chown (\n"
+                     "    path = \"%s\", uid = %u, gid = %u\n",
+                     path, uid, gid );
 #else
     (void) path, (void) uid, (void) gid;
 #endif
@@ -594,9 +595,9 @@ int adffs_truncate ( const char * path,
         ( adffs_state_t * ) fuse_get_context()->private_data;
 
 #ifdef DEBUG_ADFFS
-    log_info ( "\nadffs_truncate (\n"
-               "    filepath = \"%s\", size = %lu )\n",
-               path, new_size );
+    adffs_log_info ( "\nadffs_truncate (\n"
+                     "    filepath = \"%s\", size = %lu )\n",
+                     path, new_size );
 #endif
     int status = adfimage_file_truncate ( fs_state->adfimage, path,
                                           (long unsigned) new_size );
@@ -611,9 +612,9 @@ int adffs_rename ( const char * src_path,
         ( adffs_state_t * ) fuse_get_context()->private_data;
 
 #ifdef DEBUG_ADFFS
-    log_info ( "\nadffs_rename (\n"
-               "    src_path = \"%s\", dst_path = \"%s\" )\n",
-               src_path, dst_path );
+    adffs_log_info ( "\nadffs_rename (\n"
+                     "    src_path = \"%s\", dst_path = \"%s\" )\n",
+                     src_path, dst_path );
 #endif
     return adfimage_file_rename ( fs_state->adfimage, src_path, dst_path );
 }
@@ -626,9 +627,9 @@ int adffs_utimens ( const char *          path,
 #ifdef DEBUG_ADFFS
     const adffs_state_t * const fs_state =
         ( adffs_state_t * ) fuse_get_context()->private_data;
-    log_info ( "\nadffs_utimens (\n"
-               "    path = \"%s\", timespec[0] = %u, timespec[1] = %u )\n",
-               path, tv[0], tv[1] );
+    adffs_log_info ( "\nadffs_utimens (\n"
+                     "    path = \"%s\", timespec[0] = %u, timespec[1] = %u )\n",
+                     path, tv[0], tv[1] );
 #else
     (void) path, (void) tv;
 #endif

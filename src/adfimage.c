@@ -1,7 +1,7 @@
 
 #include "adfimage.h"
 
-#include "log.h"
+#include "adffs_log.h"
 
 #include <adf_raw.h>
 #include <errno.h>
@@ -34,7 +34,7 @@ adfimage_t * adfimage_open ( char * const filename,
 {
     adfEnvInitDefault();
 
-    adfSetEnvFct ( log_info, log_info, log_info, NULL );
+    adfSetEnvFct ( adffs_log_info, adffs_log_info, adffs_log_info, NULL );
 
     struct AdfDevice * const dev = mount_dev ( filename, read_only );
     if ( ! dev ) {
@@ -51,7 +51,7 @@ adfimage_t * adfimage_open ( char * const filename,
 
     adfimage_t * const adfimage = malloc ( sizeof ( adfimage_t ) );
     if ( ! adfimage ) {
-        log_info ( "adfimage_open: error: Cannot allocate memory for adfimage data\n" );
+        adffs_log_info ( "adfimage_open: error: Cannot allocate memory for adfimage data\n" );
         adfUnMount ( vol );
         adfUnMountDev ( dev );
         adfEnvCleanUp();
@@ -67,7 +67,7 @@ adfimage_t * adfimage_open ( char * const filename,
     stat ( adfimage->filename, &adfimage->fstat );
 
 #ifdef DEBUG_ADFIMAGE
-    log_info ( "\nfile size: %ld\n", adfimage->size );
+    adffs_log_info ( "\nfile size: %ld\n", adfimage->size );
 #endif
 
     return adfimage;
@@ -243,8 +243,8 @@ adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
     // get directory list entries (for current directory)
     struct AdfList * const dentries = adfGetDirEnt ( vol, vol->curDirPtr );
     if ( ! dentries ) {
-        log_info ( "adfimage_getdentry(): Error getting dir entries,"
-                   "filename %s\n", pathname );
+        adffs_log_info ( "adfimage_getdentry(): Error getting dir entries,"
+                         "filename %s\n", pathname );
         free ( path );
         return adf_dentry;
     }
@@ -284,8 +284,8 @@ adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
         }
 
         else {
-            log_info ( "adfimage_getdentry(): pathname '%s' has unsupported "
-                       "type: %d, \n", pathname, dentry->type );
+            adffs_log_info ( "adfimage_getdentry(): pathname '%s' has unsupported "
+                             "type: %d, \n", pathname, dentry->type );
             adf_dentry.type = ADFVOLUME_DENTRY_UNKNOWN;
         }
     }
@@ -363,7 +363,7 @@ struct AdfFile * adfimage_file_open ( adfimage_t * const adfimage,
     if ( strlen ( path->dirpath ) > 0 ) {
         cwd = strdup ( adfimage->cwd );
         if ( ! adfimage_chdir ( adfimage, path->dirpath ) ) {
-            //log_info ( "adffs_read(): Cannot chdir to the directory %s.\n",
+            //adffs_log_info ( "adffs_read(): Cannot chdir to the directory %s.\n",
             //           dir_path );
             free ( cwd );
             free ( path );
@@ -376,7 +376,7 @@ struct AdfFile * adfimage_file_open ( adfimage_t * const adfimage,
     struct AdfFile * file = adfFileOpen ( vol, path->entryname, mode );
     free ( path );
     if ( file == NULL ) {
-        //log_info ( "Error opening file: %s\n", path );
+        //adffs_log_info ( "Error opening file: %s\n", path );
         return NULL;
     }
 
@@ -412,7 +412,7 @@ int adfimage_read ( adfimage_t * const adfimage,
     if ( strlen ( path->dirpath ) > 0 ) {
         cwd = strdup ( adfimage->cwd );
         if ( ! adfimage_chdir ( adfimage, path->dirpath ) ) {
-            //log_info ( "adffs_read(): Cannot chdir to the directory %s.\n",
+            //adffs_log_info ( "adffs_read(): Cannot chdir to the directory %s.\n",
             //           dir_path );
             free ( cwd );
             free ( path );
@@ -426,7 +426,7 @@ int adfimage_read ( adfimage_t * const adfimage,
                                           ADF_FILE_MODE_READ );
     free ( path );
     if ( file == NULL ) {
-        //log_info ( "Error opening file: %s\n", path );
+        //adffs_log_info ( "Error opening file: %s\n", path );
         return -ENOENT;
     }
 
@@ -466,7 +466,7 @@ int adfimage_write ( adfimage_t * const adfimage,
     if ( strlen ( path->dirpath ) > 0 ) {
         cwd = strdup ( adfimage->cwd );
         if ( ! adfimage_chdir ( adfimage, path->dirpath ) ) {
-            //log_info ( "adffs_read(): Cannot chdir to the directory %s.\n",
+            //adffs_log_info ( "adffs_read(): Cannot chdir to the directory %s.\n",
             //           dir_path );
             free ( cwd );
             free ( path );
@@ -480,7 +480,7 @@ int adfimage_write ( adfimage_t * const adfimage,
                                           ADF_FILE_MODE_WRITE );
     free ( path );
     if ( file == NULL ) {
-        //log_info ( "Error opening file: %s\n", path );
+        //adffs_log_info ( "Error opening file: %s\n", path );
         return -ENOENT;  // ?
     }
 
@@ -522,7 +522,7 @@ int adfimage_readlink ( adfimage_t * const adfimage,
     if ( strlen ( path->dirpath ) > 0 ) {
         cwd = strdup ( adfimage->cwd );
         if ( ! adfimage_chdir ( adfimage, path->dirpath ) ) {
-            //log_info ( "adffs_readlink(): Cannot chdir to the directory %s.\n",
+            //adffs_log_info ( "adffs_readlink(): Cannot chdir to the directory %s.\n",
             //           dir_path );
             free ( cwd );
             free ( path );
@@ -755,7 +755,7 @@ int adfimage_file_truncate ( adfimage_t * const adfimage,
     struct AdfFile * const file = adfimage_file_open ( adfimage, path,
                                                        ADF_FILE_MODE_WRITE );
     if ( ! file ) {
-        //log_info ( "Error opening file: %s\n", path );
+        //adffs_log_info ( "Error opening file: %s\n", path );
         return -ENOENT;
     }
 
@@ -775,8 +775,8 @@ int adfimage_file_rename ( adfimage_t * const adfimage,
 #ifdef DEBUG_ADFIMAGE
     if ( src_pathstr == NULL || dst_pathstr == NULL )
         return -EINVAL;
-    log_info ( "adfimage_file_rename (. '%s',  '%s')\n",
-               src_pathstr, dst_pathstr );
+    adffs_log_info ( "adfimage_file_rename (. '%s',  '%s')\n",
+                     src_pathstr, dst_pathstr );
 #endif
 
     path_t * const src_path = path_create ( src_pathstr );
@@ -790,10 +790,10 @@ int adfimage_file_rename ( adfimage_t * const adfimage,
     }
 
 #ifdef DEBUG_ADFIMAGE
-    log_info ( "adfimage_file_rename,   src: dir '%s', entry '%s'\n"
-               "                        dst: dir '%s', entry '%s'\n",
-               src_path->dirpath, src_path->entryname,
-               dst_path->dirpath, dst_path->entryname );
+    adffs_log_info ( "adfimage_file_rename,   src: dir '%s', entry '%s'\n"
+                     "                        dst: dir '%s', entry '%s'\n",
+                     src_path->dirpath, src_path->entryname,
+                     dst_path->dirpath, dst_path->entryname );
 #endif
 
     // convert (FUSE to AmigaDOS) and sanitize paths
@@ -801,10 +801,10 @@ int adfimage_file_rename ( adfimage_t * const adfimage,
     pathstr_fuse2amigados ( dst_path->dirpath );
 
 #ifdef DEBUG_ADFIMAGE
-    log_info ( "adfimage_file_rename 2, src: dir '%s', entry '%s'\n"
-               "                        dst: dir '%s', entry '%s'\n",
-               src_path->dirpath, src_path->entryname,
-               dst_path->dirpath, dst_path->entryname );
+    adffs_log_info ( "adfimage_file_rename 2, src: dir '%s', entry '%s'\n"
+                     "                        dst: dir '%s', entry '%s'\n",
+                     src_path->dirpath, src_path->entryname,
+                     dst_path->dirpath, dst_path->entryname );
 #endif
 
     // get and check parent entry for source
@@ -812,8 +812,8 @@ int adfimage_file_rename ( adfimage_t * const adfimage,
         adfimage_getdentry ( adfimage, src_path->dirpath );
 
     if ( src_parent_entry.type == ADFVOLUME_DENTRY_NONE ) {
-        log_info ( "adfimage_file_rename: no such dir path: '%s'\n",
-                   src_path->dirpath );
+        adffs_log_info ( "adfimage_file_rename: no such dir path: '%s'\n",
+                         src_path->dirpath );
         return -ENOENT;
     }
 
@@ -842,8 +842,8 @@ int adfimage_file_rename ( adfimage_t * const adfimage,
           // ( src_parent_entry.type == ADFVOLUME_DENTRY_LINKDIR )
           src_parent_entry.adflib_entry.real );
     if ( src_parent_sector < 2 ) {
-        log_info ( "adfimage_file_rename: invalid src parent sector: %d\n",
-                   src_parent_sector );
+        adffs_log_info ( "adfimage_file_rename: invalid src parent sector: %d\n",
+                         src_parent_sector );
         return -1;
     }
     //assert ( src_parent_sector > 1 );   // not in bootblock...
@@ -854,31 +854,31 @@ int adfimage_file_rename ( adfimage_t * const adfimage,
           // ( dst_parent_entry.type == ADFVOLUME_DENTRY_LINKDIR )
           dst_parent_entry.adflib_entry.real );
     if ( dst_parent_sector < 2 ) {
-        log_info ( "adfimage_file_rename: invalid dst parent sector: %d\n"
-                   "dst_parent_entry.adflib_entry.sector %d\n"
-                   "dst_parent_entry.adflib_entry.real %d\n",
-                   dst_parent_sector,
-                   dst_parent_entry.adflib_entry.sector,
-                   dst_parent_entry.adflib_entry.real );
+        adffs_log_info ( "adfimage_file_rename: invalid dst parent sector: %d\n"
+                         "dst_parent_entry.adflib_entry.sector %d\n"
+                         "dst_parent_entry.adflib_entry.real %d\n",
+                         dst_parent_sector,
+                         dst_parent_entry.adflib_entry.sector,
+                         dst_parent_entry.adflib_entry.real );
         return -1;
     }
     //assert ( dst_parent_sector > 1 );   // not in bootblock...
 
 #ifdef DEBUG_ADFIMAGE
-    log_info ( "adfimage_file_rename: calling adfRenameEntry (\n"
-               "   ... , old parent sect: %d\n"
-               "         old name       : %s\n"
-               "   ... , new parent sect: %d\n"
-               "         new name       : %s\n",
-               src_parent_sector, src_path->entryname,
-               dst_parent_sector, dst_path->entryname );
+    adffs_log_info ( "adfimage_file_rename: calling adfRenameEntry (\n"
+                     "   ... , old parent sect: %d\n"
+                     "         old name       : %s\n"
+                     "   ... , new parent sect: %d\n"
+                     "         new name       : %s\n",
+                     src_parent_sector, src_path->entryname,
+                     dst_parent_sector, dst_path->entryname );
 #endif
 
     RETCODE rc = adfRenameEntry ( adfimage->vol,
                                   src_parent_sector, src_path->entryname,
                                   dst_parent_sector, dst_path->entryname );
 #ifdef DEBUG_ADFIMAGE
-    log_info ( "adfimage_file_rename: adfRenameEntry() => %d\n", rc );
+    adffs_log_info ( "adfimage_file_rename: adfRenameEntry() => %d\n", rc );
 #endif
     return ( rc == RC_OK ? 0 : -1 );
 }
