@@ -4,9 +4,11 @@
 
 #include <time.h>
 
-unsigned long time_to_secs_from_epoch1 ( int      y,
-                                        unsigned m,
-                                        unsigned d );
+//unsigned long time_to_secs_from_epoch1 ( int      y,
+//                                        unsigned m,
+//                                        unsigned d );
+
+void adffs_util_init(void);
 
 time_t time_to_time_t ( int year,
                         int month,

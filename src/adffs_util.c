@@ -3,6 +3,9 @@
 
 #include <string.h>
 
+extern char *tzname[2];
+extern long timezone;
+extern int daylight;
 
 /*
 // based on:
@@ -61,6 +64,11 @@ time_t time_to_secs_from_epoch2 ( int year,
 }
 */
 
+void adffs_util_init(void)
+{
+    tzset();
+}
+
 time_t time_to_time_t ( int year,
                         int month,
                         int day,
@@ -76,7 +84,9 @@ time_t time_to_time_t ( int year,
     time_tm.tm_hour = hour;
     time_tm.tm_min  = min;
     time_tm.tm_sec  = sec;
+    //time_tm.tm_isdst = -1;
+    time_tm.tm_isdst = daylight;
 
-    return //mktime ( &time_tm );  // note that mktime is inverse function of localtime()!!!
-        timegm ( &time_tm );
+    return mktime ( &time_tm );  // note that mktime is inverse function of localtime()!!!
+        //timegm ( &time_tm );
 }

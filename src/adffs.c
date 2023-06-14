@@ -41,6 +41,8 @@ void * adffs_init ( struct fuse_conn_info * conninfo )
     (void) conninfo;
 #endif
 
+    adffs_util_init();
+
     return context->private_data;
 }
 
