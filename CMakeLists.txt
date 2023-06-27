@@ -5,18 +5,11 @@ project ( fuseadf C )
 set ( fuseadf_VERSION_MAJOR 0 )
 set ( fuseadf_VERSION_MINOR 3 )
 
-find_package( PkgConfig REQUIRED )
-#find_package ( fuse REQUIRED )
+find_package ( PkgConfig REQUIRED )
 pkg_check_modules ( FUSE REQUIRED fuse )
 pkg_check_modules ( ADFLIB REQUIRED adflib>=0.8.0 )
 
-#set ( extraFlags "-Wall -Wextra -Weffc++ -pedantic -pedantic-errors -std=c++14" )
-
-#add_compile_definitions(
-#  $<$<CONFIG:DEBUG>:DEBUG>
-#)
-
-add_compile_options(
+add_compile_options (
   -Wall
   -Wextra
   -Wconversion
@@ -29,18 +22,18 @@ add_compile_options(
 #  $<$<CONFIG:DEBUG>:-Og>
   $<$<CONFIG:DEBUG>:-ggdb>
 #  $<$<CONFIG:DEBUG>:-fsanitize=address>
-#  $<$<CONFIG:RELEASE>:-O3>
+  $<$<CONFIG:RELEASE>:-O2>
   ${FUSE_CFLAGS}
   ${ADFLIB_CFLAGS}
-  )
+)
 
-add_link_options(
+add_link_options (
 #  $<$<CONFIG:DEBUG>:-lasan>
 #  $<$<CONFIG:DEBUG>:-fsanitize=address>
 )
 
-ADD_SUBDIRECTORY ( src )
+add_subdirectory ( src )
 
 # testing
 enable_testing()
-ADD_SUBDIRECTORY ( tests )
+add_subdirectory ( tests )
