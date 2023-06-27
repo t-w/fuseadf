@@ -1,8 +1,11 @@
 fuseadf (0.3-1) unstable; urgency=medium
 
-  * Improved write support.
+  * Require ADFlib 0.8.0
+  * Improved write support
+  * Single-threaded FUSE mode enforced
+  * Implementation improvements and bugfixes (logger, time, ...)
 
- -- Tomasz Wolak <tomas.wolak@gmail.com>  Mon, 5 Jun 2023 16:18:55 +0100
+ -- Tomasz Wolak <tomas.wolak@gmail.com>  Tue, 27 Jun 2023 13:05:52 +0100
 
 
 fuseadf (0.2-1) unstable; urgency=medium
