@@ -24,6 +24,9 @@ Show version.
 Show usage info.
 .SH FUSE options
 .TP
+.B -o
+List of mount options, eg. 'ro' to enforce read-only mount (see also man pages listed below)
+.TP
 .B \-f
 Execute in foreground.
 .TP
@@ -33,7 +36,7 @@ Execute in foreground with debug output.
 .B \-s
 Single-threaded mode (enforced since v0.3, no need to provide it).
 .SH SEE ALSO
-.BR fusermount (1)
+.BR fusermount (1), mount.fuse (1), mount (8)
 .SH AUTHOR
 \fBfuseadf\fR was written by \fBTomasz Wolak\fR <tomas.wolak@gmail.com>.
 .PP
