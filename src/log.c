@@ -21,7 +21,8 @@ FILE * log_open ( const char * const log_file_path )
 
 void log_close ( FILE * const flog )
 {
-    fclose ( flog );
+    if ( flog != NULL )
+        fclose ( flog );
 }
 
 
