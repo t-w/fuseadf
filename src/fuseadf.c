@@ -26,8 +26,15 @@ bool parse_args (  int *               argc,
                    char **             argv,
                    cmdline_options_t * options );
 
-void drop_arg ( int * argc, char ** argv, int index );
-void drop_args ( int * argc, char ** argv, int index, int num );
+void drop_arg ( int *   argc,
+                char ** argv,
+                int     index );
+
+void drop_args ( int *   argc,
+                 char ** argv,
+                 int     index,
+                 int     num );
+
 void add_arg ( int * const         argc,
                const char ** const argv,
                const char * const  arg );
