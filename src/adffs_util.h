@@ -10,10 +10,17 @@
 
 void adffs_util_init(void);
 
-time_t time_to_time_t ( int year,
-                        int month,
-                        int day,
-                        int hour,
-                        int min,
-                        int sec );
+time_t gmtime_to_time_t ( const int year,
+                          const int month,
+                          const int day,
+                          const int hour,
+                          const int min,
+                          const int sec );
+
+time_t localtime_to_time_t ( const int year,
+                             const int month,
+                             const int day,
+                             const int hour,
+                             const int min,
+                             const int sec );
 #endif

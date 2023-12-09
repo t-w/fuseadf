@@ -265,12 +265,12 @@ int adffs_getattr ( const char *  path,
 
     statbuf->st_atime =
     statbuf->st_mtime =
-    statbuf->st_ctime = ( time_t ) time_to_time_t ( dentry.adflib_entry.year,
-                                                    dentry.adflib_entry.month,
-                                                    dentry.adflib_entry.days,
-                                                    dentry.adflib_entry.hour,
-                                                    dentry.adflib_entry.mins,
-                                                    dentry.adflib_entry.secs );
+    statbuf->st_ctime = localtime_to_time_t ( dentry.adflib_entry.year,
+                                              dentry.adflib_entry.month,
+                                              dentry.adflib_entry.days,
+                                              dentry.adflib_entry.hour,
+                                              dentry.adflib_entry.mins,
+                                              dentry.adflib_entry.secs );
 
 #ifdef DEBUG_ADFFS
     adffs_log_info ( "\nadffs_getattr time:\n"

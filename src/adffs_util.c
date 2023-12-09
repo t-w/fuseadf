@@ -69,12 +69,12 @@ void adffs_util_init(void)
     tzset();
 }
 
-time_t time_to_time_t ( int year,
-                        int month,
-                        int day,
-                        int hour,
-                        int min,
-                        int sec )
+time_t gmtime_to_time_t ( const int year,
+                          const int month,
+                          const int day,
+                          const int hour,
+                          const int min,
+                          const int sec )
 {
     struct tm time_tm;
     memset ( &time_tm, 0, sizeof ( struct tm ) );
@@ -85,8 +85,31 @@ time_t time_to_time_t ( int year,
     time_tm.tm_min  = min;
     time_tm.tm_sec  = sec;
     //time_tm.tm_isdst = -1;
-    time_tm.tm_isdst = daylight;
+    time_tm.tm_isdst = 0;
+    //time_tm.tm_isdst = daylight;
 
-    return mktime ( &time_tm );  // note that mktime is inverse function of localtime()!!!
-        //timegm ( &time_tm );
+    return timegm ( &time_tm );
+}
+
+
+time_t localtime_to_time_t ( const int year,
+                             const int month,
+                             const int day,
+                             const int hour,
+                             const int min,
+                             const int sec )
+{
+    struct tm time_tm;
+    memset ( &time_tm, 0, sizeof ( struct tm ) );
+    time_tm.tm_year = year - 1900;
+    time_tm.tm_mon  = month - 1;
+    time_tm.tm_mday = day;
+    time_tm.tm_hour = hour;
+    time_tm.tm_min  = min;
+    time_tm.tm_sec  = sec;
+    time_tm.tm_isdst = -1;
+    //time_tm.tm_isdst = 0;
+    //time_tm.tm_isdst = daylight;
+
+    return mktime ( &time_tm );// + timezone;  // note that mktime is inverse function of localtime()!!!
 }
