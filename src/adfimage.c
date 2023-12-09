@@ -912,7 +912,10 @@ static struct AdfDevice *
 #ifdef DEBUG_ADFIMAGE
     printf ("Mounting file: %s\n", adf_filename );
 #endif
-    struct AdfDevice * const dev = adfMountDev ( adf_filename, read_only );
+    struct AdfDevice * const dev =
+        adfMountDev ( adf_filename,
+                      read_only ? ADF_ACCESS_MODE_READONLY :
+                                  ADF_ACCESS_MODE_READWRITE );
     if ( dev == NULL ) {
         fprintf ( stderr, "Error opening ADF file: %s\n", adf_filename );
         return NULL;
@@ -936,7 +939,10 @@ struct AdfVolume *
 #ifdef DEBUG_ADFIMAGE
     printf ("\nMounting volume (partition) %d\n", partition );
 #endif
-    struct AdfVolume * const vol = adfMount ( dev, (int) partition, read_only );
+    struct AdfVolume * const vol =
+        adfMount ( dev, (int) partition,
+                   read_only ? ADF_ACCESS_MODE_READONLY :
+                               ADF_ACCESS_MODE_READWRITE );
     if ( vol == NULL ) {
         fprintf ( stderr,  "Error opening volume %d.\n", partition );
         return NULL;
