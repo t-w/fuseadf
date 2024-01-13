@@ -27,6 +27,8 @@ static struct AdfVolume *
 static void append_dir ( adfimage_t * const adfimage,
                          const char * const dir );
 
+static bool isBlockAllocationBitmapValid ( struct AdfVolume * const vol );
+
 
 adfimage_t * adfimage_open ( char * const filename,
                              unsigned int volume,
@@ -44,6 +46,17 @@ adfimage_t * adfimage_open ( char * const filename,
 
     struct AdfVolume * const vol = mount_volume ( dev, volume, read_only );
     if ( ! vol ) {
+        adfUnMountDev ( dev );
+        adfEnvCleanUp();
+        return NULL;
+    }
+
+    if ( ( ! read_only ) &&
+         ( ! isBlockAllocationBitmapValid ( vol ) ) )
+    {
+        adffs_log_info ( "adfimage_open: error: invalid bitmap, "
+                         "cannot mount read-write volume %s\n", vol->volName );
+        adfUnMount ( vol );
         adfUnMountDev ( dev );
         adfEnvCleanUp();
         return NULL;
@@ -951,6 +964,7 @@ struct AdfVolume *
 #ifdef DEBUG_ADFIMAGE
     adfVolumeInfo ( vol );
 #endif
+
     return vol;
 }
 
@@ -962,4 +976,18 @@ static void append_dir ( adfimage_t * const adfimage,
     if ( strcmp ( adfimage->cwd, "/" ) != 0 )
         strcat ( adfimage->cwd, "/" );
     strcat ( adfimage->cwd, dir );
+}
+
+static bool isBlockAllocationBitmapValid ( struct AdfVolume * const vol )
+{
+    struct bRootBlock root;
+    //printf ("reading root block from %u\n", vol->rootBlock );
+    RETCODE rc = adfReadRootBlock ( vol, (uint32_t) vol->rootBlock, &root );
+    if ( rc != RC_OK ) {
+        adfEnv.eFct ( "Invalid RootBlock, sector %u - aborting...",
+                      vol->rootBlock );
+        return rc;
+    }
+    //printf ("root block read, name %s\n", root.diskName );
+    return ( root.bmFlag == BM_VALID );
 }
