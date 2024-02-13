@@ -46,7 +46,8 @@ adfimage_t * adfimage_open ( char * const filename,
 
     struct AdfVolume * const vol = mount_volume ( dev, volume, read_only );
     if ( ! vol ) {
-        adfUnMountDev ( dev );
+        adfDevUnMount ( dev );
+        adfDevClose ( dev );
         adfEnvCleanUp();
         return NULL;
     }
@@ -56,8 +57,9 @@ adfimage_t * adfimage_open ( char * const filename,
     {
         adffs_log_info ( "adfimage_open: error: invalid bitmap, "
                          "cannot mount read-write volume %s\n", vol->volName );
-        adfUnMount ( vol );
-        adfUnMountDev ( dev );
+        adfVolUnMount ( vol );
+        adfDevUnMount ( dev );
+        adfDevClose ( dev );
         adfEnvCleanUp();
         return NULL;
     }
@@ -65,8 +67,9 @@ adfimage_t * adfimage_open ( char * const filename,
     adfimage_t * const adfimage = malloc ( sizeof ( adfimage_t ) );
     if ( ! adfimage ) {
         adffs_log_info ( "adfimage_open: error: Cannot allocate memory for adfimage data\n" );
-        adfUnMount ( vol );
-        adfUnMountDev ( dev );
+        adfVolUnMount ( vol );
+        adfDevUnMount ( dev );
+        adfDevClose ( dev );
         adfEnvCleanUp();
         return NULL;
     }
@@ -96,10 +99,12 @@ void adfimage_close ( adfimage_t ** adfimage )
     //       ( as it points to string from argv[] )
 
     if ( (*adfimage)->vol )
-        adfUnMount ( (*adfimage)->vol );
+        adfVolUnMount ( (*adfimage)->vol );
 
-    if ( (*adfimage)->dev )
-        adfUnMountDev ( (*adfimage)->dev );
+    if ( (*adfimage)->dev ) {
+        adfDevUnMount ( (*adfimage)->dev );
+        adfDevClose ( (*adfimage)->dev );
+    }
     
     free ( *adfimage );
     *adfimage = NULL;
@@ -925,12 +930,21 @@ static struct AdfDevice *
 #ifdef DEBUG_ADFIMAGE
     printf ("Mounting file: %s\n", adf_filename );
 #endif
+
     struct AdfDevice * const dev =
-        adfMountDev ( adf_filename,
-                      read_only ? ADF_ACCESS_MODE_READONLY :
-                                  ADF_ACCESS_MODE_READWRITE );
+        adfDevOpen ( adf_filename,
+                     read_only ? ADF_ACCESS_MODE_READONLY :
+                                 ADF_ACCESS_MODE_READWRITE );
     if ( dev == NULL ) {
-        fprintf ( stderr, "Error opening ADF file: %s\n", adf_filename );
+        fprintf ( stderr, "Error opening file/device '%s'\n",
+                    adf_filename );
+        return NULL;
+    }
+
+    RETCODE rc = adfDevMount ( dev );
+    if ( rc != RC_OK ) {
+        fprintf ( stderr, "Error mounting file/device %s\n", adf_filename );
+        adfDevClose ( dev );
         return NULL;
     }
 
@@ -953,16 +967,16 @@ struct AdfVolume *
     printf ("\nMounting volume (partition) %d\n", partition );
 #endif
     struct AdfVolume * const vol =
-        adfMount ( dev, (int) partition,
-                   read_only ? ADF_ACCESS_MODE_READONLY :
-                               ADF_ACCESS_MODE_READWRITE );
+        adfVolMount ( dev, (int) partition,
+                      read_only ? ADF_ACCESS_MODE_READONLY :
+                                  ADF_ACCESS_MODE_READWRITE );
     if ( vol == NULL ) {
         fprintf ( stderr,  "Error opening volume %d.\n", partition );
         return NULL;
     }
 
 #ifdef DEBUG_ADFIMAGE
-    adfVolumeInfo ( vol );
+    adfVolInfo ( vol );
 #endif
 
     return vol;
