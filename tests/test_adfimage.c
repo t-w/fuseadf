@@ -114,7 +114,7 @@ START_TEST ( test_adfimage_chdir )
 {
     adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf", 0, false );
 
-    BOOL result = adfimage_chdir ( adf, "non-exestent-dir" );
+    bool result = adfimage_chdir ( adf, "non-exestent-dir" );
     ck_assert ( ! result );
 
     // go to top-level

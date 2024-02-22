@@ -17,12 +17,12 @@
 
 static struct AdfDevice *
     mount_dev ( char * const adf_filename,
-                const BOOL   read_only );
+                const bool   read_only );
 
 static struct AdfVolume *
     mount_volume ( struct AdfDevice * const dev,
                    unsigned int          partition,
-                   BOOL                  read_only );
+                   bool                  read_only );
 
 static void append_dir ( adfimage_t * const adfimage,
                          const char * const dir );
@@ -182,17 +182,17 @@ adfimage_dentry_t adfimage_get_root_dentry ( adfimage_t * const adfimage )
         .type = ADFVOLUME_DENTRY_NONE
     };
 
-    struct bRootBlock rootBlock;
+    struct AdfRootBlock rootBlock;
     struct AdfVolume * const vol = adfimage->vol;
 
     if ( adfReadRootBlock ( vol, (unsigned) vol->rootBlock, &rootBlock ) != RC_OK )
         return adf_dentry;
 
-    if ( adfEntBlock2Entry ( ( struct bEntryBlock * ) &rootBlock,
+    if ( adfEntBlock2Entry ( ( struct AdfEntryBlock * ) &rootBlock,
                              &adf_dentry.adflib_entry ) != RC_OK )
         return adf_dentry;
 
-    if ( adf_dentry.adflib_entry.type == ST_ROOT ) {
+    if ( adf_dentry.adflib_entry.type == ADF_ST_ROOT ) {
         adf_dentry.type = ADFVOLUME_DENTRY_DIRECTORY;
         adf_dentry.adflib_entry.sector = vol->rootBlock;
         adf_dentry.adflib_entry.real   = 0;
@@ -275,29 +275,29 @@ adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
         adf_dentry.adflib_entry = *dentry;
 
         // regular file
-        if ( dentry->type == ST_FILE ) {
+        if ( dentry->type == ADF_ST_FILE ) {
             adf_dentry.type = ADFVOLUME_DENTRY_FILE;
         }
 
         // directory
-        else if ( dentry->type == ST_ROOT ||
-                  dentry->type == ST_DIR )
+        else if ( dentry->type == ADF_ST_ROOT ||
+                  dentry->type == ADF_ST_DIR )
         {
             adf_dentry.type = ADFVOLUME_DENTRY_DIRECTORY;
         }
 
         // "hard" file link
-        else if ( dentry->type == ST_LFILE ) {
+        else if ( dentry->type == ADF_ST_LFILE ) {
             adf_dentry.type = ADFVOLUME_DENTRY_LINKFILE;
         }
 
         // "hard" directory link
-        else if ( dentry->type == ST_LDIR ) {
+        else if ( dentry->type == ADF_ST_LDIR ) {
             adf_dentry.type = ADFVOLUME_DENTRY_LINKDIR;
         }
 
         // softlink
-        else if ( dentry->type == ST_LSOFT ) {
+        else if ( dentry->type == ADF_ST_LSOFT ) {
             adf_dentry.type = ADFVOLUME_DENTRY_SOFTLINK;
         }
 
@@ -325,7 +325,7 @@ const char * adfimage_getcwd ( const adfimage_t * const adfimage )
 }
 
 
-BOOL adfimage_chdir ( adfimage_t * const adfimage,
+bool adfimage_chdir ( adfimage_t * const adfimage,
                       const char *       path )
 {
     struct AdfVolume * const vol = adfimage->vol;
@@ -550,7 +550,7 @@ int adfimage_readlink ( adfimage_t * const adfimage,
 
     // get block of the directory
     struct AdfVolume * const vol = adfimage->vol;
-    struct bEntryBlock parent;
+    struct AdfEntryBlock parent;
     if ( adfReadEntryBlock ( vol, vol->curDirPtr, &parent ) != RC_OK ) {
         status = -1;
         goto readlink_cleanup;
@@ -561,12 +561,12 @@ int adfimage_readlink ( adfimage_t * const adfimage,
     //                           struct bEntryBlock *entry, SECTNUM *nUpdSect)
 
     //struct bEntryBlock entry;
-    struct bLinkBlock entry;
+    struct AdfLinkBlock entry;
     SECTNUM nUpdSect;
     SECTNUM sectNum = adfNameToEntryBlk ( vol,
                                           parent.hashTable,
                                           path->entryname,
-                                          ( struct bEntryBlock * ) &entry,
+                                          ( struct AdfEntryBlock * ) &entry,
                                           &nUpdSect );
     if ( sectNum == -1 ) {
         status = -2;
@@ -574,7 +574,7 @@ int adfimage_readlink ( adfimage_t * const adfimage,
     }
 
     memset ( buffer, 0, len_max );
-    if ( entry.secType == ST_LSOFT ) {
+    if ( entry.secType == ADF_ST_LSOFT ) {
         strncpy ( buffer, entry.realName,
                   //entry.name,
                   //min ( len_max - 1, entry.nameLen ) );
@@ -584,10 +584,10 @@ int adfimage_readlink ( adfimage_t * const adfimage,
         // so normally this execution path should never happen
         //assert (false);
 
-        // hardlinks: ST_LFILE, ST_LDIR
+        // hardlinks: ADF_ST_LFILE, ADF_ST_LDIR
         if ( adfReadEntryBlock ( vol, entry.realEntry,
                                  //entry.nextLink,
-                                 ( struct bEntryBlock * ) &entry ) != RC_OK )
+                                 ( struct AdfEntryBlock * ) &entry ) != RC_OK )
         {
             status = -3;
             goto readlink_cleanup;
@@ -755,7 +755,7 @@ int adfimage_create ( adfimage_t * const adfimage,
     char * file_name = basename ( file_name_buf );
 
     //RETCODE adfCreateDir(struct Volume* vol, SECTNUM nParent, char* name);
-    struct bFileHeaderBlock fhdr;
+    struct AdfFileHeaderBlock fhdr;
     int status = ( adfCreateFile ( vol, vol->curDirPtr,
                                    ( char * ) file_name, &fhdr ) == RC_OK ) ?
         0 : -1;
@@ -924,7 +924,7 @@ char * get_adflib_runtime_date ( void )
 
 static struct AdfDevice *
     mount_dev ( char * const adf_filename,
-                const BOOL   read_only )
+                const bool   read_only )
 {
     // mount device (ie. image file)
 #ifdef DEBUG_ADFIMAGE
@@ -960,7 +960,7 @@ static struct AdfDevice *
 struct AdfVolume *
     mount_volume ( struct AdfDevice * const dev,
                    unsigned int             partition,
-                   BOOL                     read_only )
+                   bool                     read_only )
 {
     // mount volume (volume/partition number, for floppies always 0 (?))
 #ifdef DEBUG_ADFIMAGE
@@ -994,7 +994,7 @@ static void append_dir ( adfimage_t * const adfimage,
 
 static bool isBlockAllocationBitmapValid ( struct AdfVolume * const vol )
 {
-    struct bRootBlock root;
+    struct AdfRootBlock root;
     //printf ("reading root block from %u\n", vol->rootBlock );
     RETCODE rc = adfReadRootBlock ( vol, (uint32_t) vol->rootBlock, &root );
     if ( rc != RC_OK ) {
@@ -1003,5 +1003,5 @@ static bool isBlockAllocationBitmapValid ( struct AdfVolume * const vol )
         return rc;
     }
     //printf ("root block read, name %s\n", root.diskName );
-    return ( root.bmFlag == BM_VALID );
+    return ( root.bmFlag == ADF_BM_VALID );
 }

@@ -63,7 +63,7 @@ adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
 
 const char * adfimage_getcwd ( const adfimage_t * const adfimage );
 
-BOOL adfimage_chdir ( adfimage_t * const adfimage,
+bool adfimage_chdir ( adfimage_t * const adfimage,
                       const char *       path );
 
 

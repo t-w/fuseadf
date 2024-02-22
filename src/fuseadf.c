@@ -114,7 +114,7 @@ int main ( int    argc,
     adffs_data.mountpoint = options.mount_point;
 
     if ( options.write_mode == true &&
-         adffs_data.adfimage->dev->readOnly == TRUE )
+         adffs_data.adfimage->dev->readOnly == true )
     {
         printf ("Note: image opened in read-only mode.\n");
     }
