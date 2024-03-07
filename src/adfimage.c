@@ -36,7 +36,7 @@ adfimage_t * adfimage_open ( char * const filename,
 {
     adfEnvInitDefault();
 
-    adfSetEnvFct ( adffs_log_info, adffs_log_info, adffs_log_info, NULL );
+    adfEnvSetFct ( adffs_log_info, adffs_log_info, adffs_log_info, NULL );
 
     struct AdfDevice * const dev = mount_dev ( filename, read_only );
     if ( ! dev ) {
@@ -185,11 +185,11 @@ adfimage_dentry_t adfimage_get_root_dentry ( adfimage_t * const adfimage )
     struct AdfRootBlock rootBlock;
     struct AdfVolume * const vol = adfimage->vol;
 
-    if ( adfReadRootBlock ( vol, (unsigned) vol->rootBlock, &rootBlock ) != RC_OK )
+    if ( adfReadRootBlock ( vol, (unsigned) vol->rootBlock, &rootBlock ) != ADF_RC_OK )
         return adf_dentry;
 
     if ( adfEntBlock2Entry ( ( struct AdfEntryBlock * ) &rootBlock,
-                             &adf_dentry.adflib_entry ) != RC_OK )
+                             &adf_dentry.adflib_entry ) != ADF_RC_OK )
         return adf_dentry;
 
     if ( adf_dentry.adflib_entry.type == ADF_ST_ROOT ) {
@@ -349,14 +349,14 @@ bool adfimage_chdir ( adfimage_t * const adfimage,
     char * dir_end;
     while ( *dir && ( dir_end = strchr ( dir, '/' ) ) ) {
         *dir_end = '\0';
-        if ( adfChangeDir ( vol, ( char * ) dir ) != RC_OK ) {
+        if ( adfChangeDir ( vol, ( char * ) dir ) != ADF_RC_OK ) {
             free ( dir_path );
             return false;
         }
         append_dir ( adfimage, dir );
         dir = dir_end + 1;
     }
-    if ( adfChangeDir ( vol, ( char * ) dir ) != RC_OK ) {
+    if ( adfChangeDir ( vol, ( char * ) dir ) != ADF_RC_OK ) {
         free ( dir_path );
         return false;
     }
@@ -450,7 +450,7 @@ int adfimage_read ( adfimage_t * const adfimage,
 
     // seek and read the file
     int32_t bytes_read = 0;
-    if ( adfFileSeek ( file, (unsigned) offset ) == RC_OK ) {
+    if ( adfFileSeek ( file, (unsigned) offset ) == ADF_RC_OK ) {
         bytes_read = (int32_t) adfFileRead ( file, (unsigned) size,
                                              ( unsigned char * ) buffer );
     }
@@ -504,7 +504,7 @@ int adfimage_write ( adfimage_t * const adfimage,
 
     // seek and write the file
     int32_t bytes_written = 0;
-    if ( adfFileSeek ( file, (unsigned) offset ) == RC_OK ) {
+    if ( adfFileSeek ( file, (unsigned) offset ) == ADF_RC_OK ) {
         bytes_written = (int32_t) adfFileWrite ( file, (unsigned) size,
                                                  ( unsigned char * ) buffer );
     }
@@ -551,7 +551,7 @@ int adfimage_readlink ( adfimage_t * const adfimage,
     // get block of the directory
     struct AdfVolume * const vol = adfimage->vol;
     struct AdfEntryBlock parent;
-    if ( adfReadEntryBlock ( vol, vol->curDirPtr, &parent ) != RC_OK ) {
+    if ( adfReadEntryBlock ( vol, vol->curDirPtr, &parent ) != ADF_RC_OK ) {
         status = -1;
         goto readlink_cleanup;
     }
@@ -587,7 +587,7 @@ int adfimage_readlink ( adfimage_t * const adfimage,
         // hardlinks: ADF_ST_LFILE, ADF_ST_LDIR
         if ( adfReadEntryBlock ( vol, entry.realEntry,
                                  //entry.nextLink,
-                                 ( struct AdfEntryBlock * ) &entry ) != RC_OK )
+                                 ( struct AdfEntryBlock * ) &entry ) != ADF_RC_OK )
         {
             status = -3;
             goto readlink_cleanup;
@@ -644,8 +644,8 @@ int adfimage_mkdir ( adfimage_t * const adfimage,
     char * dir_name_buf = strdup ( path_relative );
     char * dir_name = basename ( dir_name_buf );
 
-    //RETCODE adfCreateDir(struct Volume* vol, SECTNUM nParent, char* name);
-    RETCODE status = adfCreateDir ( vol, vol->curDirPtr, ( char * ) dir_name );
+    //ADF_RETCODE adfCreateDir(struct Volume* vol, SECTNUM nParent, char* name);
+    ADF_RETCODE status = adfCreateDir ( vol, vol->curDirPtr, ( char * ) dir_name );
 
     free ( dir_name_buf );
     adfToRootDir ( vol );
@@ -686,8 +686,8 @@ static int adfimage_remove_entry ( adfimage_t * const adfimage,
     char * dir_name_buf = strdup ( path_relative );
     char * dir_name = basename ( dir_name_buf );
 
-    //RETCODE adfRemoveEntry(struct Volume *vol, SECTNUM pSect, char *name)
-    RETCODE status = adfRemoveEntry ( vol, vol->curDirPtr, dir_name );
+    //ADF_RETCODE adfRemoveEntry(struct Volume *vol, SECTNUM pSect, char *name)
+    ADF_RETCODE status = adfRemoveEntry ( vol, vol->curDirPtr, dir_name );
 
     free ( dir_name_buf );
     adfToRootDir ( vol );
@@ -754,10 +754,10 @@ int adfimage_create ( adfimage_t * const adfimage,
     char * file_name_buf = strdup ( path_relative );
     char * file_name = basename ( file_name_buf );
 
-    //RETCODE adfCreateDir(struct Volume* vol, SECTNUM nParent, char* name);
+    //ADF_RETCODE adfCreateDir(struct Volume* vol, SECTNUM nParent, char* name);
     struct AdfFileHeaderBlock fhdr;
     int status = ( adfCreateFile ( vol, vol->curDirPtr,
-                                   ( char * ) file_name, &fhdr ) == RC_OK ) ?
+                                   ( char * ) file_name, &fhdr ) == ADF_RC_OK ) ?
         0 : -1;
     free ( file_name_buf );
     adfToRootDir ( vol );
@@ -777,10 +777,10 @@ int adfimage_file_truncate ( adfimage_t * const adfimage,
         return -ENOENT;
     }
 
-    RETCODE rc = adfFileTruncate ( file, (unsigned) new_size );
+    ADF_RETCODE rc = adfFileTruncate ( file, (unsigned) new_size );
     adfimage_file_close ( file );
 
-    return ( rc == RC_OK ? 0 : -1 );
+    return ( rc == ADF_RC_OK ? 0 : -1 );
 }
 
 
@@ -892,13 +892,13 @@ int adfimage_file_rename ( adfimage_t * const adfimage,
                      dst_parent_sector, dst_path->entryname );
 #endif
 
-    RETCODE rc = adfRenameEntry ( adfimage->vol,
-                                  src_parent_sector, src_path->entryname,
-                                  dst_parent_sector, dst_path->entryname );
+    ADF_RETCODE rc = adfRenameEntry ( adfimage->vol,
+                                      src_parent_sector, src_path->entryname,
+                                      dst_parent_sector, dst_path->entryname );
 #ifdef DEBUG_ADFIMAGE
     adffs_log_info ( "adfimage_file_rename: adfRenameEntry() => %d\n", rc );
 #endif
-    return ( rc == RC_OK ? 0 : -1 );
+    return ( rc == ADF_RC_OK ? 0 : -1 );
 }
 
 char * get_adflib_build_version ( void )
@@ -941,8 +941,8 @@ static struct AdfDevice *
         return NULL;
     }
 
-    RETCODE rc = adfDevMount ( dev );
-    if ( rc != RC_OK ) {
+    ADF_RETCODE rc = adfDevMount ( dev );
+    if ( rc != ADF_RC_OK ) {
         fprintf ( stderr, "Error mounting file/device %s\n", adf_filename );
         adfDevClose ( dev );
         return NULL;
@@ -996,8 +996,8 @@ static bool isBlockAllocationBitmapValid ( struct AdfVolume * const vol )
 {
     struct AdfRootBlock root;
     //printf ("reading root block from %u\n", vol->rootBlock );
-    RETCODE rc = adfReadRootBlock ( vol, (uint32_t) vol->rootBlock, &root );
-    if ( rc != RC_OK ) {
+    ADF_RETCODE rc = adfReadRootBlock ( vol, (uint32_t) vol->rootBlock, &root );
+    if ( rc != ADF_RC_OK ) {
         adfEnv.eFct ( "Invalid RootBlock, sector %u - aborting...",
                       vol->rootBlock );
         return rc;
