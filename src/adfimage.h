@@ -28,7 +28,8 @@ typedef struct adfimage {
 
 adfimage_t * adfimage_open ( char * const filename,
                              unsigned int volume,
-                             bool         read_only );
+                             bool         read_only,
+                             const bool   ignore_checksum_errors );
 
 //void adfimage_close ( adfimage_t * const adfimage );
 void adfimage_close ( adfimage_t ** adfimage );

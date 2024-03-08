@@ -32,11 +32,13 @@ static bool isBlockAllocationBitmapValid ( struct AdfVolume * const vol );
 
 adfimage_t * adfimage_open ( char * const filename,
                              unsigned int volume,
-                             bool         read_only )
+                             bool         read_only,
+                             const bool   ignore_checksum_errors )
 {
     adfEnvInitDefault();
 
     adfEnvSetFct ( adffs_log_info, adffs_log_info, adffs_log_info, NULL );
+    adfEnvSetProperty ( ADF_PR_IGNORE_CHECKSUM_ERRORS, ignore_checksum_errors );
 
     struct AdfDevice * const dev = mount_dev ( filename, read_only );
     if ( ! dev ) {

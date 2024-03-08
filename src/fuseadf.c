@@ -103,7 +103,8 @@ int main ( int    argc,
 
     adffs_data.adfimage = adfimage_open ( options.adf_filename,
                                           options.adf_volume,
-                                          ! options.write_mode );
+                                          ! options.write_mode,
+                                          false );  // do not ignore checksum errors
     if ( adffs_data.adfimage == NULL ) {
 	fprintf ( stderr, "Cannot mount adf image: %s, "
                   "volume/partition: %d - aborting...\n",
