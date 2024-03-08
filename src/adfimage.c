@@ -557,17 +557,17 @@ int adfimage_readlink ( adfimage_t * const adfimage,
     }
 
     // get block of the entry concerned (specified with path)
-    // SECTNUM adfNameToEntryBlk(struct Volume *vol, int32_t ht[], char* name,
-    //                           struct bEntryBlock *entry, SECTNUM *nUpdSect)
+    // ADF_SECTNUM adfNameToEntryBlk(struct Volume *vol, int32_t ht[], char* name,
+    //                               struct bEntryBlock *entry, ADF_SECTNUM *nUpdSect)
 
     //struct bEntryBlock entry;
     struct AdfLinkBlock entry;
-    SECTNUM nUpdSect;
-    SECTNUM sectNum = adfNameToEntryBlk ( vol,
-                                          parent.hashTable,
-                                          path->entryname,
-                                          ( struct AdfEntryBlock * ) &entry,
-                                          &nUpdSect );
+    ADF_SECTNUM nUpdSect;
+    ADF_SECTNUM sectNum = adfNameToEntryBlk ( vol,
+                                              parent.hashTable,
+                                              path->entryname,
+                                              ( struct AdfEntryBlock * ) &entry,
+                                              &nUpdSect );
     if ( sectNum == -1 ) {
         status = -2;
         goto readlink_cleanup;
@@ -644,7 +644,7 @@ int adfimage_mkdir ( adfimage_t * const adfimage,
     char * dir_name_buf = strdup ( path_relative );
     char * dir_name = basename ( dir_name_buf );
 
-    //ADF_RETCODE adfCreateDir(struct Volume* vol, SECTNUM nParent, char* name);
+    //ADF_RETCODE adfCreateDir(struct Volume* vol, ADF_SECTNUM nParent, char* name);
     ADF_RETCODE status = adfCreateDir ( vol, vol->curDirPtr, ( char * ) dir_name );
 
     free ( dir_name_buf );
@@ -686,7 +686,7 @@ static int adfimage_remove_entry ( adfimage_t * const adfimage,
     char * dir_name_buf = strdup ( path_relative );
     char * dir_name = basename ( dir_name_buf );
 
-    //ADF_RETCODE adfRemoveEntry(struct Volume *vol, SECTNUM pSect, char *name)
+    //ADF_RETCODE adfRemoveEntry(struct Volume *vol, ADF_SECTNUM pSect, char *name)
     ADF_RETCODE status = adfRemoveEntry ( vol, vol->curDirPtr, dir_name );
 
     free ( dir_name_buf );
@@ -754,7 +754,7 @@ int adfimage_create ( adfimage_t * const adfimage,
     char * file_name_buf = strdup ( path_relative );
     char * file_name = basename ( file_name_buf );
 
-    //ADF_RETCODE adfCreateDir(struct Volume* vol, SECTNUM nParent, char* name);
+    //ADF_RETCODE adfCreateDir(struct Volume* vol, ADF_SECTNUM nParent, char* name);
     struct AdfFileHeaderBlock fhdr;
     int status = ( adfCreateFile ( vol, vol->curDirPtr,
                                    ( char * ) file_name, &fhdr ) == ADF_RC_OK ) ?
@@ -854,7 +854,7 @@ int adfimage_file_rename ( adfimage_t * const adfimage,
         return -EINVAL;
     }
 
-    SECTNUM src_parent_sector =
+    ADF_SECTNUM src_parent_sector =
         ( src_parent_entry.type == ADFVOLUME_DENTRY_DIRECTORY ?
           src_parent_entry.adflib_entry.sector :
           // ( src_parent_entry.type == ADFVOLUME_DENTRY_LINKDIR )
@@ -866,7 +866,7 @@ int adfimage_file_rename ( adfimage_t * const adfimage,
     }
     //assert ( src_parent_sector > 1 );   // not in bootblock...
 
-    SECTNUM dst_parent_sector =
+    ADF_SECTNUM dst_parent_sector =
         ( dst_parent_entry.type == ADFVOLUME_DENTRY_DIRECTORY ?
           dst_parent_entry.adflib_entry.sector :
           // ( dst_parent_entry.type == ADFVOLUME_DENTRY_LINKDIR )
