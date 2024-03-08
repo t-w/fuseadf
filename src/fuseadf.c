@@ -16,6 +16,7 @@ typedef struct cmdline_options_s {
     bool         write_mode;
     bool         single_threaded_fuse_mode_set;
     char *       logging_file;
+    bool         ignore_checksum_errors;
     bool         help,
                  version;
 } cmdline_options_t;
@@ -104,7 +105,7 @@ int main ( int    argc,
     adffs_data.adfimage = adfimage_open ( options.adf_filename,
                                           options.adf_volume,
                                           ! options.write_mode,
-                                          false );  // do not ignore checksum errors
+                                          options.ignore_checksum_errors );
     if ( adffs_data.adfimage == NULL ) {
 	fprintf ( stderr, "Cannot mount adf image: %s, "
                   "volume/partition: %d - aborting...\n",
@@ -142,6 +143,7 @@ void usage()
               "\n\t-p partition - partition/volume number (0-10), default: 0\n"
               "\t-l logfile   - enable logging and (optionally) specify logging file\n"
               "\t               (default: fuseadf.log)\n"
+              "\t-i           - ignore checksum errors (default: do not ignore!)n"
               "\nFUSE options (for details see FUSE documentation):\n" 
               "\t-o mount_option\tie. 'ro' for read-only mount (see: man fusermount)\n"
               "\t-f\t\tforeground (do not daemonize)\n"
@@ -156,10 +158,11 @@ bool parse_args ( int *               argc,
 {
     // set default options
     memset ( options, 0, sizeof ( cmdline_options_t ) );
-    options->write_mode = true;
+    options->write_mode             = true;
+    options->ignore_checksum_errors = false;
     
     //const char * valid_options = "p:l::o:dshvwquzV";
-    const char * valid_options = "p:l::o:dshvwV";
+    const char * valid_options = "p:l::o:dshiwV";
     int opt;
     while ( ( opt = getopt ( *argc, argv, valid_options ) ) != -1 ) {
         //printf ( "optind %d, opt %c, optarg %s\n", optind, ( char ) opt, optarg );
@@ -194,6 +197,13 @@ bool parse_args ( int *               argc,
                 optind--;
                 drop_arg ( argc, argv, optind );
             }
+            continue;
+        }
+
+        case 'i': {
+            options->ignore_checksum_errors = true;
+            optind--;
+            drop_arg ( argc, argv, optind );
             continue;
         }
 
