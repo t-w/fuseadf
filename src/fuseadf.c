@@ -216,7 +216,7 @@ bool parse_args ( int *               argc,
             //case 'q':
             //case 'u':
             //case 'z':
-        case 'V':
+            //case 'V':
             continue;
         case 'o':
             if ( strcmp ( optarg, "ro" ) == 0 )
@@ -229,7 +229,7 @@ bool parse_args ( int *               argc,
             drop_arg ( argc, argv, optind );
             return true;
 
-        case 'v':
+        case 'V':
             options->version = true;
             optind--;
             drop_arg ( argc, argv, optind );
