@@ -309,7 +309,7 @@ adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
             adf_dentry.type = ADFVOLUME_DENTRY_UNKNOWN;
         }
     }
-    freeList ( dentries );
+    adfListFree ( dentries );
 
     // go back to the working directory (if necessary)
     if ( cwd ) {
