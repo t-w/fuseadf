@@ -1,16 +1,24 @@
 .TH FUSEADF 1 "May 2024"
 .SH NAME
-fuseadf \- Mount an ADF image and read or write files with FUSE.
+fuseadf \- Mount a volume of an ADF image and read or write files with FUSE.
 .SH SYNOPSIS
 .B fuseadf
-[\fBoptions\fR] <\fIimage_adf\fR> <\fImount point\fR>
+[\fBoptions\fR] <\fIfile_adf\fR> <\fImount_dir\fR>
 .SH DESCRIPTION
 \fBfuseadf\fR is a simple libfuse-based filesystem allowing to mount
-an ADF image of an Amiga floppy or a hard disk and to read or write 
-its contents (volumes/partitions, directories and files).
+a volume of an ADF (an image of a floppy or a hard disk in Amiga format)
+and to access the data the volume contains, either in read-write (default)
+or in read-only mode (set with \fB-o ro\fR).
 .PP
-Volumes/partitions can be chosen with -p option (not needed for images with
-one volume only, ie. floppy disk images).
+What is important - mounting using FUSE can be done by a regular user
+(no need for root-level access).
+.PP
+Volume/partition to mount can be chosen with -p option. By default, the first
+volume (0) is mounted, so providing this option is generally not needed for
+images with one volume only (like floppy disk images or hdf/hard disk files,
+without RDB/Rigid disk block).
+.PP
+
 .
 .SH OPTIONS
 .TP
@@ -20,15 +28,13 @@ Specify volume/partition (number) to mount (default: 0).
 .B \-i
 Ignore checksum errors.
 .TP
-.B \-v
-Show version.
-.TP
 .B \-h
-Show usage info.
-.SH FUSE options
+Show help/usage info.
 .TP
-.B -o
-List of mount options, eg. 'ro' to enforce read-only mount (see also man pages listed below)
+.B \-V
+Show version.
+.PP
+Options provided by FUSE:
 .TP
 .B \-f
 Execute in foreground.
@@ -38,6 +44,47 @@ Execute in foreground with debug output.
 .TP
 .B \-s
 Single-threaded mode (enforced since v0.3, no need to provide it).
+.TP
+.B -l [logfile]
+Log fuse messages to a file (default: fuseadf.log)
+.TP
+.B -o options
+Comma-separated list of mount options, ie. 'ro' to enforce read-only mount
+(see also man pages listed below)
+.SH EXAMPLES
+\fBfuseadf mydisk.adf myfiles\fR
+.RS
+mounts volume 0 of mydisk.adf to myfiles directory in read-write mode
+.RE
+
+\fBfuseadf -l logfile -p 1 -o ro mydisk.adf myfiles\fR
+.RS
+mounts volume 1 of mydisk.adf to myfiles directory in read-only mode
+and logs messages to logfile
+.RE
+
+\fBfuseadf -f -i mydisk.adf myfiles\fR
+.RS
+mounts volume 0 of mydisk.adf to myfiles directory in read-write mode,
+ignoring the block checksum errors and leaving the process in the foregound
+outputing messages to stdout/err
+.RE
+
+.SH TROUBLESHOOTING
+By default, fuseadf mounts the image and goes silently into background.
+In case of having trouble mounting (or perfoming certain operations),
+check the messages, either by enabling a logfile (with -l option) or
+keep the process in foreground (with -f or, more verbose, -d option),
+so that the messages appear on the console.
+.SH BUGS
+In case of problems that does not find an explanation by the means described
+in the troubleshooting section above, submit an issue on the project website
+(link below, in the homepage section).
+.SH HOMEPAGE
+The project page can be found at https://gitlab.com/t-m/fuseadf.
+.SH NOTES
+fuseadf relies on ADFlib (https://github.com/lclevy/ADFlib) for accessing
+data on ADF disk images.
 .SH SEE ALSO
 .BR fusermount (1), mount.fuse (1), mount (8)
 .SH AUTHOR
