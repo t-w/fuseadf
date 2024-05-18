@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Tomasz Wolak <tomas.wolak@gmail.com>
 Build-Depends: dh-autoreconf,
                debhelper (>= 9),
-               libadf-dev (>= 0.8.0),
+               libadf-dev (>= 0.9.0),
                libfuse-dev,
                pkg-config
 Standards-Version: 4.3.0
