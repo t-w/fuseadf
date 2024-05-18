@@ -1,7 +1,9 @@
 
 AC_PREREQ([2.54])
 
-AC_INIT([fuseadf], [0.3], [tomas.wolak@gmail.com])
+AC_INIT([fuseadf], [0.4],
+        [tomas.wolak@gmail.com or (better) https://gitlab.com/t-m/fuseadf/-/issues],
+        [], [https://gitlab.com/t-m/fuseadf])
 
 AC_ARG_ENABLE([use_as_root],
               [  --enable-use-as-root    Permit using as root (default: no)],

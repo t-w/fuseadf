@@ -1,3 +1,13 @@
+fuseadf (0.4-1) unstable; urgency=medium
+
+  * Require ADFlib 0.9.0 (changed API!)
+  * Added parameter to ignore (or not) block checksum errors
+  * Not mounting read-write volumes with an invalid block allocation bitmap
+  * Bugfixes (option parser, time)
+
+ -- Tomasz Wolak <tomas.wolak@gmail.com>  Sat, 18 May 2024 18:48:31 +0100
+
+
 fuseadf (0.3-1) unstable; urgency=medium
 
   * Require ADFlib 0.8.0
