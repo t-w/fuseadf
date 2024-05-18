@@ -1,5 +1,5 @@
 
-cmake_minimum_required ( VERSION 2.6 )
+cmake_minimum_required ( VERSION 2.8.12 )
 
 project ( fuseadf C )
 set ( fuseadf_VERSION_MAJOR 0 )
@@ -31,6 +31,8 @@ add_link_options (
 #  $<$<CONFIG:DEBUG>:-lasan>
 #  $<$<CONFIG:DEBUG>:-fsanitize=address>
 )
+
+option ( FUSEADF_ALLOW_USE_AS_ROOT "Allow using as root" OFF )
 
 add_subdirectory ( src )
 

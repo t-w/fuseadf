@@ -1,4 +1,11 @@
 
+if ( FUSEADF_ALLOW_USE_AS_ROOT )
+    message ( STATUS "Allowing the use of fuseadf as root." )
+    add_compile_definitions ( ALLOW_USE_AS_ROOT )
+else()
+    message ( STATUS "Disallowing the use of fuseadf as root." )
+endif ( FUSEADF_ALLOW_USE_AS_ROOT )
+
 
 configure_file (config.h.cmake.in config.h)
 
