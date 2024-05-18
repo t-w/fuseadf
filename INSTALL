@@ -27,6 +27,9 @@ To (eventually) remove the build subdirectory use:
 
 (all have to be configured again for building).
 
+Configuration options can be passed to configure script, for instance:
+   util/cmake_debug_configure -DFUSEADF_ALLOW_USE_AS_ROOT:BOOL=ON
+
 
 Building with Autotools
 ------------------------
@@ -35,6 +38,10 @@ Standard way:
 1. $ ./autogen.sh
 2. $ ./configure
 3. $ make
+
+For configuration options, check ./configure --help.
+One worth notifying is the option for allowing or disallowing (default) using
+the built fuseadf as root (--enable-use-as-root / --disable...).
 
 
 Testing
@@ -109,7 +116,7 @@ The source package alone can be created with:
 
 Links:
 
-- ADFlib:     http://lclevy.free.fr/adflib/
+- ADFlib:     http://lclevy.free.fr/adflib/, https://github.com/lclevy/ADFlib
 - CMake:      https://cmake.org/
 - autotools:  https://en.wikipedia.org/wiki/GNU_Autotools (and links there)
 - Check:      https://libcheck.github.io/check/
