@@ -1,4 +1,14 @@
 
+AM_CFLAGS = -Wall -Wextra \
+    -pedantic \
+    -pedantic-errors \
+    -Wconversion \
+    -Wsign-conversion \
+    -Werror-implicit-function-declaration \
+    -Werror=incompatible-pointer-types \
+    -Werror=format-security \
+    @FUSE_CFLAGS@ \
+    @ADF_CFLAGS@
 
 if USE_AS_ROOT
 AM_CPPFLAGS = -DALLOW_USE_AS_ROOT
@@ -18,10 +28,5 @@ fuseadf_SOURCES = fuseadf.c \
   adffs_log.h \
   log.c \
   log.h
-
-AM_CFLAGS = -Wall -Wextra -pedantic -Wconversion -Wsign-conversion \
-  -Werror-implicit-function-declaration \
-  -Werror=incompatible-pointer-types \
-  @FUSE_CFLAGS@ @ADF_CFLAGS@
 
 LDADD = @FUSE_LIBS@ @ADF_LIBS@
