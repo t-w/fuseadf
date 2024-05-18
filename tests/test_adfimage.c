@@ -24,11 +24,16 @@ END_TEST
 
 START_TEST ( test_adfimage_open_close )
 {
-    /* note: the image ffdisk0049.adf has an invalid checksum in the root block */
+    /* note: the image ffdisk0049.adf has an invalid checksum in the boot block */
 
-    adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf", 0, true, false );
-    ck_assert_ptr_null ( adf );
-    adfimage_close ( &adf );
+    /* this test was waroking before when the ADFlib was loading bootblock
+       as a bootblock (checking its validity); now, the bootblock is loadeds just
+       as a raw block and the ADFlib checks only the first 4 bytes (the type of
+       the filesystem); so basically, mounting does not fail on a volume with
+       a bootblock having  an invalid checksum - so this test is not valid anymore */
+    //adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf", 0, true, false );
+    //ck_assert_ptr_null ( adf );
+    //adfimage_close ( &adf );
 
     adf = adfimage_open ( "testdata/ffdisk0049.adf", 0, true, true );
     ck_assert_ptr_nonnull ( adf );
