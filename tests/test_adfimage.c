@@ -35,8 +35,8 @@ START_TEST ( test_adfimage_open_close )
     //ck_assert_ptr_null ( adf );
     //adfimage_close ( &adf );
 
-    adfimage_t * const adf = adfimage_open ( "testdata/ffdisk0049.adf",
-                                             0, true, true );
+    adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf",
+                                       0, true, true );
     ck_assert_ptr_nonnull ( adf );
     adfimage_close ( &adf );
 }
