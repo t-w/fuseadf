@@ -1,2 +1,2 @@
 
-cmake -B build/release -S .
+cmake -B build/release -S . $@
