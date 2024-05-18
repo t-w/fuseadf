@@ -145,17 +145,22 @@ int main ( int    argc,
 
 void usage()
 {
-    fprintf ( stderr, "usage:\tfuseadf [fuse/mount options] [-p partition] [-l logging_file] diskimage_adf mount_point\n"
-              "\n\t-p partition - partition/volume number (0-10), default: 0\n"
-              "\t-l logfile   - enable logging and (optionally) specify logging file\n"
-              "\t               default log file: fuseadf.log\n"
-              "\t-i           - ignore checksum errors (default: do not ignore!)\n"
-              "\t-V           - show version\n"
-              "FUSE options (for details see FUSE documentation):\n"
-              "\t-o mount_option\tie. 'ro' for read-only mount (see: man fusermount)\n"
-              "\t-f\t\tforeground (do not daemonize)\n"
-              "\t-d\t\tforeground with debug info\n"
-              "\t-s\t\tsingle-threaded (enforced - no need to provide it)\n" );
+    fprintf ( stderr,
+              "Mount an ADF's volume and access its data in userspace (with FUSE).\n\n"
+              "Usage:\tfuseadf [-f] [-d] [-i] [-p partition] [-l logging_file]\n"
+              "                diskimage_adf mount_point\n\n"
+              "Options:\n"
+              "    -p partition - partition/volume number (0-10), default: 0\n"
+              "    -l logfile   - enable logging and (optionally) specify logging file,\n"
+              "                   default log file: fuseadf.log\n"
+              "    -i           - ignore checksum errors (default: do not ignore!)\n"
+              "    -V           - show version\n\n"
+              "  FUSE options (for details see FUSE documentation):\n"
+              "    -o mount_options -  list of mount options (ie. 'ro' for read-only mount)\n"
+              "                     -  (see: man fusermount)\n"
+              "    -f               -  run in foreground (do not daemonize)\n"
+              "    -d               -  run in foreground with more verbose (debug) info\n"
+              "    -s               -  single-threaded (enforced - no need to provide it)\n" );
 }
 
 
