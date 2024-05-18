@@ -1,0 +1,18 @@
+
+0.4 (2024-05-18)
+  * Require ADFlib 0.9.0 (changed API!)
+  * Added parameter to ignore (or not) block checksum errors
+  * Not mounting read-write volumes with an invalid block allocation bitmap
+  * Bugfixes (option parser, time)
+
+0.3 (2023-06-27)
+  * Require ADFlib 0.8.0
+  * Improved write support
+  * Single-threaded FUSE mode enforced
+  * Implementation improvements and bugfixes (logger, time, ...)
+
+0.2 (2023-04-10)
+  * Added write support.
+
+0.1 (2022-12-20)
+  * Initial release.
