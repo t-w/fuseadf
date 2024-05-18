@@ -13,11 +13,21 @@ Usage:
 fuseadf [options] <image_adf> <mount point>
 
 where options can be:
-       -p     Specify volume/partition (number) to mount (default: 0).
-       -v     Show version.
-       -h     Show usage info.
+    -p partition - partition/volume number (0-10), default: 0
+    -l logfile   - enable logging and (optionally) specify logging file,
+                   default log file: fuseadf.log
+    -i           - ignore checksum errors (default: do not ignore!)
+    -h           - show help info
+    -V           - show version
 
-(plus FUSE options, check -h for details).
+Additionally, some FUSE options can be used (for details see FUSE documentation):
+    -o mount_options -  list of mount options (ie. 'ro' for read-only mount)
+                     -  (see: man fusermount)
+    -f               -  run in foreground (do not daemonize)
+    -d               -  run in foreground with more verbose (debug) info
+    -s               -  single-threaded (enforced - no need to provide it)
+
+(check -h for details).
 
 
 More info:
