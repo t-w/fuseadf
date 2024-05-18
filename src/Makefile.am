@@ -22,11 +22,13 @@ fuseadf_SOURCES = fuseadf.c \
   adfimage.h \
   adffs.c \
   adffs.h \
+  adffs_fuse_api.h \
   adffs_util.c \
   adffs_util.h \
   adffs_log.c \
   adffs_log.h \
   log.c \
-  log.h
+  log.h \
+  util.h
 
 LDADD = @FUSE_LIBS@ @ADF_LIBS@
