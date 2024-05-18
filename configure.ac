@@ -3,6 +3,18 @@ AC_PREREQ([2.54])
 
 AC_INIT([fuseadf], [0.3], [tomas.wolak@gmail.com])
 
+AC_ARG_ENABLE([use_as_root],
+              [  --enable-use-as-root    Permit using as root (default: no)],
+              [case "${enableval}" in
+                yes) use_as_root=true ;;
+                no)  use_as_root=false ;;
+                *) AC_MSG_ERROR([bad value ${enableval} for --enable-use-as-root]) ;;
+               esac],
+              [use_as_root=false])
+
+AM_CONDITIONAL([USE_AS_ROOT], [test x$use_as_root = xtrue])
+echo "Permit use as root: ${use_as_root}"
+
 # https://www.gnu.org/software/automake/manual/html_node/List-of-Automake-options.html
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 

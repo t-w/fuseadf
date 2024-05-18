@@ -51,13 +51,19 @@ void show_version();
 int main ( int    argc,
            char * argv[] )
 {
+#ifndef ALLOW_USE_AS_ROOT
+#pragma message "Disallowing use of fuseadf as root."
     // for now - forbid running as root (a prototype program...)
     if ( ( getuid() == 0 ) ||
          ( geteuid() == 0 ) )
     {
-    	fprintf ( stderr, "fuseadf is a prototype - do not use as root.\n");
+    	fprintf ( stderr, "fuseadf is a (still) prototype - better (more safe)"
+                  " not to use it as root.\n");
         exit ( EXIT_FAILURE );
     }
+#else
+#pragma message "Allowing use of fuseadf as root."
+#endif
 
     // parse command-line options
     cmdline_options_t options;

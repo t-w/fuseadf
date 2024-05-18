@@ -1,5 +1,9 @@
 
 
+if USE_AS_ROOT
+AM_CPPFLAGS = -DALLOW_USE_AS_ROOT
+endif
+
 bin_PROGRAMS = fuseadf
 
 fuseadf_SOURCES = fuseadf.c \
