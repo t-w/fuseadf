@@ -174,7 +174,7 @@ bool parse_args ( int *               argc,
     options->ignore_checksum_errors = false;
     
     //const char * valid_options = "p:l::o:dshvwquzV";
-    const char * valid_options = "p:l::o:dshiwV";
+    const char * valid_options = "p:l::o:fdshiwV";
     int opt;
     while ( ( opt = getopt ( *argc, argv, valid_options ) ) != -1 ) {
         //printf ( "optind %d, opt %c, optarg %s\n", optind, ( char ) opt, optarg );
