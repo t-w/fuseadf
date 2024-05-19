@@ -17,4 +17,4 @@ export DH_VERBOSE = 1
 %:
 #	dh $@ --parallel
 #	dh $@ --parallel --with autotools_dev
-	dh $@ --with autoreconf
+	dh $@ --no-parallel --with autoreconf
