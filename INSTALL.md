@@ -49,8 +49,8 @@ The images are downloaded from:
 
 ## Testing with CMake
 After successful building (see above), automatic tests can be started with:
--  `$ util/test_release`   (for the release version)
--  `$ util/test_debug`     (for the debug version)
+-  `$ util/cmake_release_test`   (for the release version)
+-  `$ util/cmake_debug_test`     (for the debug version)
 
 
 ## Testing with Autotools
