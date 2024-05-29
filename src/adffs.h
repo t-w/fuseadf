@@ -19,7 +19,7 @@ struct adffs_state {
     FILE *       logfile;
 } adffs_state_t;
 
-static inline struct adffs_state * adffs_get_state()
+static inline struct adffs_state * adffs_get_state(void)
 {
     return ( struct adffs_state * ) fuse_get_context()->private_data;
 }

@@ -21,7 +21,7 @@ typedef struct cmdline_options_s {
                  version;
 } cmdline_options_t;
 
-void usage();
+void usage( void );
 
 bool parse_args (  int *               argc,
                    char **             argv,
@@ -45,7 +45,7 @@ void show_argv ( int argc, char ** argv );
 void drop_nonfuse_args ( int *   argc,
                          char ** argv );
 
-void show_version();
+void show_version( void );
 
 
 int main ( int    argc,
@@ -142,8 +142,7 @@ int main ( int    argc,
 }
 
 
-
-void usage()
+void usage( void )
 {
     fprintf ( stderr,
               "Mount an ADF's volume and access its data in userspace (with FUSE).\n\n"
@@ -304,7 +303,7 @@ void show_argv ( int argc, char ** argv )
 
 static const char * get_logo ( unsigned logoidx );
 
-void show_version(void)
+void show_version( void )
 {
     printf ( "\n%s\n  " PACKAGE_STRING
              ", powered by:\n\n      FUSE:    build version    %d.%d"
