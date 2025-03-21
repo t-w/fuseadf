@@ -43,16 +43,12 @@ adfimage_t * adfimage_open ( char * const filename,
 
     struct AdfDevice * const dev = mount_dev ( filename, read_only );
     if ( ! dev ) {
-        adfLibCleanUp();
-        return NULL;
+        goto adfimage_open_error_cleanup_adflib;
     }
 
     struct AdfVolume * const vol = mount_volume ( dev, volume, read_only );
     if ( ! vol ) {
-        adfDevUnMount ( dev );
-        adfDevClose ( dev );
-        adfLibCleanUp();
-        return NULL;
+        goto adfimage_open_error_cleanup_dev;
     }
 
     if ( ( ! read_only ) &&
@@ -60,21 +56,13 @@ adfimage_t * adfimage_open ( char * const filename,
     {
         adffs_log_info ( "adfimage_open: error: invalid bitmap, "
                          "cannot mount read-write volume %s\n", vol->volName );
-        adfVolUnMount ( vol );
-        adfDevUnMount ( dev );
-        adfDevClose ( dev );
-        adfLibCleanUp();
-        return NULL;
+        goto adfimage_open_error_cleanup_vol;
     }
 
     adfimage_t * const adfimage = malloc ( sizeof ( adfimage_t ) );
     if ( ! adfimage ) {
         adffs_log_info ( "adfimage_open: error: Cannot allocate memory for adfimage data\n" );
-        adfVolUnMount ( vol );
-        adfDevUnMount ( dev );
-        adfDevClose ( dev );
-        adfLibCleanUp();
-        return NULL;
+        goto adfimage_open_error_cleanup_vol;
     }
 
     adfimage->filename = filename;
@@ -90,6 +78,17 @@ adfimage_t * adfimage_open ( char * const filename,
 #endif
 
     return adfimage;
+
+adfimage_open_error_cleanup_vol:
+    adfVolUnMount( vol );
+
+adfimage_open_error_cleanup_dev:
+    adfDevUnMount( dev );
+    adfDevClose( dev );
+
+adfimage_open_error_cleanup_adflib:
+    adfLibCleanUp();
+    return NULL;
 }
 
 
