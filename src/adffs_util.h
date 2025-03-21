@@ -1,6 +1,6 @@
 
-#ifndef __ADFFS_UTIL_H__
-#define __ADFFS_UTIL_H__
+#ifndef ADFFS_UTIL_H
+#define ADFFS_UTIL_H
 
 #include <time.h>
 

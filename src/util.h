@@ -1,6 +1,6 @@
 
-#ifndef __FUSEADF_UTIL_H__
-#define __FUSEADF_UTIL_H__
+#ifndef FUSEADF_UTIL_H
+#define FUSEADF_UTIL_H
 
 #include <assert.h>
 

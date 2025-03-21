@@ -1,6 +1,6 @@
 
-#ifndef __ADFFS_H__
-#define __ADFFS_H__
+#ifndef ADFFS_H
+#define ADFFS_H
 
 #include "adffs_fuse_api.h"
 //#include "adflib.h"

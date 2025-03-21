@@ -1,6 +1,6 @@
 
-#ifndef __ADFFS_LOG_H__
-#define __ADFFS_LOG_H__
+#ifndef ADFFS_LOG_H
+#define ADFFS_LOG_H
 
 #include "adffs_fuse_api.h"
 #include <stdio.h>

@@ -1,6 +1,6 @@
 
-#ifndef __ADFIMAGE_H__
-#define __ADFIMAGE_H__
+#ifndef ADFIMAGE_H
+#define ADFIMAGE_H
 
 #include <adflib.h>
 #include <stdbool.h>
