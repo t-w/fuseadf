@@ -53,3 +53,8 @@ target_link_libraries ( test_time_to_time_t PUBLIC
   #-lm
   #-lsubunit
 )
+
+file (
+  COPY ${PROJECT_SOURCE_DIR}/tests/testdata
+  DESTINATION ${PROJECT_BINARY_DIR}/tests/
+)
