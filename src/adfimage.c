@@ -35,14 +35,15 @@ adfimage_t * adfimage_open ( char * const filename,
                              bool         read_only,
                              const bool   ignore_checksum_errors )
 {
-    adfEnvInitDefault();
+    if ( adfLibInit() != ADF_RC_OK )
+        return NULL;
 
     adfEnvSetFct ( adffs_log_info, adffs_log_info, adffs_log_info, NULL );
     adfEnvSetProperty ( ADF_PR_IGNORE_CHECKSUM_ERRORS, ignore_checksum_errors );
 
     struct AdfDevice * const dev = mount_dev ( filename, read_only );
     if ( ! dev ) {
-        adfEnvCleanUp();
+        adfLibCleanUp();
         return NULL;
     }
 
@@ -50,7 +51,7 @@ adfimage_t * adfimage_open ( char * const filename,
     if ( ! vol ) {
         adfDevUnMount ( dev );
         adfDevClose ( dev );
-        adfEnvCleanUp();
+        adfLibCleanUp();
         return NULL;
     }
 
@@ -62,7 +63,7 @@ adfimage_t * adfimage_open ( char * const filename,
         adfVolUnMount ( vol );
         adfDevUnMount ( dev );
         adfDevClose ( dev );
-        adfEnvCleanUp();
+        adfLibCleanUp();
         return NULL;
     }
 
@@ -72,7 +73,7 @@ adfimage_t * adfimage_open ( char * const filename,
         adfVolUnMount ( vol );
         adfDevUnMount ( dev );
         adfDevClose ( dev );
-        adfEnvCleanUp();
+        adfLibCleanUp();
         return NULL;
     }
 
@@ -111,7 +112,7 @@ void adfimage_close ( adfimage_t ** adfimage )
     free ( *adfimage );
     *adfimage = NULL;
 
-    adfEnvCleanUp();
+    adfLibCleanUp();
 }
 
 
