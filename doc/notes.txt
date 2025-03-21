@@ -1,6 +1,7 @@
 
 Useful links:
 
+http://github.com/adflib/ADFlib
 http://lclevy.free.fr/adflib/
 http://lclevy.free.fr/adflib/adf_info.html
 https://wiki.amigaos.net/wiki/DCFS_and_LNFS_Low_Level_Data_Structures

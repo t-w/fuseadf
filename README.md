@@ -42,7 +42,7 @@ Additionally, some FUSE options can be used (for details see FUSE documentation)
   for instance, security implications, especially if you get the disk images
   from uncertain sources.
 
-- It relies on [the ADFlib](https://github.com/lclevy/ADFlib) for accessing
+- It relies on [the ADFlib](https://github.com/adflib/ADFlib) for accessing
   ADF disk images. In particular, for the supported filesystems, check
   information what is supported by the ADFlib. At the moment of writing,
   all classic AmigaDOS filesystems (all versions of OFS and FFS)
@@ -65,7 +65,7 @@ Additionally, some FUSE options can be used (for details see FUSE documentation)
 
 ## Related websites and tools:
 - ADFlib, a portable library in C (includes some useful tools, eg. `unadf`)
-  - [repo](https://github.com/lclevy/ADFlib)
-  - [webpage](http://lclevy.free.fr/adflib/)
+  - [repo](https://github.com/adflib/ADFlib)
+  - [webpage](http://adflib.github.io/) ([old](http://lclevy.free.fr/adflib/))
   - [tech info](http://lclevy.free.fr/adflib/adf_info.html)
 - [affs linux kernel driver](https://www.kernel.org/doc/html/v6.9/filesystems/affs.html) (generic, Linux kernel mode way for mounting ADFs, requires root-level access(!))
