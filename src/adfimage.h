@@ -13,7 +13,6 @@
 
 typedef struct adfimage {
     const char * filename;
-    long size;
 
     struct AdfDevice * dev;
     struct AdfVolume * vol;

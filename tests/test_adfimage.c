@@ -48,9 +48,10 @@ START_TEST ( test_adfimage_properties )
     adfimage_t * adf = adfimage_open ( "testdata/ffdisk0049.adf", 0, true, true );
     ck_assert_ptr_nonnull ( adf );
 
-    ck_assert_int_eq ( adf->size, 901120 );
-    ck_assert_ptr_nonnull ( adf->dev );
-    ck_assert_ptr_nonnull ( adf->vol );
+    ck_assert_ptr_nonnull( adf->dev );
+    ck_assert_ptr_nonnull( adf->vol );
+    ck_assert_int_eq( adf->dev->sizeBlocks * ADF_DEV_BLOCK_SIZE, 901120 );
+    ck_assert_int_eq( adfVolGetSizeInBlocks( adf->vol ) * ADF_DEV_BLOCK_SIZE, 901120 );
 
     adfimage_close ( &adf );
 }

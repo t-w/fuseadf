@@ -66,7 +66,6 @@ adfimage_t * adfimage_open ( char * const filename,
     }
 
     adfimage->filename = filename;
-    adfimage->size = dev->size;
     adfimage->dev = dev;
     adfimage->vol = vol;
     strcpy ( adfimage->cwd, "/" );
@@ -74,7 +73,12 @@ adfimage_t * adfimage_open ( char * const filename,
     stat ( adfimage->filename, &adfimage->fstat );
 
 #ifdef DEBUG_ADFIMAGE
-    adffs_log_info ( "\nfile size: %ld\n", adfimage->size );
+    const char
+        * const devinfo = adfDevGetInfo( dev ),
+        * const volinfo = adfVolGetInfo( dev );
+    adffs_log_info( "\n%s: %s\n%s\n", __func__, devinfo, volinfo );
+    free( devinfo );
+    free( volinfo );
 #endif
 
     return adfimage;
@@ -951,9 +955,14 @@ static struct AdfDevice *
     }
 
 #ifdef DEBUG_ADFIMAGE
-    printf ( "\nMounted device info:\n" );
-    //adfDeviceInfo ( dev );
-    printf ( "  size:\t\t%d\n  volumes:\t%d\n", dev->size, dev->nVol );
+    const char
+        * const devinfo = adfDevGetInfo( dev ),
+        * const volinfo = adfVolGetInfo( dev );
+    adffs_log_info( "\n%s: Mounted device info:\n%s\n%s\n",
+                    __func__, devinfo, volinfo );
+    free( devinfo );
+    free( volinfo );
+
 #endif
 
     return dev;
