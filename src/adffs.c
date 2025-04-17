@@ -210,10 +210,11 @@ int adffs_getattr ( const char *  path,
         if ( dentry.type == ADFVOLUME_DENTRY_FILE ||
              dentry.type == ADFVOLUME_DENTRY_LINKFILE )
         {
+            const int perms = adfimage_getperm( &dentry );
             statbuf->st_mode = S_IFREG |
-                S_IRUSR | S_IWUSR |
-                S_IRGRP |
-                S_IROTH;
+                ( perms & ADF_PERM_READ    ? S_IRUSR | S_IRGRP | S_IROTH : 0 ) |
+                ( perms & ADF_PERM_WRITE   ? S_IWUSR : 0 ) |
+                ( perms & ADF_PERM_EXECUTE ? S_IXUSR | S_IXGRP | S_IXOTH : 0 );
             statbuf->st_nlink = 1;
 
             struct AdfFile * afile = adfFileOpen ( vol, direntry_name,

@@ -43,6 +43,15 @@ enum {
     ADFVOLUME_DENTRY_UNKNOWN
 };
 
+// permission translation limited to rwx (read/write/execute)
+// on Linux (*nix size) all the same for user/group/others,
+// except for write (only user)
+enum ADF_PERMISSIONS {
+    ADF_PERM_READ    = 1,
+    ADF_PERM_WRITE   = 2,
+    ADF_PERM_EXECUTE = 4
+};
+
 typedef struct adfimage_dentry {
     // name ?
     int type;
@@ -60,6 +69,8 @@ adfimage_dentry_t adfimage_get_root_dentry ( adfimage_t * const adfimage );
 
 adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
                                        const char * const name );
+
+int adfimage_getperm( adfimage_dentry_t * const dentry );
 
 const char * adfimage_getcwd ( const adfimage_t * const adfimage );
 

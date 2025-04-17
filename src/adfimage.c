@@ -324,6 +324,14 @@ adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
     return adf_dentry;
 }
 
+int adfimage_getperm( adfimage_dentry_t * const dentry )
+{
+    return
+        ( adfAccHasR( dentry->adflib_entry.access ) ? 0 : ADF_PERM_READ     ) |
+        ( adfAccHasW( dentry->adflib_entry.access ) ? 0 : ADF_PERM_WRITE    ) |
+        ( adfAccHasE( dentry->adflib_entry.access ) ? 0 : ADF_PERM_EXECUTE  );
+}
+
 
 const char * adfimage_getcwd ( const adfimage_t * const adfimage )
 {
