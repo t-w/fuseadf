@@ -35,8 +35,8 @@ void * adffs_init ( struct fuse_conn_info * conninfo )
 
     adffs_log_info ( "\nadffs_init ( conninfo = 0x%" PRIxPTR " )\n",
                      conninfo );
-    log_fuse_conn_info ( conninfo );
-    log_fuse_context ( context );
+    adffs_log_fuse_conn_info( conninfo );
+    adffs_log_fuse_context( context );
 #else
     (void) conninfo;
 #endif
@@ -117,7 +117,7 @@ int adffs_statfs ( const char *     path,
     stvfs->f_namemax = 30;                        /* Maximum filename length */
 
 #ifdef DEBUG_ADFFS
-    log_statvfs ( stvfs );
+    adffs_log_statvfs( stvfs );
 #endif
 
     return 0;
@@ -294,7 +294,7 @@ int adffs_getattr ( const char *  path,
     statbuf->st_blksize = adfimage->fstat.st_blksize;
 
 #ifdef DEBUG_ADFFS
-    log_stat ( statbuf );
+    adffs_log_stat( statbuf );
 #endif
 
     return 0;
@@ -430,7 +430,7 @@ int adffs_readdir ( const char *            path,
     }
 
 #ifdef DEBUG_ADFFS
-    log_fuse_file_info ( finfo );
+    adffs_log_fuse_file_info( finfo );
 #endif
 
     adfToRootDir ( vol );
