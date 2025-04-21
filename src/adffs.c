@@ -570,6 +570,24 @@ int adffs_chmod ( const char * path,
 #else
     (void) path, (void) mode;
 #endif
+
+    // only user permissions are managed (not touching group/other)
+    int perms =
+        ( mode & S_IRUSR ? ADF_PERM_READ    : 0 ) |
+        ( mode & S_IWUSR ? ADF_PERM_WRITE   : 0 ) |
+        ( mode & S_IXUSR ? ADF_PERM_EXECUTE : 0 );
+
+    if ( ! adfimage_setperm( fs_state->adfimage, path, perms ) ) {
+#ifdef DEBUG_ADFFS
+        adffs_log_info( "\nadffs_chmod: error setting permissions\n" );
+#endif
+        return EINVAL;   // a better error here?
+    }
+
+#ifdef DEBUG_ADFFS
+    adffs_log_info( "\nadffs_chmod: permissions set\n" );
+#endif
+
     return 0;
 }
 

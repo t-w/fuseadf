@@ -70,7 +70,16 @@ adfimage_dentry_t adfimage_get_root_dentry ( adfimage_t * const adfimage );
 adfimage_dentry_t adfimage_getdentry ( adfimage_t * const adfimage,
                                        const char * const name );
 
+static inline bool adfimage_dentry_valid( const adfimage_dentry_t * const dentry ) {
+    return ( dentry->type > ADFVOLUME_DENTRY_NONE &&
+             dentry->type < ADFVOLUME_DENTRY_UNKNOWN );
+}
+
 int adfimage_getperm( adfimage_dentry_t * const dentry );
+
+bool adfimage_setperm( adfimage_t * const adfimage,
+                       const char *       path,
+                       const int          perms );
 
 const char * adfimage_getcwd ( const adfimage_t * const adfimage );
 

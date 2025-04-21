@@ -333,6 +333,39 @@ int adfimage_getperm( adfimage_dentry_t * const dentry )
 }
 
 
+bool adfimage_setperm( adfimage_t * const adfimage,
+                       const char *       path,
+                       const int          perms )
+{
+    adfimage_dentry_t dentry = adfimage_getdentry( adfimage, path );
+    if ( ! adfimage_dentry_valid( &dentry ) )
+        return false;
+
+    struct AdfEntryBlock entryBlock;
+    if ( adfReadEntryBlock( adfimage->vol, dentry.adflib_entry.sector,
+                            &entryBlock ) != ADF_RC_OK )
+    {
+        return false;
+    }
+
+    if ( perms & ADF_PERM_READ )  entryBlock.access &= !ADF_ACCMASK_R;
+    else                          entryBlock.access |= ADF_ACCMASK_R;
+
+    if ( perms & ADF_PERM_WRITE )  entryBlock.access &= !ADF_ACCMASK_W;
+    else                           entryBlock.access |= ADF_ACCMASK_W;
+
+    if ( perms & ADF_PERM_EXECUTE )  entryBlock.access &= !ADF_ACCMASK_E;
+    else                             entryBlock.access |= ADF_ACCMASK_E;
+
+    if ( adfWriteEntryBlock( adfimage->vol, dentry.adflib_entry.sector,
+                             &entryBlock ) != ADF_RC_OK )
+    {
+        return false;
+    }
+
+    return true;
+}
+
 const char * adfimage_getcwd ( const adfimage_t * const adfimage )
 {
     return adfimage->cwd;
