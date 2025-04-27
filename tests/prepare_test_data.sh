@@ -21,7 +21,7 @@ download_fred_fish_disks()
 
 download_adflib_test_images()
 {
-    ADFLIB_DUMPS_URL=https://github.com/lclevy/ADFlib/raw/master/regtests/Dumps
+    ADFLIB_DUMPS_URL=https://github.com/adflib/ADFlib/raw/master/tests/data/Dumps
 
     for i in \
 	${ADFLIB_DUMPS_URL}/blank.adf \
