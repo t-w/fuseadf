@@ -561,9 +561,9 @@ int adffs_open ( const char *            filepath,
 int adffs_chmod ( const char * path,
                   mode_t       mode )
 {
-#ifdef DEBUG_ADFFS
     const adffs_state_t * const fs_state =
         ( adffs_state_t * ) fuse_get_context()->private_data;
+#ifdef DEBUG_ADFFS
     adffs_log_info ( "\nadffs_chmod (\n"
                      "    path = \"%s\", mode = %o\n",
                      path, mode );
