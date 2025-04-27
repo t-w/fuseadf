@@ -62,6 +62,31 @@ Additionally, some FUSE options can be used (for details see FUSE documentation)
   (Since 0.3, the FUSE's single-threaded mode is enforced, adding `-s` is no
   longer needed).
 
+## Protection flags
+Since version 0.6 FUSEADF supports mapping AmigaDOS to client (fusefs host OS)
+permissions. The implementation allows to manage the 3 permissions which are
+common with \*nix systems: read, write and execute.
+
+For now, the implementation is limited to setting these permissions for
+user/owner only (not touching "group" and "others" on ADF volume).
+
+Note that adffs presents these permissions as those from user (just replicates
+for group and other, with an exception of "write" which is set only for
+the user).
+
+Since, in practice, it was rather uncommon to use OFS/FFS disks in multiuser
+environment, this is sufficient. However, for completeness, full support for
+"group" and "other" permissions will be added.
+
+The remaining [permissions](http://lclevy.free.fr/adflib/adf_info.html#p44):
+- `D` (delete), `A` (archived), `P` (pure command), `S` (script), `H` (hold)
+probably won't be implemented (they are not present/available on clients,
+maily \*nix-like).
+
+The implementation allows to set/unset permissions eg. with `chmod`
+command with `u+/-` switch (eg. `chmod u+rx myfile`, `chmod u-w myfile`).
+Setting the remaining (`g` and `o`) has no effect.
+
 
 ## Related websites and tools:
 - ADFlib, a portable library in C (includes some useful tools, eg. `unadf`)
