@@ -1,3 +1,7 @@
+0.6 (2025-04-27)
+  * Require ADFlib 0.10.0 (changed API!).
+  * Add permissions translation (Amiga <-> local OS / *nix).
+
 0.5 (2024-05-19)
   * Fixed a bug in command line parser (option -f was not available)
   * Fixed debian packaging (disabled parallel testing, corrected

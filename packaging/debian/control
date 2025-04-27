@@ -5,7 +5,7 @@ Maintainer: Tomasz Wolak <tomas.wolak@gmail.com>
 Build-Depends: debhelper-compat (= 13),
 	       autoconf,
 	       automake,
-               libadf-dev (>= 0.9.0),
+               libadf-dev (>= 0.10.0),
                libfuse-dev,
                pkg-config
 Standards-Version: 4.3.0

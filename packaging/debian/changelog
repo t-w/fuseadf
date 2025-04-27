@@ -1,3 +1,11 @@
+fuseadf (0.6-1) unstable; urgency=medium
+
+  * Require ADFlib 0.10.0 (changed API!).
+  * Add permissions translation (Amiga <-> local OS / *nix).
+
+ -- Tomasz Wolak <tomas.wolak@gmail.com>  Sun, 27 Apr 2025 18:47:40 +0100
+
+
 fuseadf (0.5-1) unstable; urgency=medium
 
   * Fixed a bug in command line parser (option -f was not available)

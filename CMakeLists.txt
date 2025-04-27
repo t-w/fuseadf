@@ -7,7 +7,7 @@ set ( fuseadf_VERSION_MINOR 5 )
 
 find_package ( PkgConfig REQUIRED )
 pkg_check_modules ( FUSE REQUIRED fuse )
-pkg_check_modules ( ADFLIB REQUIRED adflib>=0.9.0 )
+pkg_check_modules ( ADFLIB REQUIRED adflib>=0.10.0 )
 
 add_compile_options (
   -Wall

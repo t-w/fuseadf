@@ -1,7 +1,7 @@
 
 AC_PREREQ([2.54])
 
-AC_INIT([fuseadf], [0.5],
+AC_INIT([fuseadf], [0.6],
         [tomas.wolak@gmail.com or (better) https://gitlab.com/t-m/fuseadf/-/issues],
         [], [https://gitlab.com/t-m/fuseadf])
 
@@ -29,7 +29,7 @@ AC_CHECK_HEADERS([errno.h inttypes.h limits.h stdarg.h stdio.h stdint.h \
     stdlib.h string.h sys/stat.h sys/statvfs.h sys/types.h unistd.h])
 
 PKG_CHECK_MODULES(FUSE, fuse >= 2.9)
-PKG_CHECK_MODULES(ADF, adflib >= 0.9.0)
+PKG_CHECK_MODULES(ADF, adflib >= 0.10.0)
 PKG_CHECK_MODULES([CHECK], [check >= 0.9.6])
 
 AC_TYPE_UID_T
