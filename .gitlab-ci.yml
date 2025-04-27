@@ -108,7 +108,7 @@ upload:
       apt-get clean && rm -rf /var/lib/apt/lists/*
   script:
 #    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file path/to/file.txt "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/my_package/0.0.1/file.txt"'
-    - 'cd ${CI_PROJECT_DIR} ; for FILE in *.deb *.dsc *.tar.gz *.tar.xz ; do curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${FILE} "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/fuseadf/0.5/${FILE}" ; done'
+    - 'cd ${CI_PROJECT_DIR} ; for FILE in *.deb *.dsc *.tar.gz *.tar.xz ; do curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${FILE} "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/fuseadf/0.6/${FILE}" ; done'
 
 #download:
 #  stage: download
