@@ -154,12 +154,24 @@ int adffs_getattr ( const char *  path,
     adfimage_dentry_t dentry;
     if ( *path_relative == '\0' ) {
         // main directory
+
+        dentry = adfimage_get_root_dentry ( adfimage );
+
+        /* root dir accees permissions never seem to be set properly...
+           (if translated - nothing will be accesible) */
+        /*const int perms = adfimage_getperm( &dentry );
+        statbuf->st_mode = S_IFDIR |
+                ( perms & ADF_PERM_READ    ? S_IRUSR | S_IRGRP | S_IROTH : 0 ) |
+                ( perms & ADF_PERM_WRITE   ? S_IWUSR : 0 ) |
+                //( perms & ADF_PERM_EXECUTE ? S_IXUSR | S_IXGRP | S_IXOTH : 0 );
+                S_IXUSR | S_IXGRP | S_IXOTH;  // executable (entering dir.) for all
+        */
+        /* setting reasonable defaults instead */
         statbuf->st_mode = S_IFDIR |
             S_IRUSR | S_IXUSR | S_IWUSR |
             S_IRGRP | S_IXGRP |
             S_IROTH | S_IXOTH;
 
-        dentry = adfimage_get_root_dentry ( adfimage );
         //statbuf->st_size = dentry.adflib_entry.size;   // always 0 for directories(?)
                                                          // (to improve in ADFlib?)
         statbuf->st_size = adfimage_count_cwd_entries ( adfimage );
@@ -230,10 +242,13 @@ int adffs_getattr ( const char *  path,
         } else if ( dentry.type == ADFVOLUME_DENTRY_DIRECTORY ||
                     dentry.type == ADFVOLUME_DENTRY_LINKDIR )
         {
+            const int perms = adfimage_getperm( &dentry );
             statbuf->st_mode = S_IFDIR |
-                S_IRUSR | S_IWUSR | S_IXUSR |
-                S_IRGRP |           S_IXGRP |
-                S_IROTH |           S_IXOTH;
+                ( perms & ADF_PERM_READ    ? S_IRUSR | S_IRGRP | S_IROTH : 0 ) |
+                ( perms & ADF_PERM_WRITE   ? S_IWUSR : 0 ) |
+                //( perms & ADF_PERM_EXECUTE ? S_IXUSR | S_IXGRP | S_IXOTH : 0 );
+                S_IXUSR | S_IXGRP | S_IXOTH;  // executable (entering dir.) for all
+
             //statbuf->st_size = dentry.adflib_entry.size;   // always 0 for directories(?)
                                                              // (to improve in ADFlib?)
             statbuf->st_size = adfimage_count_dir_entries ( adfimage, path );
