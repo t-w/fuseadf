@@ -1,3 +1,6 @@
+0.7 (2025-05-08)
+  * getattr: add permissions translation for directories.
+
 0.6 (2025-04-27)
   * Require ADFlib 0.10.0 (changed API!).
   * Add permissions translation (Amiga <-> local OS / *nix).

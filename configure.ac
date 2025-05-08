@@ -1,7 +1,7 @@
 
 AC_PREREQ([2.54])
 
-AC_INIT([fuseadf], [0.6],
+AC_INIT([fuseadf], [0.7],
         [tomas.wolak@gmail.com or (better) https://gitlab.com/t-m/fuseadf/-/issues],
         [], [https://gitlab.com/t-m/fuseadf])
 
